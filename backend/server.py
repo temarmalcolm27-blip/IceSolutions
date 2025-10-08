@@ -37,6 +37,91 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# IceSolutions Models
+class Product(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    price: float
+    weight: str
+    inStock: bool = True
+    comingSoon: bool = False
+    features: List[str] = []
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CustomerInfo(BaseModel):
+    name: str
+    email: str
+    phone: str
+    address: str
+
+class EventDetails(BaseModel):
+    eventDate: datetime
+    eventType: str
+    guestCount: int
+    iceAmount: int
+    deliveryTime: str
+
+class QuoteCalculation(BaseModel):
+    bags: int
+    basePrice: float
+    deliveryFee: float
+    total: float
+    savings: float = 0.0
+
+class Quote(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customerInfo: CustomerInfo
+    eventDetails: EventDetails
+    quote: QuoteCalculation
+    specialRequests: str = ""
+    status: str = "pending"  # pending, contacted, confirmed, completed
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class QuoteCreate(BaseModel):
+    customerInfo: CustomerInfo
+    eventDetails: EventDetails
+    specialRequests: str = ""
+
+class Contact(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: str
+    phone: str = ""
+    subject: str
+    message: str
+    inquiryType: str = "General Inquiry"
+    status: str = "new"  # new, replied, resolved
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ContactCreate(BaseModel):
+    name: str
+    email: str
+    phone: str = ""
+    subject: str
+    message: str
+    inquiryType: str = "General Inquiry"
+
+class DeliveryArea(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    area: str
+    deliveryFee: float
+    timeSlots: List[str] = []
+    isActive: bool = True
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
