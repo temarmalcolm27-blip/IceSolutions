@@ -317,7 +317,7 @@ const ContactPage = () => {
                       onClick={() => window.open('tel:(555)123-ICE1')}
                     >
                       <Phone className="mr-2 h-4 w-4" />
-                      Call (555) 123-ICE1
+                      Call (876) 490-7208
                     </Button>
                     
                     <Button 
