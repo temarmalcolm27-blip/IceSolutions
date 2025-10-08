@@ -18,7 +18,9 @@ import {
   Calculator,
   CheckCircle,
   Truck,
-  DollarSign
+  DollarSign,
+  Phone,
+  Mail
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { mockData } from '../data/mock';
