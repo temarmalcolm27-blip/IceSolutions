@@ -52,7 +52,7 @@ const Header = () => {
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
               <Phone className="h-4 w-4 text-cyan-600" />
-              <span className="text-gray-600">(555) 123-ICE1</span>
+              <span className="text-gray-600">(876) 490-7208</span>
             </div>
             <Link to="/quote">
               <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
@@ -87,7 +87,7 @@ const Header = () => {
                   <div className="pt-4 border-t border-gray-200">
                     <div className="flex items-center space-x-2 text-sm mb-4">
                       <Phone className="h-4 w-4 text-cyan-600" />
-                      <span className="text-gray-600">(555) 123-ICE1</span>
+                      <span className="text-gray-600">(876) 490-7208</span>
                     </div>
                     <Link to="/quote" onClick={() => setIsOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
