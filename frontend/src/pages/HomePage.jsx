@@ -310,7 +310,7 @@ const HomePage = () => {
                   className="border-2 border-white text-white hover:bg-white hover:text-cyan-600 transition-all duration-300"
                 >
                   <Phone className="mr-2 h-5 w-5" />
-                  Call (555) 123-ICE1
+                  Call (876) 490-7208
                 </Button>
               </Link>
             </div>
