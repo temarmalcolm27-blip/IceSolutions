@@ -70,7 +70,7 @@ const ContactPage = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: '(555) 123-ICE1',
+      details: '(876) 490-7208',
       description: 'Mon-Sun: 7AM - 9PM',
       action: () => window.open('tel:(555)123-ICE1')
     },
