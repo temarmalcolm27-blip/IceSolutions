@@ -314,7 +314,7 @@ const ContactPage = () => {
                   <div className="space-y-3">
                     <Button 
                       className="w-full bg-white text-gray-900 hover:bg-gray-100"
-                      onClick={() => window.open('tel:(555)123-ICE1')}
+                      onClick={() => window.open('tel:(876)490-7208')}
                     >
                       <Phone className="mr-2 h-4 w-4" />
                       Call (876) 490-7208
