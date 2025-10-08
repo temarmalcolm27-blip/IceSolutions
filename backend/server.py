@@ -151,6 +151,96 @@ async def get_status_checks():
     
     return status_checks
 
+# Products API
+@api_router.get("/products", response_model=List[Product])
+async def get_products():
+    products = await db.products.find({}, {"_id": 0}).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for product in products:
+        if isinstance(product.get('createdAt'), str):
+            product['createdAt'] = datetime.fromisoformat(product['createdAt'])
+        if isinstance(product.get('updatedAt'), str):
+            product['updatedAt'] = datetime.fromisoformat(product['updatedAt'])
+    
+    return products
+
+@api_router.get("/products/{product_id}", response_model=Product)
+async def get_product(product_id: str):
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Convert ISO string timestamps back to datetime objects
+    if isinstance(product.get('createdAt'), str):
+        product['createdAt'] = datetime.fromisoformat(product['createdAt'])
+    if isinstance(product.get('updatedAt'), str):
+        product['updatedAt'] = datetime.fromisoformat(product['updatedAt'])
+    
+    return product
+
+# Quotes API
+@api_router.post("/quotes", response_model=Quote)
+async def create_quote(quote_input: QuoteCreate):
+    # Calculate quote pricing
+    guest_count = quote_input.eventDetails.guestCount or 0
+    ice_amount = quote_input.eventDetails.iceAmount or 0
+    
+    # Calculate recommended bags (1 bag per 25 guests or based on ice amount)
+    recommended_bags = max(1, guest_count // 25) if guest_count else max(1, ice_amount // 10)
+    
+    base_price = recommended_bags * 350.00  # $350 per 10lb bag
+    delivery_fee = 0.0 if base_price > 500 else 8.99  # Free delivery over $500
+    
+    # Calculate bulk discount
+    savings = 0.0
+    if recommended_bags >= 5:
+        savings = base_price * 0.05  # 5% discount for 5+ bags
+    if recommended_bags >= 10:
+        savings = base_price * 0.10  # 10% discount for 10+ bags
+    
+    total = base_price + delivery_fee - savings
+    
+    quote_calc = QuoteCalculation(
+        bags=recommended_bags,
+        basePrice=base_price,
+        deliveryFee=delivery_fee,
+        total=total,
+        savings=savings
+    )
+    
+    quote = Quote(
+        customerInfo=quote_input.customerInfo,
+        eventDetails=quote_input.eventDetails,
+        quote=quote_calc,
+        specialRequests=quote_input.specialRequests
+    )
+    
+    # Convert to dict and serialize datetimes for MongoDB
+    doc = quote.model_dump()
+    doc['createdAt'] = doc['createdAt'].isoformat()
+    doc['updatedAt'] = doc['updatedAt'].isoformat()
+    doc['eventDetails']['eventDate'] = doc['eventDetails']['eventDate'].isoformat()
+    
+    await db.quotes.insert_one(doc)
+    return quote
+
+@api_router.get("/quotes/{quote_id}", response_model=Quote)
+async def get_quote(quote_id: str):
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # Convert ISO string timestamps back to datetime objects
+    if isinstance(quote.get('createdAt'), str):
+        quote['createdAt'] = datetime.fromisoformat(quote['createdAt'])
+    if isinstance(quote.get('updatedAt'), str):
+        quote['updatedAt'] = datetime.fromisoformat(quote['updatedAt'])
+    if isinstance(quote['eventDetails'].get('eventDate'), str):
+        quote['eventDetails']['eventDate'] = datetime.fromisoformat(quote['eventDetails']['eventDate'])
+    
+    return quote
+
 # Include the router in the main app
 app.include_router(api_router)
 
