@@ -3,8 +3,9 @@ export const mockData = {
   company: {
     name: "Ice Solutions",
     tagline: "Premium Party Ice Delivery",
+    slogan: "More Ice = More Vibes",
     description: "Your trusted partner for all party ice needs. We deliver fresh, crystal-clear ice directly to your event, restaurant, or venue.",
-    phone: "(555) 123-ICE1",
+    phone: "(876) 490-7208",
     email: "orders@icesolutions.com",
     address: "123 Ice Street, Cool City, CC 12345"
   },
