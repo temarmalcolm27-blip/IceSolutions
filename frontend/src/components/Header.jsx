@@ -26,7 +26,12 @@ const Header = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/75226q57_IMG_2763.jpg" 
               alt="Ice Solutions Logo" 
-              className="h-10 w-auto"
+              className="h-12 w-auto logo-transparent"
+              style={{
+                mixBlendMode: 'multiply',
+                filter: 'contrast(1.2) saturate(1.1)',
+                background: 'transparent'
+              }}
             />
           </Link>
 
