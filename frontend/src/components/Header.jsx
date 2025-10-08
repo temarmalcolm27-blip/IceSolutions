@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Menu, Phone, Truck } from 'lucide-react';
+import './Logo.css';
 
 const Header = () => {
   const location = useLocation();
