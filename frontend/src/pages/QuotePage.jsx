@@ -1,0 +1,466 @@
+import React, { useState } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Calendar } from '../components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { 
+  Package, 
+  Calendar as CalendarIcon,
+  Clock, 
+  MapPin,
+  Calculator,
+  CheckCircle,
+  Truck,
+  DollarSign
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { mockData } from '../data/mock';
+import { toast } from 'sonner';
+
+const QuotePage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    eventDate: null,
+    eventType: '',
+    guestCount: '',
+    iceAmount: '',
+    specialRequests: '',
+    deliveryTime: ''
+  });
+  const [calculatedQuote, setCalculatedQuote] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const eventTypes = [
+    'Private Party',
+    'Wedding',
+    'Corporate Event',
+    'Restaurant/Bar',
+    'Catering Service',
+    'Emergency Supply',
+    'Other'
+  ];
+
+  const timeSlots = [
+    '8:00 AM - 10:00 AM',
+    '10:00 AM - 12:00 PM',
+    '12:00 PM - 2:00 PM',
+    '2:00 PM - 4:00 PM',
+    '4:00 PM - 6:00 PM',
+    '6:00 PM - 8:00 PM'
+  ];
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const calculateQuote = () => {
+    const guestCount = parseInt(formData.guestCount) || 0;
+    const iceAmount = parseInt(formData.iceAmount) || 0;
+    
+    // Simple calculation logic (in real app, this would be more sophisticated)
+    let recommendedBags = Math.ceil(guestCount / 25); // 1 bag per 25 guests
+    if (iceAmount > 0) {
+      recommendedBags = Math.ceil(iceAmount / 10); // 10lbs per bag
+    }
+    
+    const basePrice = recommendedBags * 8.99;
+    const deliveryFee = basePrice > 50 ? 0 : 5.99; // Free delivery over $50
+    const total = basePrice + deliveryFee;
+    
+    setCalculatedQuote({
+      bags: recommendedBags,
+      basePrice,
+      deliveryFee,
+      total,
+      savings: recommendedBags >= 5 ? basePrice * 0.05 : 0
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Mock submission
+    setTimeout(() => {
+      toast.success("Quote request submitted! We'll contact you within 30 minutes.");
+      setIsLoading(false);
+      
+      // Mock: Add to quotes array
+      const newQuote = {
+        id: mockData.quotes.length + 1,
+        ...formData,
+        quote: calculatedQuote,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+      mockData.quotes.push(newQuote);
+    }, 1000);
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Header />
+      
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
+              Get Your Ice Quote
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Tell us about your event and get an instant quote for premium ice delivery
+            </p>
+            <Badge className="bg-green-100 text-green-700 px-4 py-2">
+              <CheckCircle className="mr-1 h-4 w-4" />
+              Instant Quote & Fast Response
+            </Badge>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            {/* Quote Form */}
+            <div className="space-y-8">
+              <Card className="border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-gray-900 flex items-center">
+                    <Calculator className="mr-2 h-6 w-6 text-cyan-600" />
+                    Quote Request Form
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    
+                    {/* Contact Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                            placeholder="Your full name"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone Number *</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            value={formData.phone}
+                            onChange={(e) => handleInputChange('phone', e.target.value)}
+                            placeholder="(555) 123-4567"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          placeholder="your@email.com"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="address">Delivery Address *</Label>
+                        <Input
+                          id="address"
+                          value={formData.address}
+                          onChange={(e) => handleInputChange('address', e.target.value)}
+                          placeholder="Full delivery address"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Event Details */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Event Details</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Event Date *</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start text-left font-normal"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {formData.eventDate ? format(formData.eventDate, "PPP") : "Select date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={formData.eventDate}
+                                onSelect={(date) => handleInputChange('eventDate', date)}
+                                initialFocus
+                                disabled={(date) => date < new Date()}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Preferred Delivery Time</Label>
+                          <Select onValueChange={(value) => handleInputChange('deliveryTime', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select time slot" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {timeSlots.map((slot) => (
+                                <SelectItem key={slot} value={slot}>
+                                  {slot}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Event Type</Label>
+                        <Select onValueChange={(value) => handleInputChange('eventType', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select event type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {eventTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="guests">Number of Guests</Label>
+                          <Input
+                            id="guests"
+                            type="number"
+                            value={formData.guestCount}
+                            onChange={(e) => handleInputChange('guestCount', e.target.value)}
+                            placeholder="e.g., 50"
+                            min="1"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="iceAmount">Ice Amount (lbs)</Label>
+                          <Input
+                            id="iceAmount"
+                            type="number"
+                            value={formData.iceAmount}
+                            onChange={(e) => handleInputChange('iceAmount', e.target.value)}
+                            placeholder="e.g., 30"
+                            min="10"
+                            step="10"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Special Requests */}
+                    <div className="space-y-2">
+                      <Label htmlFor="requests">Special Requests</Label>
+                      <Textarea
+                        id="requests"
+                        value={formData.specialRequests}
+                        onChange={(e) => handleInputChange('specialRequests', e.target.value)}
+                        placeholder="Any special delivery instructions, timing requirements, or other requests..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="flex space-x-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={calculateQuote}
+                        className="flex-1"
+                        disabled={!formData.guestCount && !formData.iceAmount}
+                      >
+                        <Calculator className="mr-2 h-4 w-4" />
+                        Calculate Quote
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                        disabled={isLoading || !formData.name || !formData.phone || !formData.email}
+                      >
+                        {isLoading ? 'Submitting...' : 'Request Quote'}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quote Summary & Info */}
+            <div className="space-y-8">
+              
+              {/* Instant Quote */}
+              {calculatedQuote && (
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-cyan-50 to-blue-50">
+                  <CardHeader>
+                    <CardTitle className="text-2xl text-gray-900 flex items-center">
+                      <DollarSign className="mr-2 h-6 w-6 text-cyan-600" />
+                      Instant Quote
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-700">Ice Bags ({calculatedQuote.bags} x 10lbs)</span>
+                        <span className="font-semibold">${calculatedQuote.basePrice.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-700">Delivery Fee</span>
+                        <span className="font-semibold">
+                          {calculatedQuote.deliveryFee === 0 ? 'FREE' : `$${calculatedQuote.deliveryFee.toFixed(2)}`}
+                        </span>
+                      </div>
+                      {calculatedQuote.savings > 0 && (
+                        <div className="flex justify-between items-center text-green-600">
+                          <span>Bulk Discount (5+ bags)</span>
+                          <span className="font-semibold">-${calculatedQuote.savings.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="border-t border-gray-300 pt-3">
+                        <div className="flex justify-between items-center text-lg font-bold">
+                          <span className="text-gray-900">Total Estimate</span>
+                          <span className="text-cyan-600">${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                      <p className="text-sm text-gray-600 text-center">
+                        This is an estimate. Final pricing may vary based on delivery location and special requirements.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Delivery Areas */}
+              <Card className="border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-xl text-gray-900 flex items-center">
+                    <MapPin className="mr-2 h-5 w-5 text-cyan-600" />
+                    Delivery Areas & Fees
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mockData.deliveryAreas.map((area) => (
+                      <div key={area.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900">{area.area}</div>
+                          <div className="text-sm text-gray-600">
+                            Available: {area.timeSlots.join(', ')}
+                          </div>
+                        </div>
+                        <Badge className={area.deliveryFee === 'Free' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}>
+                          {area.deliveryFee}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Info */}
+              <Card className="border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-xl text-gray-900 flex items-center">
+                    <Clock className="mr-2 h-5 w-5 text-cyan-600" />
+                    What Happens Next?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                      <div>
+                        <div className="font-medium text-gray-900">Instant Confirmation</div>
+                        <div className="text-sm text-gray-600">You'll receive an email confirmation within minutes</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                      <div>
+                        <div className="font-medium text-gray-900">Personal Contact</div>
+                        <div className="text-sm text-gray-600">Our team will call within 30 minutes to finalize details</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                      <div>
+                        <div className="font-medium text-gray-900">Scheduled Delivery</div>
+                        <div className="text-sm text-gray-600">Fresh ice delivered right to your door on time</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Contact */}
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+                <CardContent className="p-6 text-center space-y-4">
+                  <h3 className="text-xl font-semibold">Need Help?</h3>
+                  <p className="text-gray-300">
+                    Have questions or need a custom quote? Our ice experts are here to help!
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button 
+                      className="bg-white text-gray-900 hover:bg-gray-100"
+                      onClick={() => window.open('tel:(555)123-ICE1')}
+                    >
+                      <Phone className="mr-2 h-4 w-4" />
+                      Call (555) 123-ICE1
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="border-white text-white hover:bg-white hover:text-gray-900"
+                      onClick={() => window.open('mailto:orders@icesolutions.com')}
+                    >
+                      Email Us
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default QuotePage;
