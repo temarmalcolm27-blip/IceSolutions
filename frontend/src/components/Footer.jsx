@@ -13,7 +13,12 @@ const Footer = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/75226q57_IMG_2763.jpg" 
               alt="Ice Solutions" 
-              className="h-12 w-auto"
+              className="h-12 w-auto logo-transparent"
+              style={{
+                mixBlendMode: 'screen',
+                filter: 'brightness(1.3) contrast(1.1)',
+                background: 'transparent'
+              }}
             />
             <p className="text-gray-300 text-sm leading-relaxed">
               Your trusted partner for premium party ice delivery. 
