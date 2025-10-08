@@ -78,7 +78,7 @@ const QuotePage = () => {
       recommendedBags = Math.ceil(iceAmount / 10); // 10lbs per bag
     }
     
-    const basePrice = recommendedBags * 8.99;
+    const basePrice = recommendedBags * 350.00;
     const deliveryFee = basePrice > 50 ? 0 : 5.99; // Free delivery over $50
     const total = basePrice + deliveryFee;
     
