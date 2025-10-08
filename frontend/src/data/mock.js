@@ -16,7 +16,7 @@ export const mockData = {
       id: 1,
       name: "10lb Party Ice Bags",
       description: "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
-      price: 8.99,
+      price: 350.00,
       weight: "10 lbs",
       image: "/api/placeholder/300/200",
       inStock: true,
