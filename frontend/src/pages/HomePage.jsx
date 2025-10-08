@@ -117,7 +117,7 @@ const HomePage = () => {
                         <div className="font-medium text-gray-900">10lb Party Ice Bag</div>
                         <div className="text-sm text-gray-600">Crystal clear, restaurant quality</div>
                       </div>
-                      <div className="text-lg font-bold text-cyan-600">$8.99</div>
+                      <div className="text-lg font-bold text-cyan-600">$350.00</div>
                     </div>
                     
                     <Link to="/quote" className="block">
