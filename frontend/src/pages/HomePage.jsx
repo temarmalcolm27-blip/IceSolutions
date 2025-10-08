@@ -303,7 +303,7 @@ const HomePage = () => {
                   Get Your Quote Now
                 </Button>
               </Link>
-              <Link to="tel:(555)123-ICE1">
+              <Link to="tel:(876)490-7208">
                 <Button 
                   variant="outline" 
                   size="lg"
