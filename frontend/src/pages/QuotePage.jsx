@@ -71,27 +71,30 @@ const QuotePage = () => {
     }));
   };
 
+  useEffect(() => {
+    const fetchDeliveryAreas = async () => {
+      try {
+        const areas = await apiService.getDeliveryAreas();
+        setDeliveryAreas(areas);
+      } catch (error) {
+        console.error('Failed to load delivery areas:', error);
+        // Fallback to mock data
+        setDeliveryAreas(mockData.deliveryAreas);
+      } finally {
+        setDeliveryAreasLoading(false);
+      }
+    };
+
+    fetchDeliveryAreas();
+  }, []);
+
   const calculateQuote = () => {
     const guestCount = parseInt(formData.guestCount) || 0;
     const iceAmount = parseInt(formData.iceAmount) || 0;
     
-    // Simple calculation logic (in real app, this would be more sophisticated)
-    let recommendedBags = Math.ceil(guestCount / 25); // 1 bag per 25 guests
-    if (iceAmount > 0) {
-      recommendedBags = Math.ceil(iceAmount / 10); // 10lbs per bag
-    }
-    
-    const basePrice = recommendedBags * 350.00;
-    const deliveryFee = basePrice > 50 ? 0 : 5.99; // Free delivery over $50
-    const total = basePrice + deliveryFee;
-    
-    setCalculatedQuote({
-      bags: recommendedBags,
-      basePrice,
-      deliveryFee,
-      total,
-      savings: recommendedBags >= 5 ? basePrice * 0.05 : 0
-    });
+    // Use the API service calculation
+    const quote = apiService.calculateInstantQuote(guestCount, iceAmount);
+    setCalculatedQuote(quote);
   };
 
   const handleSubmit = async (e) => {
