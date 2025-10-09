@@ -18,6 +18,7 @@ import {
   Star
 } from 'lucide-react';
 import { mockData } from '../data/mock';
+import { apiService } from '../services/api';
 import { toast } from 'sonner';
 
 const ContactPage = () => {
