@@ -220,7 +220,20 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mockData.products.map((product) => (
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }, (_, index) => (
+                <Card key={index} className="border-0 shadow-md overflow-hidden animate-pulse">
+                  <div className="aspect-video bg-gray-200"></div>
+                  <CardContent className="p-6">
+                    <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              products.map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md overflow-hidden">
                 <div className="aspect-video bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center relative overflow-hidden">
                   <Package className="h-16 w-16 text-cyan-600" />
