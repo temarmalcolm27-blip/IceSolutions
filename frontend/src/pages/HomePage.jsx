@@ -275,7 +275,8 @@ const HomePage = () => {
                   </Link>
                 </CardContent>
               </Card>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
