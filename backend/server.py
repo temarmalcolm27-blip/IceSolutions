@@ -241,6 +241,46 @@ async def get_quote(quote_id: str):
     
     return quote
 
+# Contacts API
+@api_router.post("/contacts", response_model=Contact)
+async def create_contact(contact_input: ContactCreate):
+    contact = Contact(**contact_input.model_dump())
+    
+    # Convert to dict and serialize datetimes for MongoDB
+    doc = contact.model_dump()
+    doc['createdAt'] = doc['createdAt'].isoformat()
+    doc['updatedAt'] = doc['updatedAt'].isoformat()
+    
+    await db.contacts.insert_one(doc)
+    return contact
+
+@api_router.get("/contacts", response_model=List[Contact])
+async def get_contacts():
+    contacts = await db.contacts.find({}, {"_id": 0}).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for contact in contacts:
+        if isinstance(contact.get('createdAt'), str):
+            contact['createdAt'] = datetime.fromisoformat(contact['createdAt'])
+        if isinstance(contact.get('updatedAt'), str):
+            contact['updatedAt'] = datetime.fromisoformat(contact['updatedAt'])
+    
+    return contacts
+
+# Delivery Areas API
+@api_router.get("/delivery-areas", response_model=List[DeliveryArea])
+async def get_delivery_areas():
+    areas = await db.delivery_areas.find({"isActive": True}, {"_id": 0}).to_list(100)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for area in areas:
+        if isinstance(area.get('createdAt'), str):
+            area['createdAt'] = datetime.fromisoformat(area['createdAt'])
+        if isinstance(area.get('updatedAt'), str):
+            area['updatedAt'] = datetime.fromisoformat(area['updatedAt'])
+    
+    return areas
+
 # Include the router in the main app
 app.include_router(api_router)
 
