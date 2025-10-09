@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { mockData } from '../data/mock';
+import { apiService } from '../services/api';
 import { toast } from 'sonner';
 
 const QuotePage = () => {
