@@ -101,21 +101,49 @@ const QuotePage = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Mock submission
-    setTimeout(() => {
-      toast.success("Quote request submitted! We'll contact you within 30 minutes.");
-      setIsLoading(false);
-      
-      // Mock: Add to quotes array
-      const newQuote = {
-        id: mockData.quotes.length + 1,
-        ...formData,
-        quote: calculatedQuote,
-        status: 'pending',
-        createdAt: new Date().toISOString()
+    try {
+      // Prepare quote data for API
+      const quoteData = {
+        customerInfo: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address
+        },
+        eventDetails: {
+          eventDate: formData.eventDate ? formData.eventDate.toISOString() : new Date().toISOString(),
+          eventType: formData.eventType || 'Other',
+          guestCount: parseInt(formData.guestCount) || 0,
+          iceAmount: parseInt(formData.iceAmount) || 0,
+          deliveryTime: formData.deliveryTime || ''
+        },
+        specialRequests: formData.specialRequests
       };
-      mockData.quotes.push(newQuote);
-    }, 1000);
+      
+      // Submit to API
+      const newQuote = await apiService.createQuote(quoteData);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        eventDate: null,
+        eventType: '',
+        guestCount: '',
+        iceAmount: '',
+        specialRequests: '',
+        deliveryTime: ''
+      });
+      setCalculatedQuote(null);
+      
+    } catch (error) {
+      console.error('Failed to submit quote:', error);
+      // Error handling is done in the API service
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
