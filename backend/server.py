@@ -281,6 +281,98 @@ async def get_delivery_areas():
     
     return areas
 
+# Database seeding function
+async def seed_database():
+    """Seed the database with initial data if collections are empty"""
+    
+    # Seed products if collection is empty
+    product_count = await db.products.count_documents({})
+    if product_count == 0:
+        products_data = [
+            {
+                "id": "prod_10lb",
+                "name": "10lb Party Ice Bags",
+                "description": "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
+                "price": 350.00,
+                "weight": "10 lbs",
+                "inStock": True,
+                "comingSoon": False,
+                "features": ["Crystal Clear", "Restaurant Quality", "Fast Melting", "Perfect Cube Size"],
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "prod_50lb",
+                "name": "50lb Commercial Ice Bags",
+                "description": "Coming Soon! Perfect for larger events and commercial use.",
+                "price": 1750.00,
+                "weight": "50 lbs",
+                "inStock": False,
+                "comingSoon": True,
+                "features": ["Bulk Quantity", "Cost Effective", "Commercial Grade", "Extended Freshness"],
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "prod_100lb",
+                "name": "100lb Industrial Ice Bags",
+                "description": "Coming Soon! Ideal for restaurants, bars, and large-scale events.",
+                "price": 3200.00,
+                "weight": "100 lbs",
+                "inStock": False,
+                "comingSoon": True,
+                "features": ["Maximum Volume", "Professional Grade", "Bulk Pricing", "Commercial Delivery"],
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+        await db.products.insert_many(products_data)
+        logger.info("Seeded products collection")
+    
+    # Seed delivery areas if collection is empty
+    area_count = await db.delivery_areas.count_documents({})
+    if area_count == 0:
+        areas_data = [
+            {
+                "id": "area_downtown",
+                "area": "Downtown Core",
+                "deliveryFee": 0.0,
+                "timeSlots": ["9 AM - 12 PM", "12 PM - 3 PM", "3 PM - 6 PM", "6 PM - 9 PM"],
+                "isActive": True,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "area_westside",
+                "area": "West Side",
+                "deliveryFee": 5.99,
+                "timeSlots": ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"],
+                "isActive": True,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "area_eastside",
+                "area": "East Side",
+                "deliveryFee": 5.99,
+                "timeSlots": ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"],
+                "isActive": True,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "area_northsuburbs",
+                "area": "North Suburbs",
+                "deliveryFee": 8.99,
+                "timeSlots": ["11 AM - 2 PM", "2 PM - 5 PM"],
+                "isActive": True,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+        await db.delivery_areas.insert_many(areas_data)
+        logger.info("Seeded delivery areas collection")
+
 # Include the router in the main app
 app.include_router(api_router)
 
