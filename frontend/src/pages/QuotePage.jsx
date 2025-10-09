@@ -412,19 +412,32 @@ const QuotePage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {mockData.deliveryAreas.map((area) => (
-                      <div key={area.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <div className="font-medium text-gray-900">{area.area}</div>
-                          <div className="text-sm text-gray-600">
-                            Available: {area.timeSlots.join(', ')}
+                    {deliveryAreasLoading ? (
+                      // Loading skeleton for delivery areas
+                      Array.from({ length: 4 }, (_, index) => (
+                        <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg animate-pulse">
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
                           </div>
+                          <div className="h-6 w-16 bg-gray-200 rounded"></div>
                         </div>
-                        <Badge className={area.deliveryFee === 'Free' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}>
-                          {area.deliveryFee}
-                        </Badge>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      deliveryAreas.map((area) => (
+                        <div key={area.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <div className="font-medium text-gray-900">{area.area}</div>
+                            <div className="text-sm text-gray-600">
+                              Available: {area.timeSlots.join(', ')}
+                            </div>
+                          </div>
+                          <Badge className={area.deliveryFee === 0 ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}>
+                            {area.deliveryFee === 0 ? 'Free' : `$${area.deliveryFee.toFixed(2)}`}
+                          </Badge>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>
