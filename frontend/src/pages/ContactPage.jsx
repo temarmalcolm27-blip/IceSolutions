@@ -52,10 +52,21 @@ const ContactPage = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Mock submission
-    setTimeout(() => {
-      toast.success("Message sent successfully! We'll respond within 2 hours.");
-      setIsLoading(false);
+    try {
+      // Prepare contact data for API
+      const contactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message,
+        inquiryType: formData.contactMethod || 'General Inquiry'
+      };
+      
+      // Submit to API
+      await apiService.createContact(contactData);
+      
+      // Reset form on success
       setFormData({
         name: '',
         email: '',
@@ -64,7 +75,13 @@ const ContactPage = () => {
         message: '',
         contactMethod: ''
       });
-    }, 1000);
+      
+    } catch (error) {
+      console.error('Failed to send contact message:', error);
+      // Error handling is done in the API service
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
