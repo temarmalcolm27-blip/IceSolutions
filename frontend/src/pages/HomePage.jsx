@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -19,10 +19,13 @@ import {
   Zap
 } from 'lucide-react';
 import { mockData } from '../data/mock';
+import { apiService } from '../services/api';
 import { toast } from 'sonner';
 
 const HomePage = () => {
   const [hoveredService, setHoveredService] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleQuickOrder = () => {
     toast.success("Redirecting to quote page...");
