@@ -27,9 +27,26 @@ const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsData = await apiService.getProducts();
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        // Fallback to mock data if API fails
+        setProducts(mockData.products);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleQuickOrder = () => {
     toast.success("Redirecting to quote page...");
-    // Will navigate to quote page - mocked for now
+    // Will navigate to quote page
   };
 
   return (
