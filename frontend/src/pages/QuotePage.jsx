@@ -42,6 +42,8 @@ const QuotePage = () => {
   });
   const [calculatedQuote, setCalculatedQuote] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [deliveryAreas, setDeliveryAreas] = useState([]);
+  const [deliveryAreasLoading, setDeliveryAreasLoading] = useState(true);
 
   const eventTypes = [
     'Private Party',
