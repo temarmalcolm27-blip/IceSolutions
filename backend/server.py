@@ -189,8 +189,8 @@ async def create_quote(quote_input: QuoteCreate):
     # Calculate recommended bags (1 bag per 25 guests or based on ice amount)
     recommended_bags = max(1, guest_count // 25) if guest_count else max(1, ice_amount // 10)
     
-    base_price = recommended_bags * 350.00  # $350 per 10lb bag
-    delivery_fee = 0.0 if base_price > 500 else 8.99  # Free delivery over $500
+    base_price = recommended_bags * 350.00  # JMD $350 per 10lb bag
+    delivery_fee = 0.0 if base_price > 500 else 300.00  # Free delivery over JMD $500, otherwise JMD $300
     
     # Calculate bulk discount
     savings = 0.0
