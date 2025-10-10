@@ -532,23 +532,29 @@ const QuotePage = () => {
                     <div className="flex items-start space-x-3">
                       <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
                       <div>
-                        <div className="font-medium text-gray-900">Instant Confirmation</div>
-                        <div className="text-sm text-gray-600">You'll receive an email confirmation within minutes</div>
+                        <div className="font-medium text-gray-900">Request Saved</div>
+                        <div className="text-sm text-gray-600">Your quote/order is saved in our system with a unique ID</div>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3">
                       <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
                       <div>
-                        <div className="font-medium text-gray-900">Personal Contact</div>
-                        <div className="text-sm text-gray-600">Our team will call within 30 minutes to finalize details</div>
+                        <div className="font-medium text-gray-900">Personal Call</div>
+                        <div className="text-sm text-gray-600">Our team will call you within 30 minutes to confirm details and arrange payment</div>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3">
                       <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
                       <div>
                         <div className="font-medium text-gray-900">Scheduled Delivery</div>
-                        <div className="text-sm text-gray-600">Fresh ice delivered right to your door on time</div>
+                        <div className="text-sm text-gray-600">Fresh ice delivered to your address at your preferred time</div>
                       </div>
+                    </div>
+                    
+                    <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mt-4">
+                      <p className="text-sm text-amber-800">
+                        <strong>Note:</strong> Currently, quotes and orders are stored in our database. Our team reviews them manually and contacts customers by phone. Email notifications will be added in a future update.
+                      </p>
                     </div>
                   </div>
                 </CardContent>
