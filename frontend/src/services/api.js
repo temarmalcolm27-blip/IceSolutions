@@ -134,7 +134,7 @@ export const apiService = {
     );
     
     const basePrice = recommendedBags * 350.00;
-    const deliveryFee = basePrice > 500 ? 0 : 8.99;
+    const deliveryFee = basePrice > 500 ? 0 : 300.00;
     
     let savings = 0;
     if (recommendedBags >= 5) {
