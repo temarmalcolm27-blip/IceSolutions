@@ -123,6 +123,8 @@ const QuotePage = () => {
       // Submit to API
       const newQuote = await apiService.createQuote(quoteData);
       
+      toast.success(`Quote request submitted! Quote ID: ${newQuote.id}. We'll call you at (${formData.phone}) within 30 minutes.`);
+      
       // Reset form
       setFormData({
         name: '',
@@ -141,6 +143,66 @@ const QuotePage = () => {
     } catch (error) {
       console.error('Failed to submit quote:', error);
       // Error handling is done in the API service
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!calculatedQuote) {
+      toast.error('Please calculate a quote first');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // First create the quote
+      const quoteData = {
+        customerInfo: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address
+        },
+        eventDetails: {
+          eventDate: formData.eventDate ? formData.eventDate.toISOString() : new Date().toISOString(),
+          eventType: formData.eventType || 'Other',
+          guestCount: parseInt(formData.guestCount) || 0,
+          iceAmount: parseInt(formData.iceAmount) || 0,
+          deliveryTime: formData.deliveryTime || ''
+        },
+        specialRequests: formData.specialRequests
+      };
+      
+      const newQuote = await apiService.createQuote(quoteData);
+      
+      // Show success message with order details
+      toast.success(`🎉 Order placed successfully! 
+      Order Total: JMD $${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(0)}
+      Order ID: ${newQuote.id}
+      
+      Our team will call you at (${formData.phone}) within 30 minutes to confirm delivery details and arrange payment.`, {
+        duration: 8000,
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        eventDate: null,
+        eventType: '',
+        guestCount: '',
+        iceAmount: '',
+        specialRequests: '',
+        deliveryTime: ''
+      });
+      setCalculatedQuote(null);
+
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      toast.error('Failed to place order. Please try again or call us directly.');
     } finally {
       setIsLoading(false);
     }
