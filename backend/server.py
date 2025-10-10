@@ -354,6 +354,37 @@ async def seed_database():
         ]
         await db.delivery_areas.insert_many(areas_data)
         logger.info("Seeded delivery areas collection")
+    else:
+        # Check if we need to update delivery areas to new format
+        existing_areas = await db.delivery_areas.find({}, {"_id": 0}).to_list(10)
+        has_old_format = any(area.get("area") in ["Downtown Core", "West Side", "East Side", "North Suburbs"] for area in existing_areas)
+        
+        if has_old_format:
+            logger.info("Updating delivery areas to new Jamaica format...")
+            # Clear old areas and insert new ones
+            await db.delivery_areas.delete_many({})
+            areas_data = [
+                {
+                    "id": "area_washington_gardens",
+                    "area": "Washington Gardens",
+                    "deliveryFee": 0.0,
+                    "timeSlots": ["9 AM - 12 PM", "12 PM - 3 PM", "3 PM - 6 PM", "6 PM - 9 PM"],
+                    "isActive": True,
+                    "createdAt": datetime.now(timezone.utc).isoformat(),
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                },
+                {
+                    "id": "area_outside_washington_gardens",
+                    "area": "Anywhere outside of Washington Gardens",
+                    "deliveryFee": 300.00,
+                    "timeSlots": ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"],
+                    "isActive": True,
+                    "createdAt": datetime.now(timezone.utc).isoformat(),
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            ]
+            await db.delivery_areas.insert_many(areas_data)
+            logger.info("Updated delivery areas to Jamaica format")
 
 # Include the router in the main app
 app.include_router(api_router)
