@@ -78,27 +78,15 @@ export const mockData = {
   deliveryAreas: [
     {
       id: 1,
-      area: "Downtown Core",
+      area: "Washington Gardens",
       deliveryFee: "Free",
       timeSlots: ["9 AM - 12 PM", "12 PM - 3 PM", "3 PM - 6 PM", "6 PM - 9 PM"]
     },
     {
       id: 2,
-      area: "West Side",
-      deliveryFee: "$5.99",
+      area: "Anywhere outside of Washington Gardens",
+      deliveryFee: "JMD $300",
       timeSlots: ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"]
-    },
-    {
-      id: 3,
-      area: "East Side",
-      deliveryFee: "$5.99", 
-      timeSlots: ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"]
-    },
-    {
-      id: 4,
-      area: "North Suburbs",
-      deliveryFee: "$8.99",
-      timeSlots: ["11 AM - 2 PM", "2 PM - 5 PM"]
     }
   ],
 
