@@ -334,8 +334,8 @@ async def seed_database():
     if area_count == 0:
         areas_data = [
             {
-                "id": "area_downtown",
-                "area": "Downtown Core",
+                "id": "area_washington_gardens",
+                "area": "Washington Gardens",
                 "deliveryFee": 0.0,
                 "timeSlots": ["9 AM - 12 PM", "12 PM - 3 PM", "3 PM - 6 PM", "6 PM - 9 PM"],
                 "isActive": True,
@@ -343,28 +343,10 @@ async def seed_database():
                 "updatedAt": datetime.now(timezone.utc).isoformat()
             },
             {
-                "id": "area_westside",
-                "area": "West Side",
-                "deliveryFee": 5.99,
+                "id": "area_outside_washington_gardens",
+                "area": "Anywhere outside of Washington Gardens",
+                "deliveryFee": 300.00,
                 "timeSlots": ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"],
-                "isActive": True,
-                "createdAt": datetime.now(timezone.utc).isoformat(),
-                "updatedAt": datetime.now(timezone.utc).isoformat()
-            },
-            {
-                "id": "area_eastside",
-                "area": "East Side",
-                "deliveryFee": 5.99,
-                "timeSlots": ["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM"],
-                "isActive": True,
-                "createdAt": datetime.now(timezone.utc).isoformat(),
-                "updatedAt": datetime.now(timezone.utc).isoformat()
-            },
-            {
-                "id": "area_northsuburbs",
-                "area": "North Suburbs",
-                "deliveryFee": 8.99,
-                "timeSlots": ["11 AM - 2 PM", "2 PM - 5 PM"],
                 "isActive": True,
                 "createdAt": datetime.now(timezone.utc).isoformat(),
                 "updatedAt": datetime.now(timezone.utc).isoformat()
