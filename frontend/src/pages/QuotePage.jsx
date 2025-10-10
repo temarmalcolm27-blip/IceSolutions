@@ -433,7 +433,7 @@ const QuotePage = () => {
                             </div>
                           </div>
                           <Badge className={area.deliveryFee === 0 ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}>
-                            {area.deliveryFee === 0 ? 'Free' : `$${area.deliveryFee.toFixed(2)}`}
+                            {area.deliveryFee === 0 ? 'Free' : `JMD $${area.deliveryFee.toFixed(0)}`}
                           </Badge>
                         </div>
                       ))
