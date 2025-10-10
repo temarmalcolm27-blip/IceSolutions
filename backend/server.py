@@ -267,6 +267,38 @@ async def get_contacts():
     
     return contacts
 
+# Admin endpoint to view all quotes (for business owner)
+@api_router.get("/admin/quotes", response_model=List[Quote])
+async def get_all_quotes():
+    """Get all quotes for business review (admin endpoint)"""
+    quotes = await db.quotes.find({}, {"_id": 0}).sort([("createdAt", -1)]).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for quote in quotes:
+        if isinstance(quote.get('createdAt'), str):
+            quote['createdAt'] = datetime.fromisoformat(quote['createdAt'])
+        if isinstance(quote.get('updatedAt'), str):
+            quote['updatedAt'] = datetime.fromisoformat(quote['updatedAt'])
+        if isinstance(quote['eventDetails'].get('eventDate'), str):
+            quote['eventDetails']['eventDate'] = datetime.fromisoformat(quote['eventDetails']['eventDate'])
+    
+    return quotes
+
+# Admin endpoint to view all contacts (for business owner)
+@api_router.get("/admin/contacts")
+async def get_all_contacts_admin():
+    """Get all contact submissions for business review (admin endpoint)"""
+    contacts = await db.contacts.find({}, {"_id": 0}).sort([("createdAt", -1)]).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects  
+    for contact in contacts:
+        if isinstance(contact.get('createdAt'), str):
+            contact['createdAt'] = datetime.fromisoformat(contact['createdAt'])
+        if isinstance(contact.get('updatedAt'), str):
+            contact['updatedAt'] = datetime.fromisoformat(contact['updatedAt'])
+    
+    return contacts
+
 # Delivery Areas API
 @api_router.get("/delivery-areas", response_model=List[DeliveryArea])
 async def get_delivery_areas():
