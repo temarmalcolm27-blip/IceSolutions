@@ -216,6 +216,64 @@ const QuotePage = () => {
     }
   };
 
+  const handleScheduleCallback = () => {
+    setShowScheduleModal(true);
+  };
+
+  const submitScheduledCallback = async () => {
+    setIsLoading(true);
+    try {
+      // Create quote with scheduled callback flag
+      const quoteData = {
+        customerInfo: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address
+        },
+        eventDetails: {
+          eventDate: formData.eventDate ? formData.eventDate.toISOString() : new Date().toISOString(),
+          eventType: formData.eventType || 'Other',
+          guestCount: parseInt(formData.guestCount) || 0,
+          iceAmount: parseInt(formData.iceAmount) || 0,
+          deliveryTime: formData.deliveryTime || ''
+        },
+        specialRequests: `SCHEDULED CALLBACK: ${scheduledCallbackTime}. ${formData.specialRequests}`
+      };
+      
+      // Submit quote but don't trigger immediate callback
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/quotes-scheduled`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(quoteData)
+      });
+      
+      if (response.ok) {
+        const newQuote = await response.json();
+        toast.success(`Callback scheduled for ${scheduledCallbackTime}! Quote ID: ${newQuote.id}. We'll call you at the requested time.`, {
+          duration: 6000
+        });
+      } else {
+        throw new Error('Failed to schedule callback');
+      }
+      
+      // Reset form and modal
+      setFormData({
+        name: '', email: '', phone: '', address: '', eventDate: null,
+        eventType: '', guestCount: '', iceAmount: '', specialRequests: '', deliveryTime: ''
+      });
+      setCalculatedQuote(null);
+      setShowScheduleModal(false);
+      setScheduledCallbackTime('');
+      
+    } catch (error) {
+      console.error('Failed to schedule callback:', error);
+      toast.error('Failed to schedule callback. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
