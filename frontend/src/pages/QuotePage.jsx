@@ -461,26 +461,13 @@ const QuotePage = () => {
                       />
                     </div>
 
-                    <div className="space-y-3">
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
-                        disabled={isLoading || !formData.name || !formData.phone || !formData.email}
-                      >
-                        {isLoading ? 'Submitting...' : 'Request Immediate Callback'}
-                      </Button>
-                      
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full border-amber-500 text-amber-600 hover:bg-amber-50"
-                        onClick={() => handleScheduleCallback()}
-                        disabled={isLoading || !formData.name || !formData.phone || !formData.email}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Schedule Callback Later
-                      </Button>
-                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                      disabled={isLoading || !formData.name || !formData.phone || !formData.email}
+                    >
+                      {isLoading ? 'Submitting...' : 'Submit Quote Request'}
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
