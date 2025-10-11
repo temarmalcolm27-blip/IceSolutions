@@ -350,12 +350,14 @@ async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: 
         doc['updatedAt'] = doc['updatedAt'].isoformat()
         await db.call_attempts.insert_one(doc)
         
-        # Create Twilio call
+        # Create Twilio call (will need public URL for production)
+        base_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok.io')  # Update this with your ngrok URL
+        
         call = twilio_client.calls.create(
             to=phone_number,
             from_=TWILIO_PHONE_NUMBER,
-            url=f"{os.environ.get('BACKEND_URL', 'http://localhost:8001')}/api/ai-agent/twiml?quote_id={quote_id}&customer_name={customer_name}",
-            status_callback=f"{os.environ.get('BACKEND_URL', 'http://localhost:8001')}/api/ai-agent/status-callback",
+            url=f"{base_url}/api/ai-agent/twiml?quote_id={quote_id}&customer_name={customer_name}",
+            status_callback=f"{base_url}/api/ai-agent/status-callback",
             status_callback_event=["initiated", "ringing", "answered", "completed"]
         )
         
