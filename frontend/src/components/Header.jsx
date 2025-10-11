@@ -22,13 +22,14 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          {/* Logo with Slogan */}
+          <Link to="/" className="flex flex-col items-start space-y-0">
             <img 
               src="/IceSolution-Logo.png" 
               alt="Ice Solutions Logo" 
               className="h-12 w-auto logo-transparent logo-header"
             />
+            <span className="text-xs font-medium text-cyan-600 italic -mt-1">More Ice = More Vibes</span>
           </Link>
 
           {/* Desktop Navigation */}
