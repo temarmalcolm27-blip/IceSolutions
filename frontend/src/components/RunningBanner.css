@@ -1,0 +1,114 @@
+.running-banner-container {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  overflow: hidden;
+  background: linear-gradient(to right, rgba(6, 182, 212, 0.1), rgba(37, 99, 235, 0.1));
+  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* Background images with blur effect */
+.banner-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  opacity: 0.15;
+}
+
+.banner-bg-image {
+  position: absolute;
+  width: 33.33%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(8px) brightness(0.9);
+}
+
+.banner-bg-image:nth-child(1) {
+  left: 0;
+}
+
+.banner-bg-image:nth-child(2) {
+  left: 33.33%;
+}
+
+.banner-bg-image:nth-child(3) {
+  left: 66.66%;
+}
+
+/* Scrolling text wrapper */
+.banner-scroll-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.banner-scroll-content {
+  display: flex;
+  white-space: nowrap;
+  animation: scroll-left 40s linear infinite;
+}
+
+.banner-message {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0e7490;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.banner-separator {
+  margin: 0 1rem;
+  color: #06b6d4;
+  font-weight: bold;
+}
+
+/* Animation keyframes */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.33%);
+  }
+}
+
+/* Pause animation on hover */
+.running-banner-container:hover .banner-scroll-content {
+  animation-play-state: paused;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .running-banner-container {
+    height: 40px;
+  }
+
+  .banner-message {
+    font-size: 0.75rem;
+    padding: 0 1.5rem;
+  }
+
+  .banner-scroll-content {
+    animation: scroll-left 30s linear infinite;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-message {
+    font-size: 0.7rem;
+    padding: 0 1rem;
+  }
+
+  .banner-separator {
+    margin: 0 0.5rem;
+  }
+}
