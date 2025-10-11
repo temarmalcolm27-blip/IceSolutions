@@ -181,7 +181,7 @@ const QuotePage = () => {
       Order Total: JMD $${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(0)}
       Order ID: ${newQuote.id}
       
-      Our team will call you at (${formData.phone}) within 30 minutes to confirm delivery details and arrange payment.`, {
+      Our team will call you at (${formData.phone}) within 2-3 minutes to confirm delivery details and arrange payment.`, {
         duration: 8000,
       });
 
