@@ -315,6 +315,21 @@ async def get_contacts():
     
     return contacts
 
+# AI Agent admin endpoints
+@api_router.get("/admin/call-attempts")
+async def get_call_attempts():
+    """Get all AI agent call attempts for business review"""
+    attempts = await db.call_attempts.find({}, {"_id": 0}).sort([("createdAt", -1)]).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for attempt in attempts:
+        if isinstance(attempt.get('createdAt'), str):
+            attempt['createdAt'] = datetime.fromisoformat(attempt['createdAt'])
+        if isinstance(attempt.get('updatedAt'), str):
+            attempt['updatedAt'] = datetime.fromisoformat(attempt['updatedAt'])
+    
+    return attempts
+
 # AI Sales Agent Functions
 async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: str):
     """Initiate an AI callback for a quote/order"""
