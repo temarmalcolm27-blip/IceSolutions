@@ -109,7 +109,7 @@ const QuotePage = () => {
     setIsLoading(true);
     
     try {
-      // Prepare quote data for API
+      // Prepare quote data for API (no callback version)
       const quoteData = {
         customerInfo: {
           name: formData.name,
@@ -127,29 +127,38 @@ const QuotePage = () => {
         specialRequests: formData.specialRequests
       };
       
-      // Submit to API
-      const newQuote = await apiService.createQuote(quoteData);
-      
-      toast.success(`Quote request submitted! Quote ID: ${newQuote.id}. We'll call you at (${formData.phone}) immediately!`);
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        eventDate: null,
-        eventType: '',
-        guestCount: '',
-        iceAmount: '',
-        specialRequests: '',
-        deliveryTime: ''
+      // Submit to no-callback endpoint
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/quotes-no-callback`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(quoteData)
       });
-      setCalculatedQuote(null);
+      
+      if (response.ok) {
+        const newQuote = await response.json();
+        toast.success(`Quote request submitted successfully! Quote ID: ${newQuote.id}. Our team will review and contact you soon.`);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          address: '',
+          eventDate: null,
+          eventType: '',
+          guestCount: '',
+          iceAmount: '',
+          specialRequests: '',
+          deliveryTime: ''
+        });
+        setCalculatedQuote(null);
+      } else {
+        throw new Error('Failed to submit quote');
+      }
       
     } catch (error) {
       console.error('Failed to submit quote:', error);
-      // Error handling is done in the API service
+      toast.error('Failed to submit quote. Please try again.');
     } finally {
       setIsLoading(false);
     }
