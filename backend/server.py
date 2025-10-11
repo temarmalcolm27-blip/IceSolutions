@@ -225,7 +225,7 @@ async def get_product(product_id: str):
 
 # Quotes API
 @api_router.post("/quotes", response_model=Quote)
-async def create_quote(quote_input: QuoteCreate):
+async def create_quote(quote_input: QuoteCreate, background_tasks: BackgroundTasks):
     # Calculate quote pricing
     guest_count = quote_input.eventDetails.guestCount or 0
     ice_amount = quote_input.eventDetails.iceAmount or 0
@@ -267,6 +267,10 @@ async def create_quote(quote_input: QuoteCreate):
     doc['eventDetails']['eventDate'] = doc['eventDetails']['eventDate'].isoformat()
     
     await db.quotes.insert_one(doc)
+    
+    # Automatically trigger AI agent callback
+    background_tasks.add_task(initiate_ai_callback, quote.id, quote.customerInfo.phone, quote.customerInfo.name)
+    
     return quote
 
 @api_router.get("/quotes/{quote_id}", response_model=Quote)
