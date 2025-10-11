@@ -434,8 +434,8 @@ async def get_ai_twiml(quote_id: str, customer_name: str):
     # Very simple, short message that should definitely work
     message = "Hello, this is Ice Solutions. Please call us back at 876-490-7208 to confirm your ice order. Thank you."
     
-    # Try different voice options
-    response.say(message, voice="alice", language="en-US")
+    # Use Twilio's standard male voice
+    response.say(message, voice="Polly.Joey", language="en-US")
     
     logger.info(f"Generated simple TwiML for quote {quote_id}")
     return Response(content=str(response), media_type="text/xml")
