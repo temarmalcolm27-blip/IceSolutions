@@ -391,19 +391,16 @@ async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: 
         doc['updatedAt'] = doc['updatedAt'].isoformat()
         await db.call_attempts.insert_one(doc)
         
-        # Create Twilio call with proper URL encoding
-        base_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok.io')
+        # Try using Twilio's TwiML Bins or a simpler approach
+        # Create the call with a direct TwiML response instead of URL
         
-        # URL encode the customer name to handle spaces and special characters
-        from urllib.parse import quote
-        encoded_customer_name = quote(customer_name)
+        twiml_response = VoiceResponse()
+        twiml_response.say("Hello, this is Ice Solutions calling about your ice order. Please call us back at 876-490-7208. Thank you.", voice="man")
         
         call = twilio_client.calls.create(
             to=phone_number,
             from_=TWILIO_PHONE_NUMBER,
-            url=f"{base_url}/api/ai-agent/twiml?quote_id={quote_id}&customer_name={encoded_customer_name}",
-            status_callback=f"{base_url}/api/ai-agent/status-callback",
-            status_callback_event=["initiated", "ringing", "answered", "completed"]
+            twiml=str(twiml_response)  # Send TwiML directly instead of URL
         )
         
         # Update call attempt with Twilio call SID
