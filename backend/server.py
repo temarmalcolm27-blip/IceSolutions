@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi.responses import Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,9 +7,14 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
+import json
+import asyncio
+from twilio.rest import Client
+from twilio.twiml.voice_response import VoiceResponse, Connect
+from twilio.request_validator import RequestValidator
 
 
 ROOT_DIR = Path(__file__).parent
