@@ -137,6 +137,35 @@ class DeliveryArea(BaseModel):
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# AI Agent Models
+class CallAttempt(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    quoteId: str
+    customerId: str
+    callSid: Optional[str] = None
+    phoneNumber: str
+    status: str = "initiated"  # initiated, ringing, in_progress, completed, failed, no_answer, busy
+    duration: Optional[int] = None
+    conversationSummary: Optional[str] = None
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ConversationMessage(BaseModel):
+    speaker: str  # "customer" or "agent"
+    message: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ActiveSession(BaseModel):
+    sessionId: str
+    quoteId: str
+    customerId: str
+    callSid: str
+    conversationHistory: List[ConversationMessage] = []
+    contextData: Dict[str, Any] = {}
+    startTime: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
