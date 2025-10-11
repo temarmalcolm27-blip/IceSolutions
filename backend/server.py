@@ -388,8 +388,10 @@ async def get_ai_twiml(quote_id: str, customer_name: str):
     
     # Create Connect with ConversationRelay
     connect = Connect()
+    # Use public WebSocket URL (will need to be updated with your ngrok URL)
+    public_domain = os.environ.get('PUBLIC_DOMAIN', 'your-domain.ngrok.io')
     conversation_relay = connect.conversation_relay(
-        url=f"wss://{os.environ.get('DOMAIN', 'localhost:8001')}/api/ai-agent/websocket",
+        url=f"wss://{public_domain}/api/ai-agent/websocket",
         welcome_greeting=f"Hello {customer_name}, this is a callback from Ice Solutions regarding your recent ice delivery quote. I can help answer questions about your order and arrange delivery. How can I assist you today?",
         voice="Polly.Matthew-Neural",  # Friendly male voice
         language="en-US",
