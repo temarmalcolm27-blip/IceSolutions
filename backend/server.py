@@ -391,16 +391,22 @@ async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: 
         doc['updatedAt'] = doc['updatedAt'].isoformat()
         await db.call_attempts.insert_one(doc)
         
-        # Try using Twilio's TwiML Bins or a simpler approach
-        # Create the call with a direct TwiML response instead of URL
-        
+        # Create clear, non-choppy TwiML with proper pacing
         twiml_response = VoiceResponse()
-        twiml_response.say("Hello, this is Ice Solutions calling about your ice order. Please call us back at 876-490-7208. Thank you.", voice="man")
+        
+        # Break message into parts with pauses for clarity
+        twiml_response.say("Hello, this is Ice Solutions.", voice="man", rate="slow")
+        twiml_response.pause(length=1)
+        twiml_response.say("We are calling about your ice delivery order.", voice="man", rate="slow") 
+        twiml_response.pause(length=1)
+        twiml_response.say("Please call us back at 876-490-7208 to confirm your order.", voice="man", rate="slow")
+        twiml_response.pause(length=1)
+        twiml_response.say("Thank you for choosing Ice Solutions!", voice="man", rate="slow")
         
         call = twilio_client.calls.create(
             to=phone_number,
             from_=TWILIO_PHONE_NUMBER,
-            twiml=str(twiml_response)  # Send TwiML directly instead of URL
+            twiml=str(twiml_response)  # Send TwiML directly with better pacing
         )
         
         # Update call attempt with Twilio call SID
