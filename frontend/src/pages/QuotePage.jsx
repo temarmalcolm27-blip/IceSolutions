@@ -472,7 +472,7 @@ const QuotePage = () => {
                         Place Order Now (JMD ${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(0)})
                       </Button>
                       <p className="text-xs text-gray-500 text-center">
-                        By placing this order, you agree to our terms. You'll receive a call within 30 minutes to confirm delivery details.
+                        By placing this order, you agree to our terms. You'll receive a call within 2-3 minutes to confirm delivery details.
                       </p>
                     </div>
                   </CardContent>
