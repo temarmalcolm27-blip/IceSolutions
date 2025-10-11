@@ -330,6 +330,46 @@ async def get_call_attempts():
     
     return attempts
 
+# Test endpoint for AI agent without making real calls
+@api_router.post("/ai-agent/test-callback")
+async def test_ai_callback(quote_id: str, phone_number: str = "+18764907208"):
+    """Test the AI callback system without making real Twilio calls"""
+    try:
+        # Create test call attempt record
+        call_attempt = CallAttempt(
+            quoteId=quote_id,
+            customerId=f"customer_{quote_id}",
+            phoneNumber=phone_number,
+            status="test_mode",
+            callSid="test_call_123"
+        )
+        
+        # Store call attempt in database
+        doc = call_attempt.model_dump()
+        doc['createdAt'] = doc['createdAt'].isoformat()
+        doc['updatedAt'] = doc['updatedAt'].isoformat()
+        await db.call_attempts.insert_one(doc)
+        
+        logger.info(f"Test AI callback created for quote {quote_id}")
+        
+        return {
+            "status": "success",
+            "message": "Test callback record created",
+            "call_attempt_id": call_attempt.id,
+            "quote_id": quote_id,
+            "phone_number": phone_number,
+            "instructions": [
+                "1. Get ngrok URL: run 'ngrok http 8001' after getting ngrok authtoken",
+                "2. Update PUBLIC_URL environment variable with your ngrok URL", 
+                "3. Test TwiML endpoint: /api/ai-agent/twiml",
+                "4. The system will automatically call customers when quotes are submitted"
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to create test AI callback: {e}")
+        return {"status": "error", "message": str(e)}
+
 # AI Sales Agent Functions
 async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: str):
     """Initiate an AI callback for a quote/order"""
