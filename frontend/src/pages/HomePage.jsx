@@ -130,8 +130,12 @@ const HomePage = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-lg flex items-center justify-center">
-                        <Package className="h-6 w-6 text-cyan-600" />
+                      <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-1">
+                        <img 
+                          src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
+                          alt="10lb Ice Bags"
+                          className="w-full h-full object-contain"
+                        />
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">10lb Party Ice Bag</div>
