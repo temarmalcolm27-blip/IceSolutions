@@ -88,14 +88,20 @@ const QuotePage = () => {
     fetchDeliveryAreas();
   }, []);
 
-  const calculateQuote = () => {
+  // Real-time quote calculation whenever form data changes
+  useEffect(() => {
     const guestCount = parseInt(formData.guestCount) || 0;
     const iceAmount = parseInt(formData.iceAmount) || 0;
+    const address = formData.address || '';
     
-    // Use the API service calculation
-    const quote = apiService.calculateInstantQuote(guestCount, iceAmount);
-    setCalculatedQuote(quote);
-  };
+    // Only calculate if we have meaningful data
+    if (guestCount > 0 || iceAmount > 0) {
+      const quote = apiService.calculateInstantQuote(guestCount, iceAmount, address);
+      setCalculatedQuote(quote);
+    } else {
+      setCalculatedQuote(null);
+    }
+  }, [formData.guestCount, formData.iceAmount, formData.address]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
