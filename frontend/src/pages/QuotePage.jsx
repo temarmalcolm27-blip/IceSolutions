@@ -409,18 +409,10 @@ const QuotePage = () => {
                       </p>
                     </div>
                     
-                    {/* Order Placement Buttons */}
-                    <div className="space-y-3 pt-4 border-t border-gray-200">
-                      <Button 
-                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg"
-                        onClick={() => handlePlaceOrder()}
-                        disabled={!formData.name || !formData.phone || !formData.email}
-                      >
-                        <CheckCircle className="mr-2 h-5 w-5" />
-                        Place Order Now (JMD ${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(0)})
-                      </Button>
-                      <p className="text-xs text-gray-500 text-center">
-                        By placing this order, you agree to our terms. You'll receive a call within 2-3 minutes to confirm delivery details.
+                    {/* Quote Info */}
+                    <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200 mt-4">
+                      <p className="text-sm text-cyan-800 text-center">
+                        <strong>Ready to order?</strong> Use the "Request Quote & Callback" button in the form to submit your order and receive an immediate callback with these details.
                       </p>
                     </div>
                   </CardContent>
