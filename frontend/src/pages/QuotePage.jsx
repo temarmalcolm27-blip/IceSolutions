@@ -123,7 +123,7 @@ const QuotePage = () => {
       // Submit to API
       const newQuote = await apiService.createQuote(quoteData);
       
-      toast.success(`Quote request submitted! Quote ID: ${newQuote.id}. We'll call you at (${formData.phone}) within 30 minutes.`);
+      toast.success(`Quote request submitted! Quote ID: ${newQuote.id}. We'll call you at (${formData.phone}) immediately!`);
       
       // Reset form
       setFormData({
