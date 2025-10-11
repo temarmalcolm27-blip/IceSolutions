@@ -12,7 +12,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <img 
-              src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/75226q57_IMG_2763.jpg" 
+              src="/IceSolution-Logo.png" 
               alt="Ice Solutions" 
               className="h-12 w-auto logo-transparent logo-footer"
             />
