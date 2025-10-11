@@ -312,7 +312,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All frontend testing completed successfully"
+    - "Logo replacement verification completed successfully"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
