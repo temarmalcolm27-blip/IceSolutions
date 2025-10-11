@@ -171,6 +171,7 @@ const QuotePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+      <RunningBanner />
       
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-12">
