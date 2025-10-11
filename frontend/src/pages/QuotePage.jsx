@@ -166,120 +166,13 @@ const QuotePage = () => {
 
   const handlePlaceOrder = async () => {
     if (!calculatedQuote) {
-      toast.error('Please calculate a quote first');
+      toast.error('Please fill out the form first');
       return;
     }
 
-    setIsLoading(true);
-    try {
-      // First create the quote
-      const quoteData = {
-        customerInfo: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address
-        },
-        eventDetails: {
-          eventDate: formData.eventDate ? formData.eventDate.toISOString() : new Date().toISOString(),
-          eventType: formData.eventType || 'Other',
-          guestCount: parseInt(formData.guestCount) || 0,
-          iceAmount: parseInt(formData.iceAmount) || 0,
-          deliveryTime: formData.deliveryTime || ''
-        },
-        specialRequests: formData.specialRequests
-      };
-      
-      const newQuote = await apiService.createQuote(quoteData);
-      
-      // Show success message with order details
-      toast.success(`🎉 Order placed successfully! 
-      Order Total: JMD $${(calculatedQuote.total - (calculatedQuote.savings || 0)).toFixed(0)}
-      Order ID: ${newQuote.id}
-      
-      Our team will call you at (${formData.phone}) within 2-3 minutes to confirm delivery details and arrange payment.`, {
-        duration: 8000,
-      });
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        eventDate: null,
-        eventType: '',
-        guestCount: '',
-        iceAmount: '',
-        specialRequests: '',
-        deliveryTime: ''
-      });
-      setCalculatedQuote(null);
-
-    } catch (error) {
-      console.error('Failed to place order:', error);
-      toast.error('Failed to place order. Please try again or call us directly.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleScheduleCallback = () => {
-    setShowScheduleModal(true);
-  };
-
-  const submitScheduledCallback = async () => {
-    setIsLoading(true);
-    try {
-      // Create quote with scheduled callback flag
-      const quoteData = {
-        customerInfo: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address
-        },
-        eventDetails: {
-          eventDate: formData.eventDate ? formData.eventDate.toISOString() : new Date().toISOString(),
-          eventType: formData.eventType || 'Other',
-          guestCount: parseInt(formData.guestCount) || 0,
-          iceAmount: parseInt(formData.iceAmount) || 0,
-          deliveryTime: formData.deliveryTime || ''
-        },
-        specialRequests: `SCHEDULED CALLBACK: ${scheduledCallbackTime}. ${formData.specialRequests}`
-      };
-      
-      // Submit quote but don't trigger immediate callback
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/quotes-scheduled`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(quoteData)
-      });
-      
-      if (response.ok) {
-        const newQuote = await response.json();
-        toast.success(`Callback scheduled for ${scheduledCallbackTime}! Quote ID: ${newQuote.id}. We'll call you at the requested time.`, {
-          duration: 6000
-        });
-      } else {
-        throw new Error('Failed to schedule callback');
-      }
-      
-      // Reset form and modal
-      setFormData({
-        name: '', email: '', phone: '', address: '', eventDate: null,
-        eventType: '', guestCount: '', iceAmount: '', specialRequests: '', deliveryTime: ''
-      });
-      setCalculatedQuote(null);
-      setShowScheduleModal(false);
-      setScheduledCallbackTime('');
-      
-    } catch (error) {
-      console.error('Failed to schedule callback:', error);
-      toast.error('Failed to schedule callback. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Just trigger the same submit functionality
+    const submitEvent = { preventDefault: () => {} };
+    await handleSubmit(submitEvent);
   };
 
   return (
