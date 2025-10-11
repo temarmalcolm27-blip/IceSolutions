@@ -546,58 +546,6 @@ const QuotePage = () => {
       </section>
 
       <Footer />
-
-      {/* Schedule Callback Modal */}
-      <Dialog open={showScheduleModal} onOpenChange={setShowScheduleModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Schedule Your Callback</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Preferred Callback Time</Label>
-              <Select onValueChange={setScheduledCallbackTime}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select preferred time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Tomorrow 9 AM - 11 AM">Tomorrow 9 AM - 11 AM</SelectItem>
-                  <SelectItem value="Tomorrow 11 AM - 1 PM">Tomorrow 11 AM - 1 PM</SelectItem>
-                  <SelectItem value="Tomorrow 1 PM - 3 PM">Tomorrow 1 PM - 3 PM</SelectItem>
-                  <SelectItem value="Tomorrow 3 PM - 5 PM">Tomorrow 3 PM - 5 PM</SelectItem>
-                  <SelectItem value="Tomorrow 5 PM - 7 PM">Tomorrow 5 PM - 7 PM</SelectItem>
-                  <SelectItem value="Day after tomorrow 9 AM - 11 AM">Day after tomorrow 9 AM - 11 AM</SelectItem>
-                  <SelectItem value="Day after tomorrow 11 AM - 1 PM">Day after tomorrow 11 AM - 1 PM</SelectItem>
-                  <SelectItem value="Day after tomorrow 1 PM - 3 PM">Day after tomorrow 1 PM - 3 PM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800">
-                <strong>Note:</strong> We'll call you at the scheduled time to confirm your ice delivery order details and arrange payment.
-              </p>
-            </div>
-
-            <div className="flex space-x-3">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowScheduleModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
-                onClick={submitScheduledCallback}
-                disabled={!scheduledCallbackTime || isLoading}
-              >
-                {isLoading ? 'Scheduling...' : 'Schedule Callback'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
