@@ -434,24 +434,25 @@ async def get_ai_twiml(quote_id: str, customer_name: str):
     # URL decode the customer name
     decoded_customer_name = unquote(customer_name)
     
-    # Create Connect with ConversationRelay
-    connect = Connect()
-    # Use public WebSocket URL
-    public_domain = os.environ.get('PUBLIC_DOMAIN', 'your-domain.ngrok.io')
-    conversation_relay = connect.conversation_relay(
-        url=f"wss://{public_domain}/api/ai-agent/websocket",
-        welcome_greeting=f"Hello {decoded_customer_name}, this is a callback from Ice Solutions regarding your recent ice delivery quote. I can help answer questions about your order and arrange delivery. How can I assist you today?",
-        voice="Polly.Matthew-Neural",  # Friendly male voice
-        language="en-US",
-        transcription_provider="google",
-        speech_model="enhanced"
-    )
+    # Get quote data for personalized message
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
     
-    # Add custom parameters for the WebSocket session
-    conversation_relay.parameter(name="quote_id", value=quote_id)
-    conversation_relay.parameter(name="customer_name", value=decoded_customer_name)
+    if quote:
+        bags = quote.get("quote", {}).get("bags", 1)
+        total = quote.get("quote", {}).get("total", 350)
+        
+        # Create personalized greeting message
+        message = f"Hello {decoded_customer_name}, this is Ice Solutions calling about your recent ice delivery quote. You requested {bags} bags of ice for a total of {total} Jamaican dollars. To confirm this order, please call us back at 876-490-7208, or to modify your order, you can also call the same number. Thank you for choosing Ice Solutions, where More Ice equals More Vibes!"
+    else:
+        message = f"Hello {decoded_customer_name}, this is Ice Solutions calling about your recent ice delivery quote. To confirm or modify your order, please call us back at 876-490-7208. Thank you for choosing Ice Solutions!"
     
-    response.append(connect)
+    # Use simple Say instead of ConversationRelay for reliability
+    response.say(message, voice="Polly.Matthew-Neural", language="en-US")
+    
+    # Add a pause and repeat key information
+    response.pause(length=1)
+    response.say("Again, please call us back at 876-490-7208 to confirm your ice delivery order. Thank you!", 
+                voice="Polly.Matthew-Neural", language="en-US")
     
     return Response(content=str(response), media_type="application/xml")
 
