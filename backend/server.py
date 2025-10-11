@@ -426,6 +426,11 @@ async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: 
 active_sessions: Dict[str, ActiveSession] = {}
 
 # TwiML endpoint for AI agent
+@api_router.get("/ai-agent/test")
+async def test_endpoint():
+    """Simple test endpoint to verify Twilio can reach us"""
+    return {"status": "success", "message": "Twilio can reach this endpoint"}
+
 @api_router.get("/ai-agent/twiml")
 async def get_ai_twiml(quote_id: str = "test", customer_name: str = "customer"):
     """Generate TwiML for AI agent call"""
@@ -434,7 +439,7 @@ async def get_ai_twiml(quote_id: str = "test", customer_name: str = "customer"):
     # Return the most basic TwiML possible
     twiml_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Say voice="man">Hello, this is Ice Solutions calling about your ice order. Please call us back at 876-490-7208. Thank you.</Say>
+    <Say voice="man">Hello from Ice Solutions. Please call 876-490-7208. Thank you.</Say>
 </Response>'''
     
     return Response(content=twiml_content, media_type="text/xml")
