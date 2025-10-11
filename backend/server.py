@@ -315,6 +315,222 @@ async def get_contacts():
     
     return contacts
 
+# AI Sales Agent Functions
+async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: str):
+    """Initiate an AI callback for a quote/order"""
+    try:
+        logger.info(f"Initiating AI callback for quote {quote_id} to {phone_number}")
+        
+        # Create call attempt record
+        call_attempt = CallAttempt(
+            quoteId=quote_id,
+            customerId=f"customer_{quote_id}",
+            phoneNumber=phone_number,
+            status="initiated"
+        )
+        
+        # Store call attempt in database
+        doc = call_attempt.model_dump()
+        doc['createdAt'] = doc['createdAt'].isoformat()
+        doc['updatedAt'] = doc['updatedAt'].isoformat()
+        await db.call_attempts.insert_one(doc)
+        
+        # Create Twilio call
+        call = twilio_client.calls.create(
+            to=phone_number,
+            from_=TWILIO_PHONE_NUMBER,
+            url=f"{os.environ.get('BACKEND_URL', 'http://localhost:8001')}/api/ai-agent/twiml?quote_id={quote_id}&customer_name={customer_name}",
+            status_callback=f"{os.environ.get('BACKEND_URL', 'http://localhost:8001')}/api/ai-agent/status-callback",
+            status_callback_event=["initiated", "ringing", "answered", "completed"]
+        )
+        
+        # Update call attempt with Twilio call SID
+        await db.call_attempts.update_one(
+            {"id": call_attempt.id},
+            {"$set": {"callSid": call.sid, "status": "initiated", "updatedAt": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        logger.info(f"AI callback initiated successfully. Call SID: {call.sid}")
+        
+    except Exception as e:
+        logger.error(f"Failed to initiate AI callback: {e}")
+        # Update call attempt status to failed
+        await db.call_attempts.update_one(
+            {"quoteId": quote_id, "phoneNumber": phone_number},
+            {"$set": {"status": "failed", "updatedAt": datetime.now(timezone.utc).isoformat()}}
+        )
+
+# Store active sessions in memory
+active_sessions: Dict[str, ActiveSession] = {}
+
+# TwiML endpoint for AI agent
+@api_router.get("/ai-agent/twiml")
+async def get_ai_twiml(quote_id: str, customer_name: str):
+    """Generate TwiML for AI agent call"""
+    response = VoiceResponse()
+    
+    # Create Connect with ConversationRelay
+    connect = Connect()
+    conversation_relay = connect.conversation_relay(
+        url=f"wss://{os.environ.get('DOMAIN', 'localhost:8001')}/api/ai-agent/websocket",
+        welcome_greeting=f"Hello {customer_name}, this is a callback from Ice Solutions regarding your recent ice delivery quote. I can help answer questions about your order and arrange delivery. How can I assist you today?",
+        voice="Polly.Matthew-Neural",  # Friendly male voice
+        language="en-US",
+        transcription_provider="google",
+        speech_model="enhanced"
+    )
+    
+    # Add custom parameters for the WebSocket session
+    conversation_relay.parameter(name="quote_id", value=quote_id)
+    conversation_relay.parameter(name="customer_name", value=customer_name)
+    
+    response.append(connect)
+    
+    return Response(content=str(response), media_type="application/xml")
+
+# Status callback endpoint
+@api_router.post("/ai-agent/status-callback")
+async def handle_status_callback():
+    """Handle Twilio call status updates"""
+    # In a real implementation, you would validate the webhook signature
+    # and update the call attempt status in the database
+    return {"status": "received"}
+
+# WebSocket endpoint for AI conversation
+@api_router.websocket("/ai-agent/websocket")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    session_id = str(uuid.uuid4())
+    logger.info(f"AI Agent WebSocket connected: {session_id}")
+    
+    try:
+        while True:
+            message = await websocket.receive_text()
+            data = json.loads(message)
+            
+            # Handle different message types from ConversationRelay
+            if data.get("type") == "setup":
+                await handle_setup_message(websocket, session_id, data)
+            elif data.get("type") == "user_utterance":
+                await handle_user_utterance(websocket, session_id, data)
+            elif data.get("type") == "interrupt":
+                await handle_interrupt(websocket, session_id, data)
+                
+    except WebSocketDisconnect:
+        logger.info(f"AI Agent WebSocket disconnected: {session_id}")
+        # Clean up session
+        if session_id in active_sessions:
+            del active_sessions[session_id]
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        await websocket.close()
+
+async def handle_setup_message(websocket: WebSocket, session_id: str, data: Dict):
+    """Handle ConversationRelay setup message"""
+    try:
+        # Extract custom parameters
+        quote_id = data.get("parameters", {}).get("quote_id")
+        customer_name = data.get("parameters", {}).get("customer_name")
+        call_sid = data.get("call_sid")
+        
+        # Load quote data from database
+        quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+        
+        if not quote:
+            logger.error(f"Quote not found: {quote_id}")
+            return
+        
+        # Create active session
+        session = ActiveSession(
+            sessionId=session_id,
+            quoteId=quote_id,
+            customerId=quote["customerInfo"]["name"],
+            callSid=call_sid,
+            contextData={
+                "quote": quote,
+                "customer_name": customer_name
+            }
+        )
+        
+        active_sessions[session_id] = session
+        logger.info(f"AI Agent session initialized for quote {quote_id}")
+        
+    except Exception as e:
+        logger.error(f"Error handling setup message: {e}")
+
+async def handle_user_utterance(websocket: WebSocket, session_id: str, data: Dict):
+    """Handle user speech input and generate AI response"""
+    try:
+        if session_id not in active_sessions:
+            return
+            
+        session = active_sessions[session_id]
+        utterance = data.get("utterance", "").lower()
+        
+        # Add customer message to conversation history
+        session.conversationHistory.append(
+            ConversationMessage(speaker="customer", message=utterance)
+        )
+        
+        # Generate AI response based on utterance and context
+        response_text = await generate_ai_response(utterance, session)
+        
+        # Add agent message to conversation history
+        session.conversationHistory.append(
+            ConversationMessage(speaker="agent", message=response_text)
+        )
+        
+        # Send response back to ConversationRelay
+        response_message = {
+            "type": "response",
+            "text": response_text
+        }
+        
+        await websocket.send_text(json.dumps(response_message))
+        
+    except Exception as e:
+        logger.error(f"Error handling user utterance: {e}")
+
+async def handle_interrupt(websocket: WebSocket, session_id: str, data: Dict):
+    """Handle customer interruption during agent response"""
+    # Customer started speaking while agent was talking
+    # Clear any pending responses
+    logger.info(f"Customer interrupted agent in session {session_id}")
+
+async def generate_ai_response(utterance: str, session: ActiveSession) -> str:
+    """Generate appropriate AI response based on customer input"""
+    quote_data = session.contextData.get("quote", {})
+    customer_name = session.contextData.get("customer_name", "")
+    
+    # Extract key information from quote
+    bags = quote_data.get("quote", {}).get("bags", 0)
+    total = quote_data.get("quote", {}).get("total", 0)
+    delivery_fee = quote_data.get("quote", {}).get("deliveryFee", 0)
+    event_date = quote_data.get("eventDetails", {}).get("eventDate", "")
+    guest_count = quote_data.get("eventDetails", {}).get("guestCount", 0)
+    
+    # Simple rule-based responses (can be enhanced with LLM integration)
+    if any(word in utterance for word in ["hello", "hi", "hey"]):
+        return f"Hello {customer_name}! I'm calling about your ice delivery quote for {bags} bags of ice totaling JMD ${total:.0f}. How can I help you today?"
+    
+    elif any(word in utterance for word in ["price", "cost", "how much", "total"]):
+        return f"Your quote is for {bags} bags of 10lb ice at JMD $350 each, plus JMD ${delivery_fee:.0f} delivery fee, for a total of JMD ${total:.0f}. Would you like to confirm this order?"
+    
+    elif any(word in utterance for word in ["delivery", "deliver", "when"]):
+        return f"We can deliver your ice on your requested date. Our delivery areas are Washington Gardens (free delivery) and anywhere outside Washington Gardens (JMD $300 delivery fee). What area are you in?"
+    
+    elif any(word in utterance for word in ["confirm", "order", "yes", "book"]):
+        return f"Perfect! I'll confirm your order for {bags} bags of ice totaling JMD ${total:.0f}. Can you confirm your delivery address and preferred delivery time?"
+    
+    elif any(word in utterance for word in ["cancel", "no", "not interested"]):
+        return "No problem at all! Your quote will remain available if you change your mind. Is there anything else I can help you with regarding our ice delivery services?"
+    
+    elif any(word in utterance for word in ["question", "ask", "tell me"]):
+        return "I'm here to help! I can tell you about our ice products, delivery areas, pricing, or help you modify your order. What would you like to know?"
+    
+    else:
+        return "I understand. Let me help you with your ice delivery needs. You can ask me about pricing, delivery options, or confirm your order. What would you like to know?"
+
 # Admin endpoint to view all quotes (for business owner)
 @api_router.get("/admin/quotes", response_model=List[Quote])
 async def get_all_quotes():
