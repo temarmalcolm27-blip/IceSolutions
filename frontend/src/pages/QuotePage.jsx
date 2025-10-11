@@ -488,7 +488,7 @@ const QuotePage = () => {
                       <div className="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
                       <div>
                         <div className="font-medium text-gray-900">Personal Call</div>
-                        <div className="text-sm text-gray-600">Our AI agent will call you within 2-3 minutes to confirm details and arrange payment</div>
+                        <div className="text-sm text-gray-600">Our AI agent will call you within 2-3 minutes with your order details and confirmation</div>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3">
