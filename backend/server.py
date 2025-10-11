@@ -341,6 +341,63 @@ async def create_scheduled_quote(quote_input: QuoteCreate):
     
     return quote
 
+# No-callback quotes endpoint (for future use if needed)
+@api_router.post("/quotes-no-callback", response_model=Quote)
+async def create_quote_no_callback(quote_input: QuoteCreate):
+    # Same as regular quotes but without background callback task
+    guest_count = quote_input.eventDetails.guestCount or 0
+    ice_amount = quote_input.eventDetails.iceAmount or 0
+    
+    recommended_bags = max(1, guest_count // 25) if guest_count else max(1, ice_amount // 10)
+    base_price = recommended_bags * 350.00
+    
+    # Calculate delivery fee based on address
+    customer_address = quote_input.customerInfo.address.lower()
+    is_washington_gardens = any(area in customer_address for area in [
+        'washington gardens', 'washington garden', 'wash gardens', 'wash garden'
+    ])
+    
+    if is_washington_gardens:
+        delivery_fee = 0.0
+    else:
+        delivery_fee = 300.00
+    
+    # Calculate bulk discount
+    savings = 0.0
+    if recommended_bags >= 5:
+        savings = base_price * 0.05
+    if recommended_bags >= 10:
+        savings = base_price * 0.10
+    
+    total = base_price + delivery_fee - savings
+    
+    quote_calc = QuoteCalculation(
+        bags=recommended_bags,
+        basePrice=base_price,
+        deliveryFee=delivery_fee,
+        total=total,
+        savings=savings
+    )
+    
+    quote = Quote(
+        customerInfo=quote_input.customerInfo,
+        eventDetails=quote_input.eventDetails,
+        quote=quote_calc,
+        specialRequests=quote_input.specialRequests,
+        status="no_callback"
+    )
+    
+    # Store without triggering callback
+    doc = quote.model_dump()
+    doc['createdAt'] = doc['createdAt'].isoformat()
+    doc['updatedAt'] = doc['updatedAt'].isoformat()
+    doc['eventDetails']['eventDate'] = doc['eventDetails']['eventDate'].isoformat()
+    
+    await db.quotes.insert_one(doc)
+    logger.info(f"No-callback quote created: {quote.id}")
+    
+    return quote
+
 @api_router.get("/quotes/{quote_id}", response_model=Quote)
 async def get_quote(quote_id: str):
     quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
