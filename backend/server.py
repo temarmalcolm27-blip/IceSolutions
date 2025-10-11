@@ -427,18 +427,17 @@ active_sessions: Dict[str, ActiveSession] = {}
 
 # TwiML endpoint for AI agent
 @api_router.get("/ai-agent/twiml")
-async def get_ai_twiml(quote_id: str, customer_name: str):
+async def get_ai_twiml(quote_id: str = "test", customer_name: str = "customer"):
     """Generate TwiML for AI agent call"""
-    response = VoiceResponse()
+    logger.info(f"TwiML requested for quote {quote_id}, customer {customer_name}")
     
-    # Very simple, short message that should definitely work
-    message = "Hello, this is Ice Solutions. Please call us back at 876-490-7208 to confirm your ice order. Thank you."
+    # Return the most basic TwiML possible
+    twiml_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="man">Hello, this is Ice Solutions calling about your ice order. Please call us back at 876-490-7208. Thank you.</Say>
+</Response>'''
     
-    # Use Twilio's standard male voice
-    response.say(message, voice="Polly.Joey", language="en-US")
-    
-    logger.info(f"Generated simple TwiML for quote {quote_id}")
-    return Response(content=str(response), media_type="text/xml")
+    return Response(content=twiml_content, media_type="text/xml")
 
 # Status callback endpoint
 @api_router.post("/ai-agent/status-callback")
