@@ -128,13 +128,21 @@ export const apiService = {
   },
 
   // Helper function to calculate quote (for instant quotes without saving)
-  calculateInstantQuote(guestCount, iceAmount) {
+  calculateInstantQuote(guestCount, iceAmount, address = '') {
     const recommendedBags = Math.max(1, 
       guestCount ? Math.ceil(guestCount / 25) : Math.ceil(iceAmount / 10)
     );
     
     const basePrice = recommendedBags * 350.00;
-    const deliveryFee = basePrice > 500 ? 0 : 300.00;
+    
+    // Calculate delivery fee based on address
+    const addressLower = address.toLowerCase();
+    const isWashingtonGardens = addressLower.includes('washington gardens') || 
+                               addressLower.includes('washington garden') ||
+                               addressLower.includes('wash gardens') ||
+                               addressLower.includes('wash garden');
+    
+    const deliveryFee = isWashingtonGardens ? 0 : 300.00;
     
     let savings = 0;
     if (recommendedBags >= 5) {
@@ -151,7 +159,8 @@ export const apiService = {
       basePrice,
       deliveryFee,
       total,
-      savings
+      savings,
+      deliveryArea: isWashingtonGardens ? 'Washington Gardens' : 'Outside Washington Gardens'
     };
   }
 };
