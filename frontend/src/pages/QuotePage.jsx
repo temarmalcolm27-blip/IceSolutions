@@ -358,7 +358,8 @@ const QuotePage = () => {
                       className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
                       disabled={isLoading || !formData.name || !formData.phone || !formData.email}
                     >
-                      {isLoading ? 'Submitting...' : 'Submit Quote Request'}
+                      <Truck className="mr-2 h-5 w-5" />
+                      {isLoading ? 'Submitting...' : 'Request Quote & Callback'}
                     </Button>
                   </form>
                 </CardContent>
