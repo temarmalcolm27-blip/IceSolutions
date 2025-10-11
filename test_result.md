@@ -273,6 +273,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ Logo replacement verification completed successfully - New IceSolution-Logo.png displays correctly in header across all pages (Home, Products, Quote, About, Contact), logo is clickable and returns to homepage, CSS styling (logo-transparent, logo-header classes) working properly with mix-blend-mode multiply and proper filters, logo loads without 404 errors (dimensions: 823x690), works on both desktop and mobile views, all navigation functionality preserved after logo change, no console errors related to logo loading."
+        - working: "NA"
+          agent: "main"
+          comment: "Added slogan 'More Ice = More Vibes' beneath logo in smaller italic cyan font. Slogan now appears on all pages directly under the logo. Needs testing for visual verification across all pages."
 
   - task: "API Integration Implementation"
     implemented: true
