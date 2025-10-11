@@ -458,22 +458,50 @@ async def initiate_ai_callback(quote_id: str, phone_number: str, customer_name: 
         doc['updatedAt'] = doc['updatedAt'].isoformat()
         await db.call_attempts.insert_one(doc)
         
-        # Create clear, non-choppy TwiML with proper pacing
-        twiml_response = VoiceResponse()
+        # Get quote details for personalized callback
+        quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
         
-        # Break message into parts with pauses for clarity
-        twiml_response.say("Hello, this is Ice Solutions.", voice="man", rate="slow")
-        twiml_response.pause(length=1)
-        twiml_response.say("We are calling about your ice delivery order.", voice="man", rate="slow") 
-        twiml_response.pause(length=1)
-        twiml_response.say("Please call us back at 876-490-7208 to confirm your order.", voice="man", rate="slow")
-        twiml_response.pause(length=1)
-        twiml_response.say("Thank you for choosing Ice Solutions!", voice="man", rate="slow")
+        if quote:
+            bags = quote.get("quote", {}).get("bags", 1)
+            total = int(quote.get("quote", {}).get("total", 350))
+            delivery_fee = quote.get("quote", {}).get("deliveryFee", 300)
+            address = quote.get("customerInfo", {}).get("address", "")
+            guest_count = quote.get("eventDetails", {}).get("guestCount", 0)
+            event_type = quote.get("eventDetails", {}).get("eventType", "event")
+            
+            # Create personalized TwiML with actual details
+            twiml_response = VoiceResponse()
+            
+            twiml_response.say(f"Hello {customer_name}, this is Ice Solutions calling about your recent quote.", voice="man", rate="slow")
+            twiml_response.pause(length=1)
+            
+            if guest_count > 0:
+                twiml_response.say(f"You requested {bags} bags of ice for your {event_type} with {guest_count} guests.", voice="man", rate="slow")
+            else:
+                twiml_response.say(f"You requested {bags} bags of ice for your event.", voice="man", rate="slow")
+            
+            twiml_response.pause(length=1)
+            
+            if delivery_fee == 0:
+                twiml_response.say(f"Your total is {total} Jamaican dollars with free delivery to Washington Gardens.", voice="man", rate="slow")
+            else:
+                twiml_response.say(f"Your total is {total} Jamaican dollars including 300 dollar delivery fee.", voice="man", rate="slow")
+            
+            twiml_response.pause(length=1)
+            twiml_response.say("Please call us back at 876-490-7208 to confirm your order and arrange delivery.", voice="man", rate="slow")
+            twiml_response.pause(length=1)
+            twiml_response.say("Thank you for choosing Ice Solutions, where More Ice equals More Vibes!", voice="man", rate="slow")
+        else:
+            # Fallback if quote not found
+            twiml_response = VoiceResponse()
+            twiml_response.say("Hello, this is Ice Solutions calling about your ice delivery quote.", voice="man", rate="slow")
+            twiml_response.pause(length=1)
+            twiml_response.say("Please call us back at 876-490-7208 to confirm your order.", voice="man", rate="slow")
         
         call = twilio_client.calls.create(
             to=phone_number,
             from_=TWILIO_PHONE_NUMBER,
-            twiml=str(twiml_response)  # Send TwiML directly with better pacing
+            twiml=str(twiml_response)
         )
         
         # Update call attempt with Twilio call SID
