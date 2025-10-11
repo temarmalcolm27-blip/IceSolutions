@@ -44,6 +44,8 @@ const QuotePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deliveryAreas, setDeliveryAreas] = useState([]);
   const [deliveryAreasLoading, setDeliveryAreasLoading] = useState(true);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduledCallbackTime, setScheduledCallbackTime] = useState('');
 
   const eventTypes = [
     'Private Party',
