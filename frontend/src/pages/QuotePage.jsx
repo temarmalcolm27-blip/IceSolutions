@@ -108,7 +108,7 @@ const QuotePage = () => {
     setIsLoading(true);
     
     try {
-      // Prepare quote data for API (no callback version)
+      // Prepare quote data for API (with callback)
       const quoteData = {
         customerInfo: {
           name: formData.name,
@@ -126,38 +126,31 @@ const QuotePage = () => {
         specialRequests: formData.specialRequests
       };
       
-      // Submit to no-callback endpoint
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/quotes-no-callback`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(quoteData)
+      // Submit to regular quotes endpoint (triggers AI callback)
+      const newQuote = await apiService.createQuote(quoteData);
+      
+      toast.success(`🎉 Quote submitted! Quote ID: ${newQuote.id}. You'll receive a call within 2-3 minutes to confirm your order details.`, {
+        duration: 6000
       });
       
-      if (response.ok) {
-        const newQuote = await response.json();
-        toast.success(`Quote request submitted successfully! Quote ID: ${newQuote.id}. Our team will review and contact you soon.`);
-        
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          address: '',
-          eventDate: null,
-          eventType: '',
-          guestCount: '',
-          iceAmount: '',
-          specialRequests: '',
-          deliveryTime: ''
-        });
-        setCalculatedQuote(null);
-      } else {
-        throw new Error('Failed to submit quote');
-      }
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        eventDate: null,
+        eventType: '',
+        guestCount: '',
+        iceAmount: '',
+        specialRequests: '',
+        deliveryTime: ''
+      });
+      setCalculatedQuote(null);
       
     } catch (error) {
       console.error('Failed to submit quote:', error);
-      toast.error('Failed to submit quote. Please try again.');
+      // Error handling is done in the API service
     } finally {
       setIsLoading(false);
     }
