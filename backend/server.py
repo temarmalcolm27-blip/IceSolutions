@@ -235,7 +235,17 @@ async def create_quote(quote_input: QuoteCreate, background_tasks: BackgroundTas
     recommended_bags = max(1, guest_count // 25) if guest_count else max(1, ice_amount // 10)
     
     base_price = recommended_bags * 350.00  # JMD $350 per 10lb bag
-    delivery_fee = 0.0 if base_price > 500 else 300.00  # Free delivery over JMD $500, otherwise JMD $300
+    
+    # Calculate delivery fee based on address
+    customer_address = quote_input.customerInfo.address.lower()
+    is_washington_gardens = any(area in customer_address for area in [
+        'washington gardens', 'washington garden', 'wash gardens', 'wash garden'
+    ])
+    
+    if is_washington_gardens:
+        delivery_fee = 0.0  # Free delivery to Washington Gardens
+    else:
+        delivery_fee = 300.00  # JMD $300 for areas outside Washington Gardens
     
     # Calculate bulk discount
     savings = 0.0
