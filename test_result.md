@@ -332,9 +332,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Running Banner Implementation - needs comprehensive testing"
-    - "Header slogan update verification"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
