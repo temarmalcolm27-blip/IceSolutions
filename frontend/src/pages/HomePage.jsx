@@ -73,9 +73,6 @@ const HomePage = () => {
                   <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent"> Ice Delivery </span>
                   for Every Event
                 </h1>
-                <div className="text-2xl lg:text-3xl font-bold text-cyan-600 mb-4">
-                  "More Ice = More Vibes"
-                </div>
                 <p className="text-xl text-gray-600 leading-relaxed">
                   Crystal-clear, restaurant-quality ice delivered fresh to your door. 
                   Perfect for parties, events, restaurants, and bars.
