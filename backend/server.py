@@ -429,42 +429,16 @@ active_sessions: Dict[str, ActiveSession] = {}
 @api_router.get("/ai-agent/twiml")
 async def get_ai_twiml(quote_id: str, customer_name: str):
     """Generate TwiML for AI agent call"""
-    try:
-        response = VoiceResponse()
-        
-        # URL decode the customer name
-        decoded_customer_name = unquote(customer_name)
-        
-        # Get quote data for personalized message
-        quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
-        
-        if quote:
-            bags = quote.get("quote", {}).get("bags", 1)
-            total = int(quote.get("quote", {}).get("total", 350))
-            
-            # Create personalized greeting message
-            message = f"Hello {decoded_customer_name}, this is Ice Solutions calling about your recent ice delivery quote. You requested {bags} bags of ice for a total of {total} Jamaican dollars. To confirm this order, please call us back at 876-490-7208. Thank you for choosing Ice Solutions, where More Ice equals More Vibes!"
-        else:
-            message = f"Hello {decoded_customer_name}, this is Ice Solutions calling about your recent ice delivery quote. To confirm or modify your order, please call us back at 876-490-7208. Thank you for choosing Ice Solutions!"
-        
-        # Use standard male voice - "man" is more reliable than Polly voices
-        response.say(message, voice="man", language="en")
-        
-        # Add a pause and repeat key information
-        response.pause(length=1)
-        response.say("Again, please call us back at 876-490-7208 to confirm your ice delivery order. Thank you!", 
-                    voice="man", language="en")
-        
-        logger.info(f"Generated TwiML for quote {quote_id}, customer {decoded_customer_name}")
-        return Response(content=str(response), media_type="application/xml")
-        
-    except Exception as e:
-        logger.error(f"Error generating TwiML: {e}")
-        # Return a simple fallback TwiML
-        response = VoiceResponse()
-        response.say("Hello, this is Ice Solutions calling about your ice delivery quote. Please call us back at 876-490-7208. Thank you!", 
-                    voice="man", language="en")
-        return Response(content=str(response), media_type="application/xml")
+    response = VoiceResponse()
+    
+    # Very simple, short message that should definitely work
+    message = "Hello, this is Ice Solutions. Please call us back at 876-490-7208 to confirm your ice order. Thank you."
+    
+    # Try different voice options
+    response.say(message, voice="alice", language="en-US")
+    
+    logger.info(f"Generated simple TwiML for quote {quote_id}")
+    return Response(content=str(response), media_type="text/xml")
 
 # Status callback endpoint
 @api_router.post("/ai-agent/status-callback")
