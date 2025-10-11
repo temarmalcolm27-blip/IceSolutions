@@ -235,8 +235,16 @@ const HomePage = () => {
             ) : (
               products.map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center relative overflow-hidden">
-                  <Package className="h-16 w-16 text-cyan-600" />
+                <div className="aspect-video bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden">
+                  {product.id === 'prod_10lb' ? (
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
+                      alt="10lb Ice Bags"
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <Package className="h-16 w-16 text-cyan-600" />
+                  )}
                   {product.comingSoon && (
                     <Badge className="absolute top-4 right-4 bg-amber-100 text-amber-700">
                       Coming Soon
