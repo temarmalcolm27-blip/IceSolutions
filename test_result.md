@@ -259,7 +259,7 @@ frontend:
     file: "frontend/src/components/Header.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
@@ -267,6 +267,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ Header navigation fully functional - Logo visible and clickable (returns to homepage), all navigation links work (Home, Products, About, Contact), phone number (876) 490-7208 visible and clickable, Get Quote button works, mobile menu opens correctly on mobile devices."
+        - working: "NA"
+          agent: "main"
+          comment: "Logo replaced with new IceSolution-Logo.png. Changed from external URL to local file /IceSolution-Logo.png. Logo CSS styling maintained. Needs visual verification and testing."
 
   - task: "API Integration Implementation"
     implemented: true
