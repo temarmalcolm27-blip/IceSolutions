@@ -25,7 +25,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/75226q57_IMG_2763.jpg" 
+              src="/IceSolution-Logo.png" 
               alt="Ice Solutions Logo" 
               className="h-12 w-auto logo-transparent logo-header"
             />
