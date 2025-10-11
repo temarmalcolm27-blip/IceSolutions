@@ -81,9 +81,6 @@ const AboutPage = () => {
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
               About Ice Solutions
             </h1>
-            <div className="text-2xl font-bold text-cyan-600 mb-4">
-              "More Ice = More Vibes"
-            </div>
             <p className="text-xl text-gray-600 leading-relaxed">
               Founded in 2019, Ice Solutions has become the trusted ice supplier for events, 
               restaurants, and businesses across the city. We're passionate about delivering 
