@@ -51,7 +51,7 @@ export const mockData = {
     {
       id: 1,
       title: "Same-Day Delivery",
-      description: "Order before 2 PM for same-day delivery to your location.",
+      description: "Order at least 2 hours before Ice is needed for same day delivery",
       icon: "Truck"
     },
     {
