@@ -293,9 +293,18 @@ const HomePage = () => {
                       <Button 
                         className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
                     >
-                      {product.inStock ? 'Order Now' : 'Notify When Available'}
+                      Order Now
                     </Button>
-                  </Link>
+                    </Link>
+                  ) : (
+                    <Button 
+                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
+                      onClick={() => handleNotifyClick(product)}
+                    >
+                      <Bell className="mr-2 h-4 w-4" />
+                      Notify When Available
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
               ))
