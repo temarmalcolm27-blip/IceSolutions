@@ -259,9 +259,9 @@ class ConversationalAIHandler:
         logger.info(f"Cleaned up conversation handler for call {self.call_sid}")
 
 
-async def handle_media_stream(websocket, path):
+async def handle_media_stream(websocket):
     """WebSocket handler for Twilio Media Streams"""
-    logger.info(f"New WebSocket connection: {path}")
+    logger.info(f"New WebSocket connection")
     
     stream_sid = None
     call_sid = None
