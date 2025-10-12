@@ -14,9 +14,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client
+# OpenAI API Key
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-emergent-f62468b2cCeCfD4E15')
-client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 # Marcus's conversational personality and goals
 MARCUS_SYSTEM_INSTRUCTIONS = """
