@@ -17,8 +17,12 @@ import {
   Package,
   ArrowRight,
   CheckCircle,
-  Zap
+  Zap,
+  Bell,
+  X
 } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import { mockData } from '../data/mock';
 import { apiService } from '../services/api';
 import { toast } from 'sonner';
@@ -27,6 +31,38 @@ const HomePage = () => {
   const [hoveredService, setHoveredService] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false);
+  const [notifyProduct, setNotifyProduct] = useState(null);
+  const [notifyEmail, setNotifyEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNotifyClick = (product) => {
+    setNotifyProduct(product);
+    setShowNotifyDialog(true);
+  };
+
+  const handleNotifySubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await apiService.subscribeToNotification({
+        email: notifyEmail,
+        product_name: notifyProduct.name,
+        product_size: notifyProduct.weight
+      });
+
+      toast.success(`You'll be notified when ${notifyProduct.weight} bags are available!`);
+      setShowNotifyDialog(false);
+      setNotifyEmail('');
+      setNotifyProduct(null);
+    } catch (error) {
+      console.error('Error subscribing:', error);
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
