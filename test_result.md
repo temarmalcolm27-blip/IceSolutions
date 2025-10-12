@@ -177,6 +177,54 @@ backend:
           agent: "testing"
           comment: "✅ Business logic fully implemented and tested - Quote calculations accurate, bulk discounts working (5% for 5+ bags, 10% for 10+ bags), delivery fee logic correct (free over $500, $8.99 otherwise), datetime handling proper."
 
+  - task: "NEW Payment Endpoints Implementation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ NEW Payment endpoints fully functional - POST /api/checkout/create-session creates Stripe sessions successfully for all bag quantities (1, 5, 10, 20 bags), GET /api/checkout/status/{session_id} retrieves payment status correctly, bulk discounts applied properly (5%, 10%, 15%), delivery fees calculated correctly (FREE Washington Gardens, JMD $300 others), session_id and URL returned as expected."
+
+  - task: "NEW Order Management Implementation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ NEW Order management fully functional - POST /api/orders creates orders successfully with complete data validation, order ID generated correctly, order stored in database, GET /api/orders/{order_id} retrieves orders successfully, all required fields present, proper error handling for invalid order IDs (404 status)."
+
+  - task: "NEW Lead Management Implementation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ NEW Lead management endpoints functional - GET /api/sales-agent/script returns SALES_AGENT_SCRIPT and SALES_FAQ correctly, GET /api/sales-agent/twiml generates proper TwiML XML with lead name parameter, GET /api/leads returns leads list (empty initially), TwiML contains proper XML structure with Ice Solutions branding and lead personalization."
+
+  - task: "NEW Pricing Logic Implementation"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL ISSUE: Quote API missing 15% discount for 20+ bags. Currently applies only 10% discount for 20+ bags instead of required 15%. Checkout API has correct 15% logic (lines 511-517) but quotes API (lines 306-311) stops at 10% for 10+ bags. Pricing verified correct for 1-19 bags: 0% (1-4 bags), 5% (5-9 bags), 10% (10-19 bags). Delivery logic working: FREE Washington Gardens, JMD $300 others. NEEDS FIX: Add 20+ bags condition with 15% discount to quotes endpoint."
+
 frontend:
   - task: "Homepage Implementation"
     implemented: true
