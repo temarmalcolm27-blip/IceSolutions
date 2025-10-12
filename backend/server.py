@@ -1087,9 +1087,10 @@ async def handle_conversation(
             cleanup_conversation(call_sid_from_twilio)
         else:
             # Continue conversation
+            public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
             gather = Gather(
                 input='speech',
-                action=f'/api/conversational-ai/handle?call_sid={call_sid_from_twilio}&business_name={quote(business_name)}',
+                action=f'{public_url}/api/conversational-ai/handle?business_name={quote(business_name)}',
                 method='POST',
                 speech_timeout='auto',
                 language='en-US',
