@@ -125,14 +125,16 @@ class GoogleSheetsLeadManager:
             logger.error(f"Failed to get leads: {str(e)}")
             return []
     
-    def update_lead_status(self, phone: str, status: str, notes: str = ""):
+    def update_lead_status(self, phone: str, status: str, call_date: str = "", call_notes: str = "", result: str = ""):
         """
-        Update the status of a lead in the sheet
+        Update the status and call details of a lead in the sheet
         
         Args:
             phone: Phone number of the lead
             status: New status (e.g., "Contacted", "Interested", "Not Interested", "Sold")
-            notes: Additional notes to add
+            call_date: Date of the call
+            call_notes: Notes from the call
+            result: Result of the call (e.g., "Order placed", "Follow up needed", "Not interested")
         """
         try:
             if not self.sheet:
@@ -144,14 +146,25 @@ class GoogleSheetsLeadManager:
             if cell:
                 row_number = cell.row
                 
-                # Update status column (assuming Status is column D, index 4)
-                self.sheet.update_cell(row_number, 4, status)
+                # Column indices (1-based): Business Name=1, Phone=2, Address=3, Type=4, Area=5, Status=6, Call Date=7, Call Notes=8, Result=9
                 
-                # Update notes column (assuming Notes is column E, index 5)
-                if notes:
-                    existing_notes = self.sheet.cell(row_number, 5).value or ""
-                    updated_notes = f"{existing_notes}\n{notes}" if existing_notes else notes
-                    self.sheet.update_cell(row_number, 5, updated_notes)
+                # Update status column (column 6)
+                if status:
+                    self.sheet.update_cell(row_number, 6, status)
+                
+                # Update call date column (column 7)
+                if call_date:
+                    self.sheet.update_cell(row_number, 7, call_date)
+                
+                # Update call notes column (column 8)
+                if call_notes:
+                    existing_notes = self.sheet.cell(row_number, 8).value or ""
+                    updated_notes = f"{existing_notes}\n{call_notes}" if existing_notes else call_notes
+                    self.sheet.update_cell(row_number, 8, updated_notes)
+                
+                # Update result column (column 9)
+                if result:
+                    self.sheet.update_cell(row_number, 9, result)
                 
                 logger.info(f"Updated lead status for {phone} to {status}")
                 return True
