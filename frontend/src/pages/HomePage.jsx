@@ -253,8 +253,8 @@ const HomePage = () => {
               ))
             ) : (
               products.map((product) => (
-              <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden">
+              <Card key={product.id} className="group hover:shadow-2xl transition-all duration-300 border-2 border-cyan-100 shadow-lg overflow-hidden transform hover:scale-105">
+                <div className="aspect-video bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50 flex items-center justify-center relative overflow-hidden">
                   {product.id === 'prod_10lb' ? (
                     <img 
                       src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
