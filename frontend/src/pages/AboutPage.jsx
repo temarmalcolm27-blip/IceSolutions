@@ -167,7 +167,7 @@ const AboutPage = () => {
                   <div className="text-center text-white">
                     <Truck className="h-20 w-20 mx-auto mb-4" />
                     <div className="text-lg font-semibold">Professional Ice Delivery</div>
-                    <div className="text-sm opacity-90">Serving the community since 2019</div>
+                    <div className="text-sm opacity-90">Serving Kingston since 2023</div>
                   </div>
                 </div>
               </Card>
