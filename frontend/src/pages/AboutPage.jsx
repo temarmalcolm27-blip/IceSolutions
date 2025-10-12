@@ -82,9 +82,10 @@ const AboutPage = () => {
               About Ice Solutions
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              Founded in 2019, Ice Solutions has become the trusted ice supplier for events, 
-              restaurants, and businesses across the city. We're passionate about delivering 
-              crystal-clear quality and exceptional service.
+              Founded in 2023, Ice Solutions was born from a simple observation: getting party ice quickly and affordably 
+              was a challenge in Kingston, Jamaica. Based in the Washington Gardens area, we set out to solve this problem 
+              by providing crystal-clear, restaurant-quality ice with fast, reliable delivery. Today, we're proud to serve 
+              events, restaurants, bars, and businesses across Kingston with exceptional service and quality.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Badge className="bg-green-100 text-green-700 px-4 py-2">
