@@ -21,6 +21,7 @@ from google_sheets_integration import GoogleSheetsLeadManager
 from sales_agent_script import SALES_AGENT_SCRIPT, SALES_FAQ, calculate_ice_recommendation, calculate_price
 from email_service import send_notification_confirmation_email
 from lead_scraper import LeadScraper
+from conversational_ai_http import get_or_create_conversation, cleanup_conversation, transcribe_audio, generate_speech
 
 
 ROOT_DIR = Path(__file__).parent
