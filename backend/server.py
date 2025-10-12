@@ -862,6 +862,65 @@ async def get_sales_agent_twiml(lead_name: str = "customer"):
     
     return Response(content=twiml_content, media_type="text/xml")
 
+# Product Notification Endpoints
+class NotificationRequest(BaseModel):
+    email: str
+    product_name: str
+    product_size: str
+
+@api_router.post("/notifications/subscribe")
+async def subscribe_to_notification(notification: NotificationRequest):
+    """Subscribe to product availability notifications and save to Google Sheets"""
+    try:
+        # Save to database
+        notification_doc = {
+            "email": notification.email,
+            "product_name": notification.product_name,
+            "product_size": notification.product_size,
+            "subscribed_at": datetime.now(timezone.utc).isoformat(),
+            "notified": False
+        }
+        
+        await db.product_notifications.insert_one(notification_doc)
+        
+        # Try to save to Google Sheets if configured
+        try:
+            sheets_manager = GoogleSheetsLeadManager()
+            sheet_url = os.getenv('GOOGLE_SHEETS_NOTIFICATIONS_URL')
+            
+            if sheet_url and sheets_manager.connect_to_sheet(sheet_url, "Notifications"):
+                sheets_manager.add_lead(
+                    name=notification.email,
+                    phone="N/A",
+                    email=notification.email,
+                    status="Waiting",
+                    notes=f"Wants notification for {notification.product_size} {notification.product_name}"
+                )
+                logger.info(f"Saved notification to Google Sheets for {notification.email}")
+        except Exception as e:
+            logger.warning(f"Could not save to Google Sheets: {str(e)}")
+            # Continue even if Google Sheets fails - we have it in database
+        
+        return {
+            "status": "success",
+            "message": f"You'll be notified when {notification.product_size} {notification.product_name} become available!",
+            "email": notification.email
+        }
+        
+    except Exception as e:
+        logger.error(f"Error subscribing to notification: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to subscribe to notifications")
+
+@api_router.get("/notifications")
+async def get_notifications():
+    """Get all product notification subscriptions"""
+    try:
+        notifications = await db.product_notifications.find({}, {"_id": 0}).to_list(1000)
+        return {"notifications": notifications, "count": len(notifications)}
+    except Exception as e:
+        logger.error(f"Error getting notifications: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # AI Agent admin endpoints
 @api_router.get("/admin/call-attempts")
 async def get_call_attempts():
