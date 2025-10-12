@@ -1054,7 +1054,6 @@ async def get_leads_stats():
 @api_router.post("/conversational-ai/handle")
 async def handle_conversation(
     request: Request,
-    call_sid: str = "",
     business_name: str = ""
 ):
     """Handle conversational AI turns (HTTP-based)"""
@@ -1064,7 +1063,7 @@ async def handle_conversation(
         # Get form data from Twilio
         form_data = await request.form()
         speech_result = form_data.get('SpeechResult', '')
-        call_sid_from_twilio = form_data.get('CallSid', call_sid)
+        call_sid_from_twilio = form_data.get('CallSid', '')
         
         logger.info(f"[{call_sid_from_twilio}] Received speech: {speech_result}")
         
