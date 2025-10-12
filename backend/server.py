@@ -784,16 +784,45 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         else:
             phone_formatted = phone
         
-        # Create TwiML for sales call
-        public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
-        twiml_url = f"{public_url}/api/sales-agent/twiml?lead_name={quote(lead_name)}"
+        # Create TwiML for sales call (inline to avoid ngrok dependency)
+        from twilio.twiml.voice_response import VoiceResponse, Say, Pause
         
-        # Make the call
+        twiml_response = VoiceResponse()
+        twiml_response.say(
+            "Hello, this is Marcus from Ice Solutions. We provide party ice deliveries for businesses in the corporate area and Kingston at a reasonable price.",
+            voice='man',
+            language='en-JM'
+        )
+        twiml_response.pause(length=1)
+        twiml_response.say(
+            "We provide crystal-clear, restaurant-quality ice delivered fresh to your door. Our 10-pound bags start at just 350 Jamaican dollars, with great bulk discounts available.",
+            voice='man',
+            language='en-JM'
+        )
+        twiml_response.pause(length=1)
+        twiml_response.say(
+            "Whether you're planning a party, running a bar, or need ice for an event, we can help. We offer same-day delivery, and it's FREE in Washington Gardens!",
+            voice='man',
+            language='en-JM'
+        )
+        twiml_response.pause(length=1)
+        twiml_response.say(
+            "For more information or to place an order, please call us at 8 7 6, 4 9 0, 7 2 0 8. That's 8 7 6, 4 9 0, 7 2 0 8.",
+            voice='man',
+            language='en-JM'
+        )
+        twiml_response.pause(length=1)
+        twiml_response.say(
+            "You can also order online at our website. Remember, More Ice equals More Vibes! Thank you and have a great day!",
+            voice='man',
+            language='en-JM'
+        )
+        
+        # Make the call with inline TwiML
         call = twilio_client.calls.create(
             to=phone_formatted,
             from_=TWILIO_PHONE_NUMBER,
-            url=twiml_url,
-            method='GET'
+            twiml=str(twiml_response)
         )
         
         # Update lead in database
