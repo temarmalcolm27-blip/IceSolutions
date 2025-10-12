@@ -788,34 +788,30 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         from twilio.twiml.voice_response import VoiceResponse, Say, Pause
         
         twiml_response = VoiceResponse()
+        # Using Amazon Polly voice - much more natural sounding
+        # Note: This is still a message, not conversational. See documentation for conversational AI setup.
         twiml_response.say(
-            "Hello, this is Marcus from Ice Solutions. We provide party ice deliveries for businesses in the corporate area and Kingston at a reasonable price.",
-            voice='man',
-            language='en-JM'
+            "Hello, good day! My name is Marcus, and I'm calling from Ice Solutions. May I speak with the person who handles purchasing for your business? We specialize in premium ice delivery for restaurants, bars, and events here in Kingston.",
+            voice='Polly.Matthew',  # Natural-sounding male voice
+            language='en-US'
+        )
+        twiml_response.pause(length=2)
+        twiml_response.say(
+            "If they're not available right now, no problem. I wanted to introduce our service - we deliver crystal-clear, restaurant-quality ice in 10-pound bags starting at just 350 Jamaican dollars. We offer bulk discounts and same-day delivery.",
+            voice='Polly.Matthew',
+            language='en-US'
         )
         twiml_response.pause(length=1)
         twiml_response.say(
-            "We provide crystal-clear, restaurant-quality ice delivered fresh to your door. Our 10-pound bags start at just 350 Jamaican dollars, with great bulk discounts available.",
-            voice='man',
-            language='en-JM'
+            "For Washington Gardens businesses like yours, delivery is completely free! Would you like me to call back at a better time, or can I leave my contact number so you can reach us?",
+            voice='Polly.Matthew',
+            language='en-US'
         )
-        twiml_response.pause(length=1)
+        twiml_response.pause(length=2)
         twiml_response.say(
-            "Whether you're planning a party, running a bar, or need ice for an event, we can help. We offer same-day delivery, and it's FREE in Washington Gardens!",
-            voice='man',
-            language='en-JM'
-        )
-        twiml_response.pause(length=1)
-        twiml_response.say(
-            "For more information or to place an order, please call us at 8 7 6, 4 9 0, 7 2 0 8. That's 8 7 6, 4 9 0, 7 2 0 8.",
-            voice='man',
-            language='en-JM'
-        )
-        twiml_response.pause(length=1)
-        twiml_response.say(
-            "You can also order online at our website. Remember, More Ice equals More Vibes! Thank you and have a great day!",
-            voice='man',
-            language='en-JM'
+            "You can reach us anytime at 8 7 6, 4 9 0, 7 2 0 8. That's 8 7 6, 4 9 0, 7 2 0 8. We're Ice Solutions, and we'd love to help with your ice needs. Have a great day!",
+            voice='Polly.Matthew',
+            language='en-US'
         )
         
         # Make the call with inline TwiML
