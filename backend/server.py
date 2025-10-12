@@ -17,6 +17,8 @@ from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Connect
 from twilio.request_validator import RequestValidator
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+from google_sheets_integration import GoogleSheetsLeadManager
+from sales_agent_script import SALES_AGENT_SCRIPT, SALES_FAQ, calculate_ice_recommendation, calculate_price
 
 
 ROOT_DIR = Path(__file__).parent
