@@ -145,7 +145,8 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
         # Send email
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
-            server.login(sender_email, sender_password)
+            # For SendGrid SMTP, username is always "apikey"
+            server.login("apikey", sender_password)
             server.sendmail(sender_email, customer_email, message.as_string())
         
         logger.info(f"Confirmation email sent successfully to {customer_email}")
