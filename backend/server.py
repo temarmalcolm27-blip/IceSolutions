@@ -171,6 +171,56 @@ class ActiveSession(BaseModel):
     contextData: Dict[str, Any] = {}
     startTime: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# Payment Models
+class PaymentTransaction(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    amount: float
+    currency: str = "jmd"
+    payment_status: str = "pending"  # pending, completed, failed, expired
+    metadata: Dict[str, Any] = {}
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CheckoutRequest(BaseModel):
+    bags: int
+    delivery_address: str
+    delivery_fee: float = 0.0
+    metadata: Optional[Dict[str, Any]] = {}
+
+class OrderCreate(BaseModel):
+    customer_name: str
+    customer_email: str
+    customer_phone: str
+    delivery_address: str
+    bags: int
+    delivery_fee: float
+    total_amount: float
+    payment_session_id: Optional[str] = None
+
+class Order(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_name: str
+    customer_email: str
+    customer_phone: str
+    delivery_address: str
+    bags: int
+    price_per_bag: float = 350.00
+    subtotal: float
+    discount_percent: float = 0.0
+    discount_amount: float = 0.0
+    delivery_fee: float
+    total_amount: float
+    payment_status: str = "pending"
+    payment_session_id: Optional[str] = None
+    order_status: str = "pending"  # pending, confirmed, in_delivery, delivered, cancelled
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
