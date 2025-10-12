@@ -36,6 +36,9 @@ TWILIO_PHONE_NUMBER = os.environ['TWILIO_PHONE_NUMBER']
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 request_validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
+# Stripe configuration
+STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
+
 # Create the main app without a prefix
 app = FastAPI()
 
