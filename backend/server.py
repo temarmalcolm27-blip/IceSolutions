@@ -853,6 +853,7 @@ async def scrape_and_add_leads(count: int = 10, areas: Optional[List[str]] = Non
         sheet_url = os.getenv('GOOGLE_SHEETS_URL')
         
         leads_added = 0
+        leads_added_to_sheets = 0
         errors = []
         
         # Add leads to Google Sheets and database
@@ -860,37 +861,62 @@ async def scrape_and_add_leads(count: int = 10, areas: Optional[List[str]] = Non
             try:
                 # Add to Google Sheets if configured
                 if sheet_url:
-                    if sheets_manager.connect_to_sheet(sheet_url):
-                        sheets_manager.add_lead(
-                            business_name=lead['business_name'],
-                            phone=lead['phone'],
-                            address=lead['address'],
-                            business_type=lead['type'],
-                            area=lead['area'],
-                            status='New'
-                        )
+                    try:
+                        if sheets_manager.connect_to_sheet(sheet_url):
+                            sheets_manager.add_lead(
+                                business_name=lead['business_name'],
+                                phone=lead['phone'],
+                                address=lead['address'],
+                                business_type=lead['type'],
+                                area=lead['area'],
+                                status='New'
+                            )
+                            leads_added_to_sheets += 1
+                    except Exception as sheet_error:
+                        logger.warning(f"Could not add to Google Sheets: {str(sheet_error)}")
                 
                 # Check if lead already exists in database
                 existing = await db.leads.find_one({"phone": lead['phone']})
                 if not existing:
-                    lead['created_at'] = datetime.now(timezone.utc).isoformat()
-                    lead['last_updated'] = datetime.now(timezone.utc).isoformat()
-                    lead['call_attempts'] = 0
-                    lead['last_call_date'] = None
-                    await db.leads.insert_one(lead)
+                    # Create a clean copy without _id for insertion
+                    lead_doc = {
+                        'business_name': lead['business_name'],
+                        'phone': lead['phone'],
+                        'address': lead['address'],
+                        'type': lead['type'],
+                        'area': lead['area'],
+                        'status': lead['status'],
+                        'call_date': lead.get('call_date', ''),
+                        'call_notes': lead.get('call_notes', ''),
+                        'result': lead.get('result', ''),
+                        'created_at': datetime.now(timezone.utc).isoformat(),
+                        'last_updated': datetime.now(timezone.utc).isoformat(),
+                        'call_attempts': 0,
+                        'last_call_date': None
+                    }
+                    await db.leads.insert_one(lead_doc)
                     leads_added += 1
                 
             except Exception as lead_error:
                 logger.error(f"Error adding lead {lead.get('phone', 'unknown')}: {str(lead_error)}")
                 errors.append(f"{lead.get('business_name', 'unknown')}: {str(lead_error)}")
         
+        # Return clean response without MongoDB ObjectIds
         return {
             "status": "success",
-            "message": f"Successfully generated and added {leads_added} leads",
+            "message": f"Successfully generated and added {leads_added} leads to database{f', {leads_added_to_sheets} to Google Sheets' if leads_added_to_sheets > 0 else ''}",
             "leads_added": leads_added,
+            "leads_added_to_sheets": leads_added_to_sheets,
             "total_generated": len(leads),
             "errors": errors if errors else None,
-            "leads": leads[:5]  # Return first 5 as sample
+            "sample_leads": [
+                {
+                    "business_name": l["business_name"],
+                    "phone": l["phone"],
+                    "area": l["area"],
+                    "type": l["type"]
+                } for l in leads[:5]
+            ]
         }
         
     except Exception as e:
