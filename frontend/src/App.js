@@ -23,7 +23,8 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/quote" element={<QuotePage />} />
+          <Route path="/quote" element={<SimpleQuotePage />} />
+          <Route path="/quote-old" element={<QuotePage />} />
           <Route path="/event-planning" element={<EventPlanningPage />} />
           <Route path="/bulk-orders" element={<BulkOrdersPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
