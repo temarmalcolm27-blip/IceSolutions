@@ -276,7 +276,9 @@ const HomePage = () => {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-xl font-semibold text-gray-900">{product.name}</h3>
-                    <span className="text-2xl font-bold text-cyan-600">${product.price}</span>
+                    {product.inStock && (
+                      <span className="text-2xl font-bold text-cyan-600">${product.price}</span>
+                    )}
                   </div>
                   <p className="text-gray-600 mb-4">{product.description}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -286,14 +288,10 @@ const HomePage = () => {
                       </Badge>
                     ))}
                   </div>
-                  <Link to={product.inStock ? "/quote" : "/products"}>
-                    <Button 
-                      className={`w-full ${
-                        product.inStock 
-                          ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white'
-                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      }`}
-                      disabled={!product.inStock}
+                  {product.inStock ? (
+                    <Link to="/quote">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
                     >
                       {product.inStock ? 'Order Now' : 'Notify When Available'}
                     </Button>
