@@ -140,10 +140,12 @@ const ProductsPage = () => {
                     <h3 className="text-xl font-bold text-gray-900 group-hover:text-cyan-600 transition-colors">
                       {product.name}
                     </h3>
-                    <div className="text-right">
-                      <span className="text-2xl font-bold text-cyan-600">${product.price}</span>
-                      <div className="text-sm text-gray-500">per bag</div>
-                    </div>
+                    {product.inStock && (
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-cyan-600">${product.price}</span>
+                        <div className="text-sm text-gray-500">per bag</div>
+                      </div>
+                    )}
                   </div>
                   
                   <p className="text-gray-600 mb-4 leading-relaxed">{product.description}</p>
