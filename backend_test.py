@@ -106,7 +106,7 @@ def test_products_api(results):
         results.errors.append(error_msg)
 
 def test_delivery_areas_api(results):
-    """Test Delivery Areas API - should return 4 delivery areas with correct fees"""
+    """Test Delivery Areas API - should return 2 delivery areas (Washington Gardens + Others)"""
     print("\n🧪 Testing Delivery Areas API...")
     
     try:
@@ -115,19 +115,22 @@ def test_delivery_areas_api(results):
         
         if response.status_code == 200:
             areas = response.json()
-            results.assert_equal(len(areas), 4, "Delivery Areas API returns exactly 4 areas")
+            results.assert_equal(len(areas), 2, "Delivery Areas API returns exactly 2 areas")
             
-            # Check for expected delivery areas
+            # Check for expected delivery areas (NEW Jamaica format)
             area_names = [area['area'] for area in areas]
-            expected_areas = ["Downtown Core", "West Side", "East Side", "North Suburbs"]
             
-            for expected in expected_areas:
-                results.assert_true(expected in area_names, f"Delivery area '{expected}' exists")
+            # Washington Gardens should have free delivery
+            washington_gardens = next((a for a in areas if "Washington Gardens" in a['area']), None)
+            if washington_gardens:
+                results.assert_equal(washington_gardens['deliveryFee'], 0.0, "Washington Gardens has free delivery")
+                results.assert_true("Washington Gardens" in washington_gardens['area'], "Washington Gardens area exists")
             
-            # Check delivery fees
-            downtown = next((a for a in areas if "Downtown" in a['area']), None)
-            if downtown:
-                results.assert_equal(downtown['deliveryFee'], 0.0, "Downtown Core has free delivery")
+            # Other areas should have JMD $300 delivery fee
+            other_areas = next((a for a in areas if "outside" in a['area']), None)
+            if other_areas:
+                results.assert_equal(other_areas['deliveryFee'], 300.0, "Outside Washington Gardens has JMD $300 delivery fee")
+                results.assert_true("outside" in other_areas['area'], "Outside Washington Gardens area exists")
             
             # Verify all areas have required fields
             for area in areas:
