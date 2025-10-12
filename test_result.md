@@ -381,14 +381,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "New feature implementation - needs comprehensive end-to-end testing"
-    - "Payment flow testing (quote → checkout → Stripe → confirmation)"
-    - "Event Planning Calculator testing"
-    - "Bulk Orders page testing"
-    - "Simplified Quote system testing"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+    - "NEW Pricing Logic Implementation - 20+ bags discount fix needed"
+  stuck_tasks:
+    - "NEW Pricing Logic Implementation"
+  test_all: false
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "testing"
