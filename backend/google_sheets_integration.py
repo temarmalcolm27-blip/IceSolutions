@@ -243,11 +243,15 @@ GOOGLE SHEETS INTEGRATION SETUP:
 
 7. Sheet Format:
    Your Google Sheet should have these columns (first row as headers):
-   - Name (Lead's full name)
-   - Phone (Phone number in any format)
-   - Email (Email address)
+   - Business Name (Name of the business)
+   - Phone (Phone number in any format, e.g., 876-555-1234)
+   - Address (Physical address of business)
+   - Type (Business type: bar, restaurant, shop, event venue, caterer, hotel/motel)
+   - Area (Location area: Washington Gardens, Duhaney Park, Patrick City, Pembrook Hall, etc.)
    - Status (New, Contacted, Interested, Not Interested, Sold)
-   - Notes (Any additional information)
+   - Call Date (Date of call attempt)
+   - Call Notes (Notes from the call conversation)
+   - Result (Outcome: Order placed, Follow up needed, Not interested, etc.)
 
 8. Test the Integration:
    Use the /api/leads/sync endpoint to test fetching leads
