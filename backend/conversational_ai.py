@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 # OpenAI API Key
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-emergent-f62468b2cCeCfD4E15')
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Marcus's conversational personality and goals
 MARCUS_SYSTEM_INSTRUCTIONS = """
 You are Marcus, a friendly and professional sales representative for Ice Solutions in Kingston, Jamaica.
