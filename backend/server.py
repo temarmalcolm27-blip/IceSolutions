@@ -16,6 +16,7 @@ from urllib.parse import quote, unquote
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Connect
 from twilio.request_validator import RequestValidator
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 
 ROOT_DIR = Path(__file__).parent
