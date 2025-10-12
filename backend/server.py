@@ -870,7 +870,7 @@ class NotificationRequest(BaseModel):
     product_size: str
 
 @api_router.post("/notifications/subscribe")
-async def subscribe_to_notification(notification: NotificationRequest):
+async def subscribe_to_notification(notification: NotificationRequest, background_tasks: BackgroundTasks):
     """Subscribe to product availability notifications and save to Google Sheets"""
     try:
         # Save to database
@@ -883,6 +883,14 @@ async def subscribe_to_notification(notification: NotificationRequest):
         }
         
         await db.product_notifications.insert_one(notification_doc)
+        
+        # Send confirmation email (in background to not block response)
+        background_tasks.add_task(
+            send_notification_confirmation_email,
+            notification.email,
+            notification.product_name,
+            notification.product_size
+        )
         
         # Try to save to Google Sheets if configured
         try:
@@ -904,7 +912,7 @@ async def subscribe_to_notification(notification: NotificationRequest):
         
         return {
             "status": "success",
-            "message": f"You'll be notified when {notification.product_size} {notification.product_name} become available!",
+            "message": f"You'll be notified when {notification.product_size} {notification.product_name} become available! Check your email for confirmation.",
             "email": notification.email
         }
         
