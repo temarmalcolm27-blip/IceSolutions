@@ -367,6 +367,426 @@ def test_contacts_api(results):
         print(error_msg)
         results.errors.append(error_msg)
 
+def test_payment_endpoints(results):
+    """Test NEW Payment Endpoints - Stripe Checkout Integration"""
+    print("\n🧪 Testing NEW Payment Endpoints...")
+    
+    # Test 1: Create checkout session for 1 bag (no discount)
+    print("\n  📦 Testing 1 bag checkout (no discount)...")
+    checkout_data_1 = {
+        "bags": 1,
+        "delivery_address": "123 Main St, Kingston",
+        "delivery_fee": 300.0,
+        "metadata": {
+            "customer_name": "John Smith",
+            "customer_email": "john@email.com"
+        }
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/checkout/create-session", 
+                               json=checkout_data_1,
+                               params={"origin_url": BASE_URL},
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "Checkout session creation returns 200 status")
+        
+        if response.status_code == 200:
+            session_data = response.json()
+            results.assert_true('session_id' in session_data, "Checkout session returns session_id")
+            results.assert_true('url' in session_data, "Checkout session returns Stripe URL")
+            
+            # Store session_id for status testing
+            session_id_1 = session_data.get('session_id')
+            
+            # Test checkout status endpoint
+            if session_id_1:
+                print(f"  🔍 Testing checkout status for session: {session_id_1}")
+                status_response = requests.get(f"{API_BASE}/checkout/status/{session_id_1}", timeout=10)
+                results.assert_equal(status_response.status_code, 200, "Checkout status returns 200 status")
+                
+                if status_response.status_code == 200:
+                    status_data = status_response.json()
+                    results.assert_true('payment_status' in status_data, "Checkout status returns payment_status")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 1 bag checkout request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Create checkout session for 5 bags (5% discount)
+    print("\n  📦 Testing 5 bags checkout (5% discount)...")
+    checkout_data_5 = {
+        "bags": 5,
+        "delivery_address": "Washington Gardens, Kingston",
+        "delivery_fee": 0.0,  # Free delivery to Washington Gardens
+        "metadata": {
+            "customer_name": "Maria Garcia",
+            "customer_email": "maria@email.com"
+        }
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/checkout/create-session", 
+                               json=checkout_data_5,
+                               params={"origin_url": BASE_URL},
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "5 bags checkout session creation returns 200 status")
+        
+        if response.status_code == 200:
+            session_data = response.json()
+            results.assert_true('session_id' in session_data, "5 bags checkout session returns session_id")
+            results.assert_true('url' in session_data, "5 bags checkout session returns Stripe URL")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 5 bags checkout request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: Create checkout session for 10 bags (10% discount)
+    print("\n  📦 Testing 10 bags checkout (10% discount)...")
+    checkout_data_10 = {
+        "bags": 10,
+        "delivery_address": "456 Business Ave, Spanish Town",
+        "delivery_fee": 300.0,
+        "metadata": {
+            "customer_name": "Robert Johnson",
+            "customer_email": "robert@business.com"
+        }
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/checkout/create-session", 
+                               json=checkout_data_10,
+                               params={"origin_url": BASE_URL},
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "10 bags checkout session creation returns 200 status")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 10 bags checkout request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 4: Create checkout session for 20 bags (15% discount)
+    print("\n  📦 Testing 20 bags checkout (15% discount)...")
+    checkout_data_20 = {
+        "bags": 20,
+        "delivery_address": "Washington Gardens, Kingston",
+        "delivery_fee": 0.0,  # Free delivery to Washington Gardens
+        "metadata": {
+            "customer_name": "Sarah Williams",
+            "customer_email": "sarah@events.com"
+        }
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/checkout/create-session", 
+                               json=checkout_data_20,
+                               params={"origin_url": BASE_URL},
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "20 bags checkout session creation returns 200 status")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 20 bags checkout request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_order_endpoints(results):
+    """Test NEW Order Management Endpoints"""
+    print("\n🧪 Testing NEW Order Management Endpoints...")
+    
+    # Test order creation
+    order_data = {
+        "customer_name": "Jennifer Martinez",
+        "customer_email": "jennifer@email.com",
+        "customer_phone": "876-555-0123",
+        "delivery_address": "Washington Gardens, Kingston",
+        "bags": 8,
+        "delivery_fee": 0.0,
+        "total_amount": 2660.0,  # 8 bags * 350 * 0.95 (5% discount) + 0 delivery
+        "payment_session_id": "test_session_123"
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/orders", 
+                               json=order_data, 
+                               headers={'Content-Type': 'application/json'},
+                               timeout=10)
+        
+        results.assert_equal(response.status_code, 200, "Order creation returns 200 status")
+        
+        if response.status_code == 200:
+            order = response.json()
+            
+            # Verify order structure
+            required_fields = ['id', 'customer_name', 'customer_email', 'bags', 'total_amount', 'order_status', 'created_at']
+            for field in required_fields:
+                results.assert_true(field in order, f"Order has required field: {field}")
+            
+            # Verify data integrity
+            results.assert_equal(order['customer_name'], order_data['customer_name'], "Order customer name matches input")
+            results.assert_equal(order['bags'], order_data['bags'], "Order bags count matches input")
+            results.assert_equal(order['order_status'], "confirmed", "New order has 'confirmed' status")
+            results.assert_equal(order['payment_status'], "completed", "New order has 'completed' payment status")
+            
+            # Store order_id for retrieval testing
+            order_id = order.get('id')
+            
+            # Test order retrieval
+            if order_id:
+                print(f"  🔍 Testing order retrieval for order: {order_id}")
+                get_response = requests.get(f"{API_BASE}/orders/{order_id}", timeout=10)
+                results.assert_equal(get_response.status_code, 200, "Order retrieval returns 200 status")
+                
+                if get_response.status_code == 200:
+                    retrieved_order = get_response.json()
+                    results.assert_equal(retrieved_order['id'], order_id, "Retrieved order ID matches created order")
+                    results.assert_equal(retrieved_order['customer_name'], order_data['customer_name'], "Retrieved order data matches")
+            
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Order API request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test invalid order ID
+    try:
+        invalid_response = requests.get(f"{API_BASE}/orders/invalid_order_id", timeout=10)
+        results.assert_equal(invalid_response.status_code, 404, "Invalid order ID returns 404 status")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Invalid order ID test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_lead_management_endpoints(results):
+    """Test NEW Lead Management Endpoints"""
+    print("\n🧪 Testing NEW Lead Management Endpoints...")
+    
+    # Test 1: Get sales agent script
+    try:
+        response = requests.get(f"{API_BASE}/sales-agent/script", timeout=10)
+        results.assert_equal(response.status_code, 200, "Sales agent script returns 200 status")
+        
+        if response.status_code == 200:
+            script_data = response.json()
+            results.assert_true('script' in script_data, "Sales script response contains 'script' field")
+            results.assert_true('faq' in script_data, "Sales script response contains 'faq' field")
+            
+            # Verify script content
+            if 'script' in script_data:
+                script = script_data['script']
+                results.assert_true(isinstance(script, str) and len(script) > 0, "Sales script is non-empty string")
+            
+            # Verify FAQ content
+            if 'faq' in script_data:
+                faq = script_data['faq']
+                results.assert_true(isinstance(faq, list) and len(faq) > 0, "Sales FAQ is non-empty list")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Sales agent script request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Get sales agent TwiML
+    try:
+        response = requests.get(f"{API_BASE}/sales-agent/twiml", 
+                               params={"lead_name": "TestCustomer"}, 
+                               timeout=10)
+        results.assert_equal(response.status_code, 200, "Sales agent TwiML returns 200 status")
+        
+        if response.status_code == 200:
+            twiml_content = response.text
+            results.assert_true('<?xml version="1.0" encoding="UTF-8"?>' in twiml_content, "TwiML contains XML declaration")
+            results.assert_true('<Response>' in twiml_content, "TwiML contains Response element")
+            results.assert_true('<Say' in twiml_content, "TwiML contains Say element")
+            results.assert_true('Ice Solutions' in twiml_content, "TwiML mentions Ice Solutions")
+            results.assert_true('TestCustomer' in twiml_content, "TwiML includes lead name")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Sales agent TwiML request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: Get all leads (should return empty initially)
+    try:
+        response = requests.get(f"{API_BASE}/leads", timeout=10)
+        results.assert_equal(response.status_code, 200, "Leads API returns 200 status")
+        
+        if response.status_code == 200:
+            leads_data = response.json()
+            results.assert_true('leads' in leads_data, "Leads response contains 'leads' field")
+            results.assert_true('count' in leads_data, "Leads response contains 'count' field")
+            
+            # Initially should be empty or contain existing leads
+            leads = leads_data.get('leads', [])
+            count = leads_data.get('count', 0)
+            results.assert_equal(len(leads), count, "Leads count matches array length")
+            results.assert_true(isinstance(leads, list), "Leads is a list")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Leads API request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_pricing_logic_verification(results):
+    """Test NEW Pricing Logic - Bulk Discounts and Delivery Fees"""
+    print("\n🧪 Testing NEW Pricing Logic Verification...")
+    
+    # Test pricing calculations through quote API with new logic
+    test_cases = [
+        {
+            "name": "1 bag - No discount",
+            "bags": 1,
+            "address": "Kingston, Jamaica",
+            "expected_discount": 0.0,
+            "expected_price_per_bag": 350.0,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "4 bags - No discount",
+            "bags": 4,
+            "address": "Spanish Town, Jamaica", 
+            "expected_discount": 0.0,
+            "expected_price_per_bag": 350.0,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "5 bags - 5% discount",
+            "bags": 5,
+            "address": "Portmore, Jamaica",
+            "expected_discount": 5.0,
+            "expected_price_per_bag": 332.50,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "9 bags - 5% discount",
+            "bags": 9,
+            "address": "Half Way Tree, Jamaica",
+            "expected_discount": 5.0,
+            "expected_price_per_bag": 332.50,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "10 bags - 10% discount",
+            "bags": 10,
+            "address": "New Kingston, Jamaica",
+            "expected_discount": 10.0,
+            "expected_price_per_bag": 315.0,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "19 bags - 10% discount",
+            "bags": 19,
+            "address": "Mandeville, Jamaica",
+            "expected_discount": 10.0,
+            "expected_price_per_bag": 315.0,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "20 bags - 15% discount",
+            "bags": 20,
+            "address": "Ocho Rios, Jamaica",
+            "expected_discount": 15.0,
+            "expected_price_per_bag": 297.50,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "25 bags - 15% discount",
+            "bags": 25,
+            "address": "Montego Bay, Jamaica",
+            "expected_discount": 15.0,
+            "expected_price_per_bag": 297.50,
+            "expected_delivery": 300.0
+        },
+        {
+            "name": "5 bags - Washington Gardens (FREE delivery)",
+            "bags": 5,
+            "address": "Washington Gardens, Kingston",
+            "expected_discount": 5.0,
+            "expected_price_per_bag": 332.50,
+            "expected_delivery": 0.0
+        }
+    ]
+    
+    for test_case in test_cases:
+        print(f"\n  💰 Testing: {test_case['name']}")
+        
+        # Calculate expected values
+        base_total = test_case['bags'] * 350.0
+        discount_amount = base_total * (test_case['expected_discount'] / 100)
+        expected_total = base_total - discount_amount + test_case['expected_delivery']
+        
+        # Create quote to test pricing
+        quote_data = {
+            "customerInfo": {
+                "name": "Test Customer",
+                "email": "test@email.com",
+                "phone": "876-555-0000",
+                "address": test_case['address']
+            },
+            "eventDetails": {
+                "eventDate": "2024-12-20T18:00:00Z",
+                "eventType": "Test Event",
+                "guestCount": test_case['bags'] * 25,  # 25 guests per bag
+                "iceAmount": 0,
+                "deliveryTime": "3 PM - 6 PM"
+            }
+        }
+        
+        try:
+            response = requests.post(f"{API_BASE}/quotes-no-callback", 
+                                   json=quote_data, 
+                                   headers={'Content-Type': 'application/json'},
+                                   timeout=10)
+            
+            if response.status_code == 200:
+                quote = response.json()
+                quote_calc = quote.get('quote', {})
+                
+                # Verify calculations
+                results.assert_equal(quote_calc.get('bags'), test_case['bags'], 
+                                   f"{test_case['name']}: Correct bag count")
+                
+                results.assert_equal(quote_calc.get('deliveryFee'), test_case['expected_delivery'], 
+                                   f"{test_case['name']}: Correct delivery fee")
+                
+                # Check if discount percentage is applied correctly
+                actual_discount_percent = (quote_calc.get('savings', 0) / quote_calc.get('basePrice', 1)) * 100
+                results.assert_in_range(actual_discount_percent, test_case['expected_discount'] - 0.1, 
+                                      test_case['expected_discount'] + 0.1, 
+                                      f"{test_case['name']}: Correct discount percentage")
+                
+                # Verify total calculation
+                results.assert_in_range(quote_calc.get('total', 0), expected_total - 1, expected_total + 1,
+                                      f"{test_case['name']}: Correct total amount")
+            else:
+                results.failed += 1
+                error_msg = f"❌ FAIL: {test_case['name']} - Quote request failed with status {response.status_code}"
+                print(error_msg)
+                results.errors.append(error_msg)
+                
+        except requests.exceptions.RequestException as e:
+            results.failed += 1
+            error_msg = f"❌ FAIL: {test_case['name']} - Request failed: {str(e)}"
+            print(error_msg)
+            results.errors.append(error_msg)
+
 def test_edge_cases(results):
     """Test edge cases and error handling"""
     print("\n🧪 Testing Edge Cases...")
