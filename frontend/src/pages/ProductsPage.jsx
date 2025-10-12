@@ -354,7 +354,7 @@ const ProductsPage = () => {
             <CardContent>
               <form onSubmit={handleNotifySubmit} className="space-y-4">
                 <p className="text-gray-600">
-                  We'll send you an email when <strong>{notifyProduct?.weight} {notifyProduct?.name}</strong> become available.
+                  We'll send you an email when the <strong>{notifyProduct?.name}</strong> become available.
                 </p>
                 
                 <div className="space-y-2">
