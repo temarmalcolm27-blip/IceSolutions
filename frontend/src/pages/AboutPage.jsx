@@ -21,7 +21,7 @@ const AboutPage = () => {
   const stats = [
     { label: 'Happy Customers', value: '1,000+', icon: Users },
     { label: 'Ice Delivered', value: '50,000+ lbs', icon: Truck },
-    { label: 'Years of Service', value: '5+', icon: Award },
+    { label: 'Since', value: '2023', icon: Award },
     { label: 'Average Rating', value: '4.9★', icon: Star }
   ];
 
