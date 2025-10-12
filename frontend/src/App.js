@@ -21,6 +21,8 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/quote" element={<QuotePage />} />
+          <Route path="/event-planning" element={<EventPlanningPage />} />
+          <Route path="/bulk-orders" element={<BulkOrdersPage />} />
         </Routes>
       </BrowserRouter>
     </div>
