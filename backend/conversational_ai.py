@@ -97,12 +97,16 @@ class ConversationalAIHandler:
         try:
             # OpenAI Realtime API endpoint
             url = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01"
-            headers = {
-                "Authorization": f"Bearer {OPENAI_API_KEY}",
-                "OpenAI-Beta": "realtime=v1"
-            }
             
-            self.openai_ws = await websockets.connect(url, extra_headers=headers)
+            # Create headers using the proper method for websockets library
+            import websockets.client
+            self.openai_ws = await websockets.client.connect(
+                url,
+                additional_headers={
+                    "Authorization": f"Bearer {OPENAI_API_KEY}",
+                    "OpenAI-Beta": "realtime=v1"
+                }
+            )
             logger.info(f"Connected to OpenAI Realtime API for call {self.call_sid}")
             
             # Configure the session
