@@ -176,27 +176,28 @@ class GoogleSheetsLeadManager:
             logger.error(f"Failed to update lead status: {str(e)}")
             return False
     
-    def add_lead(self, name: str, phone: str, email: str = "", status: str = "New", notes: str = ""):
+    def add_lead(self, business_name: str, phone: str, address: str = "", business_type: str = "", area: str = "", status: str = "New"):
         """
         Add a new lead to the sheet
         
         Args:
-            name: Lead's name
-            phone: Lead's phone number
-            email: Lead's email (optional)
+            business_name: Business name
+            phone: Business phone number
+            address: Business address
+            business_type: Type of business (bar, restaurant, shop, event venue, caterer, hotel/motel)
+            area: Area/location (e.g., Washington Gardens, Duhaney Park, etc.)
             status: Initial status (default: "New")
-            notes: Any notes about the lead
         """
         try:
             if not self.sheet:
                 logger.error("Not connected to any sheet")
                 return False
             
-            # Append new row
-            row = [name, phone, email, status, notes]
+            # Append new row: Business Name, Phone, Address, Type, Area, Status, Call Date, Call Notes, Result
+            row = [business_name, phone, address, business_type, area, status, "", "", ""]
             self.sheet.append_row(row)
             
-            logger.info(f"Added new lead: {name} ({phone})")
+            logger.info(f"Added new lead: {business_name} ({phone})")
             return True
             
         except Exception as e:
