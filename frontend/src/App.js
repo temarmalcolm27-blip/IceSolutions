@@ -25,6 +25,8 @@ function App() {
           <Route path="/quote" element={<QuotePage />} />
           <Route path="/event-planning" element={<EventPlanningPage />} />
           <Route path="/bulk-orders" element={<BulkOrdersPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
         </Routes>
       </BrowserRouter>
     </div>
