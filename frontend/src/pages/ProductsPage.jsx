@@ -332,6 +332,63 @@ const ProductsPage = () => {
       </section>
 
       <Footer />
+
+      {/* Notification Dialog */}
+      {showNotifyDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-md w-full">
+            <CardHeader className="relative">
+              <button
+                onClick={() => setShowNotifyDialog(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-cyan-600" />
+                Get Notified
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleNotifySubmit} className="space-y-4">
+                <p className="text-gray-600">
+                  We'll send you an email when <strong>{notifyProduct?.weight} {notifyProduct?.name}</strong> become available.
+                </p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your.email@example.com"
+                    value={notifyEmail}
+                    onChange={(e) => setNotifyEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowNotifyDialog(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600"
+                  >
+                    {isSubmitting ? 'Subscribing...' : 'Notify Me'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
