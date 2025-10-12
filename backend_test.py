@@ -2,6 +2,7 @@
 """
 Comprehensive Backend API Tests for IceSolutions
 Tests all API endpoints and business logic as specified in the review request.
+Includes NEW payment endpoints, lead management, and updated pricing logic.
 """
 
 import requests
@@ -9,6 +10,7 @@ import json
 from datetime import datetime, timezone
 import sys
 import os
+import time
 
 # Get backend URL from frontend .env file
 def get_backend_url():
