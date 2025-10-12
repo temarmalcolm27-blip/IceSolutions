@@ -77,28 +77,6 @@ const HomePage = () => {
                   <div className="text-sm text-gray-600 mt-2">Customer Rating</div>
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link to="/quote" className="flex-1">
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  >
-                    <Truck className="mr-2 h-5 w-5" />
-                    Order Ice Now
-                  </Button>
-                </Link>
-                <Link to="/products" className="flex-1">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="w-full border-cyan-600 text-cyan-600 hover:bg-cyan-50 transition-colors"
-                  >
-                    View Products
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
             </div>
 
             {/* Visual Element */}
