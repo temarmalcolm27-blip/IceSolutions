@@ -79,7 +79,7 @@ class GoogleSheetsLeadManager:
         """
         Get all leads from the Google Sheet
         
-        Expected columns: Name, Phone, Email, Status, Notes
+        Expected columns: Business Name, Phone, Address, Type, Area, Status, Call Date, Call Notes, Result
         
         Args:
             sheet_url: URL of the Google Sheet (optional if already connected)
@@ -98,19 +98,24 @@ class GoogleSheetsLeadManager:
                 return []
             
             # Get all records as list of dictionaries
-            # Assumes first row is headers: Name, Phone, Email, Status, Notes
+            # Assumes first row is headers: Business Name, Phone, Address, Type, Area, Status, Call Date, Call Notes, Result
             records = self.sheet.get_all_records()
             
             leads = []
             for record in records:
-                # Only include leads that have a phone number and are not marked as "Contacted"
-                if record.get('Phone') and record.get('Status', '').lower() != 'contacted':
+                # Only include leads that have a phone number and are not marked as "Contacted" or "Sold"
+                status = record.get('Status', '').lower()
+                if record.get('Phone') and status not in ['contacted', 'sold', 'not interested']:
                     leads.append({
-                        'name': record.get('Name', ''),
+                        'business_name': record.get('Business Name', ''),
                         'phone': str(record.get('Phone', '')),
-                        'email': record.get('Email', ''),
+                        'address': record.get('Address', ''),
+                        'type': record.get('Type', ''),
+                        'area': record.get('Area', ''),
                         'status': record.get('Status', 'New'),
-                        'notes': record.get('Notes', '')
+                        'call_date': record.get('Call Date', ''),
+                        'call_notes': record.get('Call Notes', ''),
+                        'result': record.get('Result', '')
                     })
             
             logger.info(f"Retrieved {len(leads)} leads from sheet")
