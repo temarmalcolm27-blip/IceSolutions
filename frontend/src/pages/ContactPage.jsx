@@ -96,16 +96,16 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: 'orders@icesolutions.com',
+      details: 'temarmalcolm27@gmail.com',
       description: 'We respond within 2 hours',
-      action: () => window.open('mailto:orders@icesolutions.com')
+      action: () => window.open('mailto:temarmalcolm27@gmail.com')
     },
     {
       icon: MapPin,
       title: 'Location',
-      details: '123 Ice Street, Cool City, CC 12345',
-      description: 'Delivery & pickup available',
-      action: () => window.open('https://maps.google.com/?q=123+Ice+Street+Cool+City+CC+12345')
+      details: 'Rosend Avenue, Washington Gardens, Kingston 20',
+      description: 'Jamaica - Delivery & pickup available',
+      action: () => window.open('https://maps.google.com/?q=Rosend+Avenue+Washington+Gardens+Kingston+20+Jamaica')
     }
   ];
 
