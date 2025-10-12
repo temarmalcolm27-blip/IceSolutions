@@ -50,21 +50,21 @@ const AboutPage = () => {
 
   const team = [
     {
-      name: 'Michael Chen',
+      name: 'Temar Malcolm',
       role: 'Founder & CEO',
-      bio: '15+ years in food service industry, started Ice Solutions to solve ice supply challenges for local businesses.',
+      bio: 'Over a decade in customer service and customer relations. Founded Ice Solutions in 2023 to provide affordable, reliable ice delivery across Kingston.',
       image: '/api/placeholder/200/200'
     },
     {
-      name: 'Sarah Rodriguez',
+      name: 'Shandale Campbell',
       role: 'Operations Manager',
-      bio: 'Former restaurant manager who understands the critical importance of reliable ice supply for hospitality.',
+      bio: 'Former restaurant and bar manager who understands the critical importance of reliable ice supply for hospitality and events.',
       image: '/api/placeholder/200/200'
     },
     {
-      name: 'David Park',
+      name: 'Marcus Thompson',
       role: 'Delivery Supervisor',
-      bio: 'Logistics expert ensuring efficient routes and on-time deliveries across all service areas.',
+      bio: 'Logistics expert ensuring efficient routes and on-time deliveries across Kingston. Specializes in same-day delivery coordination.',
       image: '/api/placeholder/200/200'
     }
   ];
