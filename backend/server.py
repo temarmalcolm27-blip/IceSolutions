@@ -784,37 +784,24 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         else:
             phone_formatted = phone
         
-        # Create TwiML for sales call (inline to avoid ngrok dependency)
-        from twilio.twiml.voice_response import VoiceResponse, Say, Pause
+        # Use conversational AI with OpenAI Realtime API
+        # This creates a WebSocket connection for two-way conversations
+        public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
+        
+        # Create TwiML that connects to our WebSocket server for conversational AI
+        from twilio.twiml.voice_response import VoiceResponse, Connect, Stream
         
         twiml_response = VoiceResponse()
-        # Using Amazon Polly voice - much more natural sounding
-        # Note: This is still a message, not conversational. See documentation for conversational AI setup.
-        twiml_response.say(
-            "Hello, good day! My name is Marcus, and I'm calling from Ice Solutions. May I speak with the person who handles purchasing for your business? We specialize in premium ice delivery for restaurants, bars, and events here in Kingston.",
-            voice='Polly.Matthew',  # Natural-sounding male voice
-            language='en-US'
+        connect = Connect()
+        stream = Stream(
+            url=f'wss://{public_url.replace("https://", "").replace("http://", "")}/media-stream'
         )
-        twiml_response.pause(length=2)
-        twiml_response.say(
-            "If they're not available right now, no problem. I wanted to introduce our service - we deliver crystal-clear, restaurant-quality ice in 10-pound bags starting at just 350 Jamaican dollars. We offer bulk discounts and same-day delivery.",
-            voice='Polly.Matthew',
-            language='en-US'
-        )
-        twiml_response.pause(length=1)
-        twiml_response.say(
-            "For Washington Gardens businesses like yours, delivery is completely free! Would you like me to call back at a better time, or can I leave my contact number so you can reach us?",
-            voice='Polly.Matthew',
-            language='en-US'
-        )
-        twiml_response.pause(length=2)
-        twiml_response.say(
-            "You can reach us anytime at 8 7 6, 4 9 0, 7 2 0 8. That's 8 7 6, 4 9 0, 7 2 0 8. We're Ice Solutions, and we'd love to help with your ice needs. Have a great day!",
-            voice='Polly.Matthew',
-            language='en-US'
-        )
+        # Pass business name as custom parameter
+        stream.parameter(name='businessName', value=lead_name)
+        connect.append(stream)
+        twiml_response.append(connect)
         
-        # Make the call with inline TwiML
+        # Make the call with conversational AI
         call = twilio_client.calls.create(
             to=phone_formatted,
             from_=TWILIO_PHONE_NUMBER,
