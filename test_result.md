@@ -332,9 +332,14 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "New feature implementation - needs comprehensive end-to-end testing"
+    - "Payment flow testing (quote → checkout → Stripe → confirmation)"
+    - "Event Planning Calculator testing"
+    - "Bulk Orders page testing"
+    - "Simplified Quote system testing"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
