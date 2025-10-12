@@ -61,60 +61,43 @@ const HomePage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
-            {/* Content */}
+            {/* Quick Stats - Now Primary Content */}
             <div className="space-y-8">
-              <div className="space-y-4">
-                <Badge className="bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition-colors">
-                  <Zap className="mr-1 h-3 w-3" />
-                  Same-Day Delivery Available
-                </Badge>
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Premium
-                  <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent"> Ice Delivery </span>
-                  for Every Event
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Crystal-clear, restaurant-quality ice delivered fresh to your door. 
-                  Perfect for parties, events, restaurants, and bars.
-                </p>
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="text-3xl font-bold text-cyan-600">1000+</div>
+                  <div className="text-sm text-gray-600 mt-2">Happy Customers</div>
+                </div>
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="text-3xl font-bold text-cyan-600">2-Hour</div>
+                  <div className="text-sm text-gray-600 mt-2">Fast Delivery</div>
+                </div>
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="text-3xl font-bold text-cyan-600">4.9★</div>
+                  <div className="text-sm text-gray-600 mt-2">Customer Rating</div>
+                </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/quote">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link to="/quote" className="flex-1">
                   <Button 
                     size="lg" 
-                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Truck className="mr-2 h-5 w-5" />
                     Order Ice Now
                   </Button>
                 </Link>
-                <Link to="/products">
+                <Link to="/products" className="flex-1">
                   <Button 
+                    size="lg" 
                     variant="outline" 
-                    size="lg"
-                    className="border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 transition-all duration-300"
+                    className="w-full border-cyan-600 text-cyan-600 hover:bg-cyan-50 transition-colors"
                   >
                     View Products
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-4 pt-8 border-t border-gray-200">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-600">1000+</div>
-                  <div className="text-sm text-gray-600">Happy Customers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-600">2-Hour</div>
-                  <div className="text-sm text-gray-600">Fast Delivery</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-600">4.9★</div>
-                  <div className="text-sm text-gray-600">Customer Rating</div>
-                </div>
               </div>
             </div>
 
