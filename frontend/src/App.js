@@ -8,6 +8,8 @@ import ContactPage from "./pages/ContactPage";
 import QuotePage from "./pages/QuotePage";
 import EventPlanningPage from "./pages/EventPlanningPage";
 import BulkOrdersPage from "./pages/BulkOrdersPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
