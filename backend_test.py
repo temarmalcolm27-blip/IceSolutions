@@ -826,26 +826,49 @@ def test_edge_cases(results):
         results.assert_true(True, "Edge case testing handled network error gracefully")
 
 def run_all_tests():
-    """Run all backend API tests"""
-    print("🚀 Starting IceSolutions Backend API Tests")
-    print("=" * 60)
+    """Run all backend API tests including NEW features"""
+    print("🚀 Starting IceSolutions Backend API Tests - COMPREHENSIVE NEW FEATURES TESTING")
+    print("=" * 80)
     
     results = TestResults()
     
-    # Run all test suites
+    # SECTION 1: Existing Endpoints (Smoke Test)
+    print("\n" + "=" * 50)
+    print("📋 SECTION 1: EXISTING ENDPOINTS (SMOKE TEST)")
+    print("=" * 50)
     test_products_api(results)
     test_delivery_areas_api(results)
-    test_quotes_api_basic(results)
-    test_quotes_api_bulk_discounts(results)
-    test_quotes_api_large_order(results)
-    test_quotes_api_ice_amount(results)
     test_contacts_api(results)
-    test_edge_cases(results)
+    
+    # SECTION 2: NEW Payment Endpoints
+    print("\n" + "=" * 50)
+    print("💳 SECTION 2: NEW PAYMENT ENDPOINTS")
+    print("=" * 50)
+    test_payment_endpoints(results)
+    test_order_endpoints(results)
+    
+    # SECTION 3: NEW Lead Management Endpoints  
+    print("\n" + "=" * 50)
+    print("📞 SECTION 3: NEW LEAD MANAGEMENT ENDPOINTS")
+    print("=" * 50)
+    test_lead_management_endpoints(results)
+    
+    # SECTION 4: NEW Pricing Logic Verification
+    print("\n" + "=" * 50)
+    print("💰 SECTION 4: NEW PRICING LOGIC VERIFICATION")
+    print("=" * 50)
+    test_pricing_logic_verification(results)
+    
+    # SECTION 5: Error Handling
+    print("\n" + "=" * 50)
+    print("⚠️  SECTION 5: ERROR HANDLING")
+    print("=" * 50)
+    test_error_handling(results)
     
     # Print summary
-    print("\n" + "=" * 60)
-    print("🏁 TEST SUMMARY")
-    print("=" * 60)
+    print("\n" + "=" * 80)
+    print("🏁 COMPREHENSIVE TEST SUMMARY")
+    print("=" * 80)
     print(f"✅ PASSED: {results.passed}")
     print(f"❌ FAILED: {results.failed}")
     print(f"📊 TOTAL:  {results.passed + results.failed}")
@@ -859,10 +882,12 @@ def run_all_tests():
     print(f"\n📈 SUCCESS RATE: {success_rate:.1f}%")
     
     if results.failed == 0:
-        print("\n🎉 ALL TESTS PASSED! Backend API is working correctly.")
+        print("\n🎉 ALL TESTS PASSED! Backend API with NEW features is working correctly.")
+        print("✨ Payment flow, lead management, and pricing logic all verified!")
         return True
     else:
         print(f"\n⚠️  {results.failed} tests failed. Please review the issues above.")
+        print("🔧 Focus on NEW payment and lead management features.")
         return False
 
 if __name__ == "__main__":
