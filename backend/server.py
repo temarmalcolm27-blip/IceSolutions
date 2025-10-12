@@ -786,7 +786,7 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         
         # Create TwiML for sales call
         public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
-        twiml_url = f"{public_url}/api/sales-agent/twiml?lead_name={urllib.parse.quote(lead_name)}"
+        twiml_url = f"{public_url}/api/sales-agent/twiml?lead_name={quote(lead_name)}"
         
         # Make the call
         call = twilio_client.calls.create(
