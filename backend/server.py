@@ -785,22 +785,37 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         else:
             phone_formatted = phone
         
-        # Use conversational AI with OpenAI Realtime API
-        # This creates a WebSocket connection for two-way conversations
+        # Use HTTP-based conversational AI
+        # More reliable than WebSocket approach
         public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
         
-        # Create TwiML that connects to our WebSocket server for conversational AI
-        from twilio.twiml.voice_response import VoiceResponse, Connect, Stream
+        # Create TwiML that uses Gather for conversation
+        from twilio.twiml.voice_response import VoiceResponse, Gather
         
         twiml_response = VoiceResponse()
-        connect = Connect()
-        stream = Stream(
-            url=f'wss://{public_url.replace("https://", "").replace("http://", "")}/media-stream'
+        
+        # Start conversation with initial greeting
+        gather = Gather(
+            input='speech',
+            action=f'{public_url}/api/conversational-ai/handle?call_sid={{CallSid}}&business_name={quote(lead_name)}',
+            method='POST',
+            speech_timeout='auto',
+            language='en-US'
         )
-        # Pass business name as custom parameter
-        stream.parameter(name='businessName', value=lead_name)
-        connect.append(stream)
-        twiml_response.append(connect)
+        
+        # Initial greeting from Marcus
+        gather.say(
+            "Good day! This is Marcus from Ice Solutions. May I speak with the person who handles purchasing for your business?",
+            voice='Polly.Matthew'
+        )
+        
+        twiml_response.append(gather)
+        
+        # If no input, try again
+        twiml_response.say(
+            "I didn't hear a response. I'll call back another time. Have a great day!",
+            voice='Polly.Matthew'
+        )
         
         # Make the call with conversational AI
         call = twilio_client.calls.create(
