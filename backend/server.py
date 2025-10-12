@@ -494,6 +494,202 @@ async def get_contacts():
     
     return contacts
 
+# Payment Endpoints
+@api_router.post("/checkout/create-session")
+async def create_checkout_session(checkout_req: CheckoutRequest, origin_url: str):
+    """Create Stripe checkout session for ice order"""
+    try:
+        # Calculate pricing
+        price_per_bag = 350.00
+        bags = checkout_req.bags
+        subtotal = bags * price_per_bag
+        
+        # Apply bulk discounts
+        discount_percent = 0.0
+        if bags >= 20:
+            discount_percent = 0.15
+        elif bags >= 10:
+            discount_percent = 0.10
+        elif bags >= 5:
+            discount_percent = 0.05
+        
+        discount_amount = subtotal * discount_percent
+        total_after_discount = subtotal - discount_amount
+        total_amount = total_after_discount + checkout_req.delivery_fee
+        
+        # Initialize Stripe checkout
+        webhook_url = f"{origin_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        # Create checkout session request
+        success_url = f"{origin_url}/order-confirmation?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{origin_url}/quote"
+        
+        metadata = {
+            "bags": str(bags),
+            "delivery_address": checkout_req.delivery_address,
+            "delivery_fee": str(checkout_req.delivery_fee),
+            "discount_percent": str(discount_percent),
+            "discount_amount": str(discount_amount),
+            **checkout_req.metadata
+        }
+        
+        checkout_request = CheckoutSessionRequest(
+            amount=total_amount,
+            currency="jmd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata
+        )
+        
+        # Create checkout session
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store payment transaction
+        transaction = PaymentTransaction(
+            session_id=session.session_id,
+            amount=total_amount,
+            currency="jmd",
+            payment_status="pending",
+            metadata=metadata
+        )
+        
+        doc = transaction.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        
+        await db.payment_transactions.insert_one(doc)
+        
+        return {
+            "url": session.url,
+            "session_id": session.session_id
+        }
+        
+    except Exception as e:
+        logging.error(f"Error creating checkout session: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
+
+@api_router.get("/checkout/status/{session_id}")
+async def get_checkout_status(session_id: str):
+    """Get the status of a checkout session"""
+    try:
+        # Initialize Stripe checkout
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+        
+        # Get checkout status from Stripe
+        status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update payment transaction in database
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {
+                "$set": {
+                    "payment_status": status.payment_status,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return status
+        
+    except Exception as e:
+        logging.error(f"Error getting checkout status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get checkout status: {str(e)}")
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: dict):
+    """Handle Stripe webhook events"""
+    try:
+        # Initialize Stripe checkout
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+        
+        # Process webhook
+        # Note: In production, verify webhook signature
+        session_id = request.get("session_id")
+        payment_status = request.get("payment_status")
+        
+        if session_id and payment_status:
+            # Update payment transaction
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {
+                    "$set": {
+                        "payment_status": payment_status,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+        
+        return {"status": "success"}
+        
+    except Exception as e:
+        logging.error(f"Error processing webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Webhook processing failed: {str(e)}")
+
+@api_router.post("/orders", response_model=Order)
+async def create_order(order_input: OrderCreate):
+    """Create an order after successful payment"""
+    try:
+        # Calculate pricing
+        price_per_bag = 350.00
+        bags = order_input.bags
+        subtotal = bags * price_per_bag
+        
+        # Apply bulk discounts
+        discount_percent = 0.0
+        if bags >= 20:
+            discount_percent = 0.15
+        elif bags >= 10:
+            discount_percent = 0.10
+        elif bags >= 5:
+            discount_percent = 0.05
+        
+        discount_amount = subtotal * discount_percent
+        
+        order = Order(
+            customer_name=order_input.customer_name,
+            customer_email=order_input.customer_email,
+            customer_phone=order_input.customer_phone,
+            delivery_address=order_input.delivery_address,
+            bags=bags,
+            subtotal=subtotal,
+            discount_percent=discount_percent,
+            discount_amount=discount_amount,
+            delivery_fee=order_input.delivery_fee,
+            total_amount=order_input.total_amount,
+            payment_session_id=order_input.payment_session_id,
+            payment_status="completed",
+            order_status="confirmed"
+        )
+        
+        # Convert to dict and serialize datetimes for MongoDB
+        doc = order.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        
+        await db.orders.insert_one(doc)
+        return order
+        
+    except Exception as e:
+        logging.error(f"Error creating order: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create order: {str(e)}")
+
+@api_router.get("/orders/{order_id}", response_model=Order)
+async def get_order(order_id: str):
+    """Get order by ID"""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Convert ISO string timestamps back to datetime objects
+    if isinstance(order.get('created_at'), str):
+        order['created_at'] = datetime.fromisoformat(order['created_at'])
+    if isinstance(order.get('updated_at'), str):
+        order['updated_at'] = datetime.fromisoformat(order['updated_at'])
+    
+    return order
+
 # AI Agent admin endpoints
 @api_router.get("/admin/call-attempts")
 async def get_call_attempts():
