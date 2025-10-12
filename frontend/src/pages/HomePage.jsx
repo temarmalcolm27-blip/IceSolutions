@@ -164,29 +164,46 @@ const HomePage = () => {
                 Shield
               }[service.icon];
 
+              // Determine link for clickable cards
+              const getServiceLink = (id) => {
+                if (id === 2) return '/event-planning';
+                if (id === 3) return '/bulk-orders';
+                return null;
+              };
+
+              const serviceLink = getServiceLink(service.id);
+              const CardWrapper = serviceLink ? Link : 'div';
+              const wrapperProps = serviceLink ? { to: serviceLink } : {};
+
               return (
-                <Card 
-                  key={service.id}
-                  className={`group cursor-pointer transition-all duration-300 border-2 hover:border-cyan-200 hover:shadow-lg ${
-                    hoveredService === index ? 'shadow-lg border-cyan-200 scale-105' : 'shadow-sm border-gray-200'
-                  }`}
-                  onMouseEnter={() => setHoveredService(index)}
-                  onMouseLeave={() => setHoveredService(null)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-16 h-16 mx-auto mb-4 rounded-lg flex items-center justify-center transition-colors ${
-                      hoveredService === index 
-                        ? 'bg-gradient-to-br from-cyan-500 to-blue-600' 
-                        : 'bg-gradient-to-br from-cyan-100 to-blue-100'
-                    }`}>
-                      <IconComponent className={`h-8 w-8 ${
-                        hoveredService === index ? 'text-white' : 'text-cyan-600'
-                      }`} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
-                  </CardContent>
-                </Card>
+                <CardWrapper key={service.id} {...wrapperProps}>
+                  <Card 
+                    className={`group cursor-pointer transition-all duration-300 border-2 hover:border-cyan-200 hover:shadow-lg ${
+                      hoveredService === index ? 'shadow-lg border-cyan-200 scale-105' : 'shadow-sm border-gray-200'
+                    }`}
+                    onMouseEnter={() => setHoveredService(index)}
+                    onMouseLeave={() => setHoveredService(null)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-16 h-16 mx-auto mb-4 rounded-lg flex items-center justify-center transition-colors ${
+                        hoveredService === index 
+                          ? 'bg-gradient-to-br from-cyan-500 to-blue-600' 
+                          : 'bg-gradient-to-br from-cyan-100 to-blue-100'
+                      }`}>
+                        <IconComponent className={`h-8 w-8 ${
+                          hoveredService === index ? 'text-white' : 'text-cyan-600'
+                        }`} />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
+                      {serviceLink && (
+                        <div className="mt-4 flex items-center justify-center text-cyan-600 group-hover:text-cyan-700">
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </CardWrapper>
               );
             })}
           </div>
