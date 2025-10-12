@@ -207,6 +207,18 @@ export const apiService = {
       console.error(`Failed to fetch order ${orderId}:`, error);
       throw error;
     }
+  },
+
+  // Product Notification APIs
+  async subscribeToNotification(notificationData) {
+    try {
+      const response = await api.post('/notifications/subscribe', notificationData);
+      toast.success(response.data.message || 'Successfully subscribed to notifications!');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to subscribe to notification:', error);
+      throw error;
+    }
   }
 };
 
