@@ -821,6 +821,181 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         logger.error(f"Error initiating sales call: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to initiate call: {str(e)}")
 
+@api_router.post("/leads/scrape")
+async def scrape_and_add_leads(count: int = 10, areas: Optional[List[str]] = None, types: Optional[List[str]] = None):
+    """
+    Generate sample leads and add them to Google Sheets and database
+    
+    Query params:
+        count: Number of leads to generate (default: 10)
+        areas: Target areas (optional, e.g., ["Washington Gardens", "Duhaney Park"])
+        types: Business types (optional, e.g., ["bar", "restaurant"])
+    
+    Note: This uses sample data generation. For production, implement actual web scraping
+    or integrate with Google Places API.
+    """
+    try:
+        # Initialize lead scraper
+        scraper = LeadScraper()
+        
+        # Generate leads
+        leads = scraper.generate_sample_leads(count=count, areas=areas, business_types=types)
+        
+        if not leads:
+            return {
+                "status": "error",
+                "message": "Failed to generate leads",
+                "leads_added": 0
+            }
+        
+        # Initialize Google Sheets manager
+        sheets_manager = GoogleSheetsLeadManager()
+        sheet_url = os.getenv('GOOGLE_SHEETS_URL')
+        
+        leads_added = 0
+        errors = []
+        
+        # Add leads to Google Sheets and database
+        for lead in leads:
+            try:
+                # Add to Google Sheets if configured
+                if sheet_url:
+                    if sheets_manager.connect_to_sheet(sheet_url):
+                        sheets_manager.add_lead(
+                            business_name=lead['business_name'],
+                            phone=lead['phone'],
+                            address=lead['address'],
+                            business_type=lead['type'],
+                            area=lead['area'],
+                            status='New'
+                        )
+                
+                # Check if lead already exists in database
+                existing = await db.leads.find_one({"phone": lead['phone']})
+                if not existing:
+                    lead['created_at'] = datetime.now(timezone.utc).isoformat()
+                    lead['last_updated'] = datetime.now(timezone.utc).isoformat()
+                    lead['call_attempts'] = 0
+                    lead['last_call_date'] = None
+                    await db.leads.insert_one(lead)
+                    leads_added += 1
+                
+            except Exception as lead_error:
+                logger.error(f"Error adding lead {lead.get('phone', 'unknown')}: {str(lead_error)}")
+                errors.append(f"{lead.get('business_name', 'unknown')}: {str(lead_error)}")
+        
+        return {
+            "status": "success",
+            "message": f"Successfully generated and added {leads_added} leads",
+            "leads_added": leads_added,
+            "total_generated": len(leads),
+            "errors": errors if errors else None,
+            "leads": leads[:5]  # Return first 5 as sample
+        }
+        
+    except Exception as e:
+        logger.error(f"Error scraping leads: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to scrape leads: {str(e)}")
+
+@api_router.post("/leads/update/{phone}")
+async def update_lead_call_result(phone: str, status: str, call_notes: str = "", result: str = ""):
+    """
+    Update lead status after a call attempt
+    
+    Args:
+        phone: Phone number of the lead
+        status: New status (Contacted, Interested, Not Interested, Sold)
+        call_notes: Notes from the call
+        result: Result of the call
+    """
+    try:
+        # Update in database
+        update_data = {
+            "status": status,
+            "last_updated": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if call_notes:
+            update_data["call_notes"] = call_notes
+        if result:
+            update_data["result"] = result
+        
+        db_result = await db.leads.update_one(
+            {"phone": phone},
+            {"$set": update_data}
+        )
+        
+        # Update in Google Sheets if configured
+        sheets_manager = GoogleSheetsLeadManager()
+        sheet_url = os.getenv('GOOGLE_SHEETS_URL')
+        
+        if sheet_url and sheets_manager.connect_to_sheet(sheet_url):
+            call_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            sheets_manager.update_lead_status(
+                phone=phone,
+                status=status,
+                call_date=call_date,
+                call_notes=call_notes,
+                result=result
+            )
+        
+        if db_result.modified_count > 0:
+            return {
+                "status": "success",
+                "message": f"Lead {phone} updated successfully"
+            }
+        else:
+            return {
+                "status": "warning",
+                "message": f"No lead found with phone {phone} or no changes made"
+            }
+        
+    except Exception as e:
+        logger.error(f"Error updating lead: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update lead: {str(e)}")
+
+@api_router.get("/leads/stats")
+async def get_leads_stats():
+    """Get statistics about leads"""
+    try:
+        total_leads = await db.leads.count_documents({})
+        new_leads = await db.leads.count_documents({"status": "New"})
+        contacted = await db.leads.count_documents({"status": "Contacted"})
+        interested = await db.leads.count_documents({"status": "Interested"})
+        sold = await db.leads.count_documents({"status": "Sold"})
+        not_interested = await db.leads.count_documents({"status": "Not Interested"})
+        
+        # Get leads by area
+        pipeline = [
+            {"$group": {"_id": "$area", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        by_area = await db.leads.aggregate(pipeline).to_list(100)
+        
+        # Get leads by type
+        pipeline = [
+            {"$group": {"_id": "$type", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        by_type = await db.leads.aggregate(pipeline).to_list(100)
+        
+        return {
+            "total": total_leads,
+            "by_status": {
+                "new": new_leads,
+                "contacted": contacted,
+                "interested": interested,
+                "sold": sold,
+                "not_interested": not_interested
+            },
+            "by_area": [{"area": item["_id"], "count": item["count"]} for item in by_area],
+            "by_type": [{"type": item["_id"], "count": item["count"]} for item in by_type]
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting lead stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
 @api_router.get("/sales-agent/script")
 async def get_sales_script():
     """Get the sales agent script and FAQ"""
