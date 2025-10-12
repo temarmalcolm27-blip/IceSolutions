@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Solutions - Lead Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .stat-card { transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">🧊 Ice Solutions Lead Management</h1>
+            <p class="text-gray-600">Marcus AI Sales Agent Dashboard</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <button onclick="generateLeads()" class="bg-cyan-600 text-white px-4 py-3 rounded-lg hover:bg-cyan-700 font-medium">
+                    ➕ Generate 10 Leads
+                </button>
+                <button onclick="syncLeads()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                    🔄 Sync from Sheets
+                </button>
+                <button onclick="refreshAll()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 font-medium">
+                    🔃 Refresh All
+                </button>
+                <button onclick="viewGoogleSheet()" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 font-medium">
+                    📊 Open Google Sheet
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div class="stat-card bg-white rounded-lg shadow-md p-6">
+                <div class="text-sm text-gray-600 mb-1">Total Leads</div>
+                <div id="totalLeads" class="text-3xl font-bold text-gray-900">-</div>
+            </div>
+            <div class="stat-card bg-white rounded-lg shadow-md p-6">
+                <div class="text-sm text-gray-600 mb-1">New</div>
+                <div id="newLeads" class="text-3xl font-bold text-blue-600">-</div>
+            </div>
+            <div class="stat-card bg-white rounded-lg shadow-md p-6">
+                <div class="text-sm text-gray-600 mb-1">Contacted</div>
+                <div id="contactedLeads" class="text-3xl font-bold text-yellow-600">-</div>
+            </div>
+            <div class="stat-card bg-white rounded-lg shadow-md p-6">
+                <div class="text-sm text-gray-600 mb-1">Interested</div>
+                <div id="interestedLeads" class="text-3xl font-bold text-green-600">-</div>
+            </div>
+            <div class="stat-card bg-white rounded-lg shadow-md p-6">
+                <div class="text-sm text-gray-600 mb-1">Sold 🎉</div>
+                <div id="soldLeads" class="text-3xl font-bold text-purple-600">-</div>
+            </div>
+        </div>
+
+        <!-- Leads by Area & Type -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Leads by Area</h3>
+                <div id="leadsByArea" class="space-y-2">Loading...</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Leads by Type</h3>
+                <div id="leadsByType" class="space-y-2">Loading...</div>
+            </div>
+        </div>
+
+        <!-- All Leads Table -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">All Leads</h2>
+                <div class="flex gap-2">
+                    <select id="statusFilter" onchange="filterLeads()" class="px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="">All Status</option>
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Not Interested">Not Interested</option>
+                    </select>
+                    <button onclick="refreshLeads()" class="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+            <div id="leadsContainer" class="overflow-x-auto">
+                Loading leads...
+            </div>
+        </div>
+
+        <!-- Call Action Modal (Hidden by default) -->
+        <div id="callModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold mb-4">Initiate Sales Call</h3>
+                <p id="callModalContent" class="text-gray-600 mb-4"></p>
+                <div class="flex gap-3">
+                    <button onclick="confirmCall()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        📞 Call Now
+                    </button>
+                    <button onclick="closeCallModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api';
+        let allLeads = [];
+        let selectedLead = null;
+
+        // Fetch stats
+        async function fetchStats() {
+            try {
+                const response = await fetch(`${API_BASE}/leads/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('totalLeads').textContent = stats.total;
+                document.getElementById('newLeads').textContent = stats.by_status.new;
+                document.getElementById('contactedLeads').textContent = stats.by_status.contacted;
+                document.getElementById('interestedLeads').textContent = stats.by_status.interested;
+                document.getElementById('soldLeads').textContent = stats.by_status.sold;
+
+                // Display by area
+                const areaContainer = document.getElementById('leadsByArea');
+                if (stats.by_area && stats.by_area.length > 0) {
+                    areaContainer.innerHTML = stats.by_area.map(item => `
+                        <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                            <span class="text-gray-700">${item.area}</span>
+                            <span class="font-semibold text-cyan-600">${item.count}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    areaContainer.innerHTML = '<p class="text-gray-500">No data</p>';
+                }
+
+                // Display by type
+                const typeContainer = document.getElementById('leadsByType');
+                if (stats.by_type && stats.by_type.length > 0) {
+                    typeContainer.innerHTML = stats.by_type.map(item => `
+                        <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                            <span class="text-gray-700 capitalize">${item.type}</span>
+                            <span class="font-semibold text-cyan-600">${item.count}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    typeContainer.innerHTML = '<p class="text-gray-500">No data</p>';
+                }
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+            }
+        }
+
+        // Fetch all leads
+        async function fetchLeads() {
+            try {
+                const response = await fetch(`${API_BASE}/leads`);
+                const data = await response.json();
+                allLeads = data.leads;
+                displayLeads(allLeads);
+            } catch (error) {
+                console.error('Failed to fetch leads:', error);
+                document.getElementById('leadsContainer').innerHTML = 
+                    '<div class="text-red-600 p-4">Failed to load leads. Make sure the backend server is running.</div>';
+            }
+        }
+
+        // Display leads in table
+        function displayLeads(leads) {
+            const container = document.getElementById('leadsContainer');
+            
+            if (leads.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-center py-8">No leads yet. Click "Generate Leads" to get started!</div>';
+                return;
+            }
+
+            const statusColors = {
+                'New': 'bg-blue-100 text-blue-800',
+                'Contacted': 'bg-yellow-100 text-yellow-800',
+                'Interested': 'bg-green-100 text-green-800',
+                'Sold': 'bg-purple-100 text-purple-800',
+                'Not Interested': 'bg-gray-100 text-gray-800'
+            };
+
+            container.innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Business</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Calls</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${leads.map(lead => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">
+                                    <div class="text-sm font-medium text-gray-900">${lead.business_name}</div>
+                                    <div class="text-xs text-gray-500">${lead.address}</div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${lead.phone}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">${lead.area}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 capitalize">${lead.type}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[lead.status] || 'bg-gray-100 text-gray-800'}">
+                                        ${lead.status}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${lead.call_attempts || 0}</td>
+                                <td class="px-4 py-3">
+                                    <button onclick='initiateCall("${lead.phone}", "${lead.business_name}")' 
+                                            class="text-green-600 hover:text-green-800 font-medium text-sm mr-2">
+                                        📞 Call
+                                    </button>
+                                    <button onclick='updateLeadStatus("${lead.phone}")' 
+                                            class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                                        ✏️ Update
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Filter leads by status
+        function filterLeads() {
+            const status = document.getElementById('statusFilter').value;
+            const filtered = status ? allLeads.filter(lead => lead.status === status) : allLeads;
+            displayLeads(filtered);
+        }
+
+        // Generate new leads
+        async function generateLeads() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Generating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/leads/scrape?count=10`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                alert(`✅ Successfully generated ${data.leads_added} new leads!`);
+                refreshAll();
+            } catch (error) {
+                alert('❌ Failed to generate leads: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Generate 10 Leads';
+            }
+        }
+
+        // Sync leads from Google Sheets
+        async function syncLeads() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Syncing...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/leads/sync`);
+                const data = await response.json();
+                alert(`✅ Successfully synced ${data.leads_count} leads from Google Sheets!`);
+                refreshAll();
+            } catch (error) {
+                alert('❌ Failed to sync leads: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Sync from Sheets';
+            }
+        }
+
+        // Initiate call to lead
+        function initiateCall(phone, businessName) {
+            selectedLead = { phone, businessName };
+            document.getElementById('callModalContent').textContent = 
+                `Marcus (AI Sales Agent) will call ${businessName} at ${phone}. Continue?`;
+            document.getElementById('callModal').classList.remove('hidden');
+        }
+
+        async function confirmCall() {
+            if (!selectedLead) return;
+            
+            closeCallModal();
+            
+            try {
+                const response = await fetch(`${API_BASE}/leads/call/${selectedLead.phone}?lead_name=${encodeURIComponent(selectedLead.businessName)}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert(`✅ Call initiated to ${selectedLead.businessName}!\nCall SID: ${data.call_sid}`);
+                    refreshAll();
+                } else {
+                    alert('❌ Failed to initiate call: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Failed to initiate call: ' + error.message);
+            }
+        }
+
+        function closeCallModal() {
+            document.getElementById('callModal').classList.add('hidden');
+            selectedLead = null;
+        }
+
+        // Update lead status
+        function updateLeadStatus(phone) {
+            const newStatus = prompt('Enter new status (Contacted, Interested, Sold, Not Interested):');
+            if (!newStatus) return;
+            
+            const notes = prompt('Call notes (optional):') || '';
+            const result = prompt('Result (optional):') || '';
+            
+            fetch(`${API_BASE}/leads/update/${phone}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: newStatus,
+                    call_notes: notes,
+                    result: result
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('✅ Lead updated successfully!');
+                refreshAll();
+            })
+            .catch(error => {
+                alert('❌ Failed to update lead: ' + error.message);
+            });
+        }
+
+        // Refresh functions
+        function refreshStats() {
+            fetchStats();
+        }
+
+        function refreshLeads() {
+            document.getElementById('leadsContainer').innerHTML = 'Loading leads...';
+            fetchLeads();
+        }
+
+        function refreshAll() {
+            refreshStats();
+            refreshLeads();
+        }
+
+        function viewGoogleSheet() {
+            window.open('https://docs.google.com/spreadsheets/d/1wK3hgflRMOvvdnKXG2aFcqKo3ytsIz7GcvaCM_1sId8/edit', '_blank');
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshAll();
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshAll, 30000);
+    </script>
+</body>
+</html>
