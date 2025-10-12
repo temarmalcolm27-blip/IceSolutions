@@ -176,10 +176,10 @@ const ProductsPage = () => {
                       </>
                     ) : (
                       <Button 
-                        className="w-full bg-gray-200 text-gray-500 cursor-not-allowed" 
-                        disabled
+                        className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white" 
+                        onClick={() => handleNotifyClick(product)}
                       >
-                        <Clock className="mr-2 h-4 w-4" />
+                        <Bell className="mr-2 h-4 w-4" />
                         Notify When Available
                       </Button>
                     )}
