@@ -29,7 +29,7 @@ const Header = () => {
               alt="Ice Solutions Logo" 
               className="h-12 w-auto logo-transparent logo-header"
             />
-            <span className="text-xs font-medium text-cyan-600 italic -mt-1">More Ice = More Vibes</span>
+            <span className="text-[10px] font-medium text-cyan-600 italic -mt-1 leading-tight">More Ice = More Vibes</span>
           </Link>
 
           {/* Desktop Navigation */}
