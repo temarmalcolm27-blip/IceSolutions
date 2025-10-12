@@ -77,13 +77,13 @@ const Footer = () => {
                 <Phone className="h-4 w-4 mr-3 text-cyan-400" />
                 <span className="text-sm">(876) 490-7208</span>
               </div>
-              <div className="flex items-center text-gray-300">
+              <a href="mailto:temarmalcolm27@gmail.com" className="flex items-center text-gray-300 hover:text-cyan-400 transition-colors">
                 <Mail className="h-4 w-4 mr-3 text-cyan-400" />
-                <span className="text-sm">orders@icesolutions.com</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <MapPin className="h-4 w-4 mr-3 text-cyan-400" />
-                <span className="text-sm">123 Ice Street, Cool City, CC 12345</span>
+                <span className="text-sm">temarmalcolm27@gmail.com</span>
+              </a>
+              <div className="flex items-start text-gray-300">
+                <MapPin className="h-4 w-4 mr-3 text-cyan-400 mt-0.5 flex-shrink-0" />
+                <span className="text-sm">Rosend Avenue, Washington Gardens,<br />Kingston 20, Jamaica</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <Clock className="h-4 w-4 mr-3 text-cyan-400" />
