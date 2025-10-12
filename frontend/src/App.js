@@ -11,6 +11,7 @@ import EventPlanningPage from "./pages/EventPlanningPage";
 import BulkOrdersPage from "./pages/BulkOrdersPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
