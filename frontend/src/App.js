@@ -6,6 +6,8 @@ import ProductsPage from "./pages/ProductsPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import QuotePage from "./pages/QuotePage";
+import EventPlanningPage from "./pages/EventPlanningPage";
+import BulkOrdersPage from "./pages/BulkOrdersPage";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
