@@ -1050,6 +1050,67 @@ async def get_leads_stats():
         logger.error(f"Error getting lead stats: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
 
+@api_router.post("/conversational-ai/handle")
+async def handle_conversation(
+    request: Request,
+    call_sid: str = "",
+    business_name: str = ""
+):
+    """Handle conversational AI turns (HTTP-based)"""
+    try:
+        from twilio.twiml.voice_response import VoiceResponse, Gather
+        
+        # Get form data from Twilio
+        form_data = await request.form()
+        speech_result = form_data.get('SpeechResult', '')
+        call_sid_from_twilio = form_data.get('CallSid', call_sid)
+        
+        logger.info(f"[{call_sid_from_twilio}] Received speech: {speech_result}")
+        
+        # Get or create conversation
+        conversation = get_or_create_conversation(call_sid_from_twilio, business_name)
+        
+        # Get Marcus's response
+        if speech_result:
+            marcus_response = conversation.get_response(speech_result)
+        else:
+            # First turn - just get initial greeting
+            marcus_response = conversation.get_response()
+        
+        # Create TwiML response
+        response = VoiceResponse()
+        
+        # Check if conversation should end
+        if conversation.should_end_call():
+            response.say(marcus_response, voice='Polly.Matthew')
+            response.hangup()
+            cleanup_conversation(call_sid_from_twilio)
+        else:
+            # Continue conversation
+            gather = Gather(
+                input='speech',
+                action=f'/api/conversational-ai/handle?call_sid={call_sid_from_twilio}&business_name={quote(business_name)}',
+                method='POST',
+                speech_timeout='auto',
+                language='en-US',
+                timeout=5
+            )
+            gather.say(marcus_response, voice='Polly.Matthew')
+            response.append(gather)
+            
+            # If no response, end call
+            response.say("Thank you for your time. Have a great day!", voice='Polly.Matthew')
+            response.hangup()
+        
+        return Response(content=str(response), media_type="text/xml")
+        
+    except Exception as e:
+        logger.error(f"Error in conversational AI handler: {str(e)}")
+        response = VoiceResponse()
+        response.say("I apologize, but I'm having technical difficulties. Please call us at 876-490-7208. Thank you!", voice='Polly.Matthew')
+        response.hangup()
+        return Response(content=str(response), media_type="text/xml")
+
 @api_router.get("/sales-agent/script")
 async def get_sales_script():
     """Get the sales agent script and FAQ"""
