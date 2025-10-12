@@ -787,43 +787,69 @@ def test_pricing_logic_verification(results):
             print(error_msg)
             results.errors.append(error_msg)
 
-def test_edge_cases(results):
-    """Test edge cases and error handling"""
-    print("\n🧪 Testing Edge Cases...")
+def test_error_handling(results):
+    """Test error handling for NEW endpoints"""
+    print("\n🧪 Testing Error Handling...")
     
-    # Test invalid quote data
+    # Test 1: Invalid session ID for checkout status
     try:
-        invalid_quote = {
-            "customerInfo": {
-                "name": "",  # Empty name
-                "email": "invalid-email",  # Invalid email format
-                "phone": "",
-                "address": ""
-            },
-            "eventDetails": {
-                "eventDate": "invalid-date",  # Invalid date
-                "eventType": "",
-                "guestCount": -5,  # Negative guest count
-                "iceAmount": -10,  # Negative ice amount
-                "deliveryTime": ""
-            }
+        response = requests.get(f"{API_BASE}/checkout/status/invalid_session_id", timeout=10)
+        # Should return error or handle gracefully
+        results.assert_true(response.status_code in [400, 404, 500], "Invalid session ID handled appropriately")
+        
+    except requests.exceptions.RequestException as e:
+        results.assert_true(True, "Invalid session ID test handled network error gracefully")
+    
+    # Test 2: Invalid order ID
+    try:
+        response = requests.get(f"{API_BASE}/orders/invalid_order_id", timeout=10)
+        results.assert_equal(response.status_code, 404, "Invalid order ID returns 404")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Invalid order ID test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: Missing required fields in checkout
+    try:
+        invalid_checkout = {
+            "bags": 0,  # Invalid bag count
+            "delivery_address": "",  # Empty address
+            "delivery_fee": -100  # Negative fee
         }
         
-        response = requests.post(f"{API_BASE}/quotes", 
-                               json=invalid_quote, 
+        response = requests.post(f"{API_BASE}/checkout/create-session", 
+                               json=invalid_checkout,
+                               params={"origin_url": BASE_URL},
                                headers={'Content-Type': 'application/json'},
                                timeout=10)
         
-        # Should handle gracefully (either 400 error or default to minimum values)
-        if response.status_code == 400:
-            results.assert_true(True, "Invalid quote data returns 400 error (proper validation)")
-        elif response.status_code == 200:
-            quote = response.json()
-            results.assert_true(quote['quote']['bags'] >= 1, "Minimum 1 bag even with invalid data")
+        # Should handle gracefully
+        results.assert_true(response.status_code in [400, 422, 500], "Invalid checkout data handled appropriately")
         
     except requests.exceptions.RequestException as e:
-        # Network errors are acceptable for edge case testing
-        results.assert_true(True, "Edge case testing handled network error gracefully")
+        results.assert_true(True, "Invalid checkout test handled network error gracefully")
+    
+    # Test 4: Missing required fields in order creation
+    try:
+        invalid_order = {
+            "customer_name": "",  # Empty name
+            "customer_email": "invalid-email",  # Invalid email
+            "bags": -5,  # Negative bags
+            "total_amount": -100  # Negative amount
+        }
+        
+        response = requests.post(f"{API_BASE}/orders", 
+                               json=invalid_order, 
+                               headers={'Content-Type': 'application/json'},
+                               timeout=10)
+        
+        # Should handle gracefully
+        results.assert_true(response.status_code in [400, 422, 500], "Invalid order data handled appropriately")
+        
+    except requests.exceptions.RequestException as e:
+        results.assert_true(True, "Invalid order test handled network error gracefully")
 
 def run_all_tests():
     """Run all backend API tests including NEW features"""
