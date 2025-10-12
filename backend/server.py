@@ -797,10 +797,11 @@ async def initiate_sales_call(phone: str, lead_name: str = "customer"):
         # Start conversation with initial greeting
         gather = Gather(
             input='speech',
-            action=f'{public_url}/api/conversational-ai/handle?call_sid={{CallSid}}&business_name={quote(lead_name)}',
+            action=f'{public_url}/api/conversational-ai/handle?business_name={quote(lead_name)}',
             method='POST',
             speech_timeout='auto',
-            language='en-US'
+            language='en-US',
+            timeout=5
         )
         
         # Initial greeting from Marcus
