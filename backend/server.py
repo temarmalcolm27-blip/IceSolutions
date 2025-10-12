@@ -305,10 +305,12 @@ async def create_quote(quote_input: QuoteCreate, background_tasks: BackgroundTas
     
     # Calculate bulk discount
     savings = 0.0
-    if recommended_bags >= 5:
-        savings = base_price * 0.05  # 5% discount for 5+ bags
-    if recommended_bags >= 10:
+    if recommended_bags >= 20:
+        savings = base_price * 0.15  # 15% discount for 20+ bags
+    elif recommended_bags >= 10:
         savings = base_price * 0.10  # 10% discount for 10+ bags
+    elif recommended_bags >= 5:
+        savings = base_price * 0.05  # 5% discount for 5+ bags
     
     total = base_price + delivery_fee - savings
     
