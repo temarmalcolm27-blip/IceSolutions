@@ -56,21 +56,24 @@ const SimpleQuotePage = () => {
     const guests = parseInt(formData.guests) || 0;
     const duration = parseFloat(formData.duration) || 0;
     
-    // Ice calculation formula:
-    // Base: 1 lb per guest per hour
+    // Ice calculation formula (optimized for 10lb bags):
+    // More conservative approach: 0.5 lb per guest per hour base
+    const baseLbsPerGuestPerHour = 0.5;
+    
+    // Event type multipliers (reduced to be more realistic)
     const multipliers = {
-      'party': 1.2,
-      'wedding': 1.5,
-      'restaurant': 1.8,
-      'bar': 2.0,
-      'corporate': 1.0
+      'party': 0.8,      // Social events - moderate ice use
+      'wedding': 1.0,    // Formal events - standard use
+      'restaurant': 1.2, // Commercial - higher turnover
+      'bar': 1.5,        // Bars - highest ice consumption
+      'corporate': 0.7   // Corporate - lighter consumption
     };
     
-    const multiplier = multipliers[formData.eventType] || 1.0;
-    const totalIceLbs = guests * duration * multiplier;
+    const multiplier = multipliers[formData.eventType] || 0.8;
+    const totalIceLbs = guests * duration * baseLbsPerGuestPerHour * multiplier;
     
-    // Calculate bags needed (10 lb bags)
-    const bagsNeeded = Math.ceil(totalIceLbs / 10);
+    // Calculate bags needed (10 lb bags), minimum 1 bag
+    const bagsNeeded = Math.max(1, Math.ceil(totalIceLbs / 10));
     
     // Calculate price (JMD $350 per bag)
     const pricePerBag = 350.00;
