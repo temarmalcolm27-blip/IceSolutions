@@ -692,6 +692,170 @@ async def get_order(order_id: str):
     
     return order
 
+# Lead Management Endpoints (for Sales Agent)
+@api_router.get("/leads/sync")
+async def sync_leads_from_sheets(sheet_url: str = None):
+    """
+    Sync leads from Google Sheets
+    
+    Query params:
+        sheet_url: URL of the Google Sheet (optional, can be configured in env)
+    """
+    try:
+        # Initialize Google Sheets manager
+        sheets_manager = GoogleSheetsLeadManager()
+        
+        # Get sheet URL from environment if not provided
+        if not sheet_url:
+            sheet_url = os.getenv('GOOGLE_SHEETS_URL')
+            
+        if not sheet_url:
+            return {
+                "status": "error",
+                "message": "No Google Sheet URL provided. Please provide sheet_url parameter or set GOOGLE_SHEETS_URL environment variable.",
+                "setup_required": True
+            }
+        
+        # Get leads from sheet
+        leads = sheets_manager.get_leads(sheet_url=sheet_url)
+        
+        if not leads:
+            return {
+                "status": "warning",
+                "message": "No new leads found or unable to connect to Google Sheets",
+                "leads_count": 0,
+                "leads": []
+            }
+        
+        # Store leads in database for tracking
+        for lead in leads:
+            # Check if lead already exists
+            existing = await db.leads.find_one({"phone": lead['phone']})
+            if not existing:
+                lead['created_at'] = datetime.now(timezone.utc).isoformat()
+                lead['last_updated'] = datetime.now(timezone.utc).isoformat()
+                lead['call_attempts'] = 0
+                lead['last_call_date'] = None
+                await db.leads.insert_one(lead)
+        
+        return {
+            "status": "success",
+            "message": f"Successfully synced {len(leads)} leads",
+            "leads_count": len(leads),
+            "leads": leads
+        }
+        
+    except Exception as e:
+        logger.error(f"Error syncing leads: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to sync leads: {str(e)}")
+
+@api_router.get("/leads")
+async def get_all_leads():
+    """Get all leads from database"""
+    try:
+        leads = await db.leads.find({}, {"_id": 0}).to_list(1000)
+        return {"leads": leads, "count": len(leads)}
+    except Exception as e:
+        logger.error(f"Error getting leads: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/leads/call/{phone}")
+async def initiate_sales_call(phone: str, lead_name: str = "customer"):
+    """
+    Initiate an outbound sales call to a lead
+    
+    Args:
+        phone: Phone number to call
+        lead_name: Name of the lead
+    """
+    try:
+        # Format phone number for Twilio (add +1 if not present)
+        if not phone.startswith('+'):
+            # Assuming Jamaican numbers, add +1876
+            phone_formatted = f"+1876{phone.replace('-', '').replace(' ', '')[-7:]}"
+        else:
+            phone_formatted = phone
+        
+        # Create TwiML for sales call
+        public_url = os.environ.get('PUBLIC_URL', 'https://your-domain.ngrok-free.app')
+        twiml_url = f"{public_url}/api/sales-agent/twiml?lead_name={urllib.parse.quote(lead_name)}"
+        
+        # Make the call
+        call = twilio_client.calls.create(
+            to=phone_formatted,
+            from_=TWILIO_PHONE_NUMBER,
+            url=twiml_url,
+            method='GET'
+        )
+        
+        # Update lead in database
+        await db.leads.update_one(
+            {"phone": phone},
+            {
+                "$inc": {"call_attempts": 1},
+                "$set": {
+                    "last_call_date": datetime.now(timezone.utc).isoformat(),
+                    "last_call_sid": call.sid
+                }
+            }
+        )
+        
+        logger.info(f"Initiated sales call to {phone} (SID: {call.sid})")
+        
+        return {
+            "status": "success",
+            "message": f"Call initiated to {lead_name}",
+            "call_sid": call.sid,
+            "phone": phone_formatted
+        }
+        
+    except Exception as e:
+        logger.error(f"Error initiating sales call: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to initiate call: {str(e)}")
+
+@api_router.get("/sales-agent/script")
+async def get_sales_script():
+    """Get the sales agent script and FAQ"""
+    return {
+        "script": SALES_AGENT_SCRIPT,
+        "faq": SALES_FAQ
+    }
+
+@api_router.get("/sales-agent/twiml")
+async def get_sales_agent_twiml(lead_name: str = "customer"):
+    """Generate TwiML for sales agent call"""
+    logger.info(f"Sales TwiML requested for lead: {lead_name}")
+    
+    # Create TwiML for sales call
+    twiml_content = f'''<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="man" language="en-JM">
+        Hello {lead_name}, this is calling from Ice Solutions, Jamaica's premier ice delivery service.
+    </Say>
+    <Pause length="1"/>
+    <Say voice="man" language="en-JM">
+        We provide crystal-clear, restaurant-quality ice delivered fresh to your door. 
+        Our 10-pound bags start at just 350 Jamaican dollars, with great bulk discounts available.
+    </Say>
+    <Pause length="1"/>
+    <Say voice="man" language="en-JM">
+        Whether you're planning a party, running a bar, or need ice for an event, we can help.
+        We offer same-day delivery, and it's FREE in Washington Gardens!
+    </Say>
+    <Pause length="1"/>
+    <Say voice="man" language="en-JM">
+        For more information or to place an order, please call us at 8 7 6, 4 9 0, 7 2 0 8.
+        That's 8 7 6, 4 9 0, 7 2 0 8.
+    </Say>
+    <Pause length="1"/>
+    <Say voice="man" language="en-JM">
+        You can also order online at our website. Remember, More Ice equals More Vibes!
+        Thank you and have a great day!
+    </Say>
+</Response>'''
+    
+    return Response(content=twiml_content, media_type="text/xml")
+
 # AI Agent admin endpoints
 @api_router.get("/admin/call-attempts")
 async def get_call_attempts():
