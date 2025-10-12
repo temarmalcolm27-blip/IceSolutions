@@ -18,7 +18,8 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Toaster />
+        <ScrollToTop />
+        <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
