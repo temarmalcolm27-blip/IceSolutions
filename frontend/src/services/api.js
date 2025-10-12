@@ -162,6 +162,51 @@ export const apiService = {
       savings,
       deliveryArea: isWashingtonGardens ? 'Washington Gardens' : 'Outside Washington Gardens'
     };
+  },
+
+  // Payment/Checkout APIs
+  async createCheckoutSession(checkoutData, originUrl) {
+    try {
+      const response = await api.post('/checkout/create-session', checkoutData, {
+        params: { origin_url: originUrl }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+      throw error;
+    }
+  },
+
+  async getCheckoutStatus(sessionId) {
+    try {
+      const response = await api.get(`/checkout/status/${sessionId}`, {
+        skipErrorToast: true
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to get checkout status:`, error);
+      throw error;
+    }
+  },
+
+  async createOrder(orderData) {
+    try {
+      const response = await api.post('/orders', orderData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create order:', error);
+      throw error;
+    }
+  },
+
+  async getOrder(orderId) {
+    try {
+      const response = await api.get(`/orders/${orderId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch order ${orderId}:`, error);
+      throw error;
+    }
   }
 };
 
