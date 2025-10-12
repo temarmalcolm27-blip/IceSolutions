@@ -137,21 +137,20 @@ const AboutPage = () => {
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  Ice Solutions was born from a simple observation: event planners and restaurant 
-                  owners were struggling with unreliable ice suppliers. Last-minute cancellations, 
-                  poor quality ice, and unpredictable delivery times were causing stress and 
-                  disappointing customers.
+                  In 2023, we noticed a real problem in Kingston, Jamaica: getting party ice quickly and affordably 
+                  was a major challenge for event planners, party hosts, restaurants, and bars. Last-minute needs, 
+                  unreliable suppliers, and high prices were making celebrations stressful.
                 </p>
                 <p>
-                  Our founder, Michael Chen, spent 15 years in the food service industry and 
-                  experienced these challenges firsthand. In 2019, he decided to create the 
-                  ice delivery service he wished existed – one focused on premium quality, 
-                  reliable timing, and exceptional customer service.
+                  Based right here in Washington Gardens, Kingston, we launched Ice Solutions to solve this problem. 
+                  We focus on three things: crystal-clear, restaurant-quality ice, same-day delivery (order at least 
+                  2 hours before you need it), and affordable prices with bulk discounts. Plus, delivery is FREE in 
+                  Washington Gardens!
                 </p>
                 <p>
-                  Today, we're proud to serve over 1,000 satisfied customers, from intimate 
-                  backyard parties to large corporate events. Every bag of ice we deliver 
-                  represents our commitment to making your event a success.
+                  Today, we're proud to serve over 1,000 satisfied customers across Kingston, from intimate 
+                  backyard parties to large events and busy restaurants. Every 10lb bag of ice we deliver 
+                  represents our commitment to making your event a success. More Ice = More Vibes!
                 </p>
               </div>
               <Link to="/contact">
