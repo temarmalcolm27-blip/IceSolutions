@@ -11,6 +11,12 @@ import EventPlanningPage from "./pages/EventPlanningPage";
 import BulkOrdersPage from "./pages/BulkOrdersPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsConditionsPage from "./pages/TermsConditionsPage";
+import RefundPolicyPage from "./pages/RefundPolicyPage";
+import FAQPage from "./pages/FAQPage";
+import OrderTrackingPage from "./pages/OrderTrackingPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "./components/ui/sonner";
 
