@@ -1013,7 +1013,7 @@ async def get_sales_agent_twiml(lead_name: str = "customer"):
     twiml_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Say voice="man" language="en-JM">
-        Hello {lead_name}, this is calling from Ice Solutions, Jamaica's premier ice delivery service.
+        Hello, this is Marcus from Ice Solutions. We provide party ice deliveries for businesses in the corporate area and Kingston at a reasonable price.
     </Say>
     <Pause length="1"/>
     <Say voice="man" language="en-JM">
