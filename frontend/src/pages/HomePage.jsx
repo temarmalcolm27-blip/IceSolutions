@@ -142,9 +142,10 @@ const HomePage = () => {
                 </div>
               </div>
               
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-20 blur-xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full opacity-15 blur-xl"></div>
+              {/* Decorative Elements - Enhanced Godly Glow */}
+              <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-cyan-400 via-blue-400 to-blue-500 rounded-full opacity-30 blur-2xl animate-pulse"></div>
+              <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-gradient-to-br from-blue-400 via-cyan-400 to-cyan-500 rounded-full opacity-25 blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-radial from-cyan-200/20 to-transparent rounded-2xl blur-xl"></div>
             </div>
           </div>
         </div>
