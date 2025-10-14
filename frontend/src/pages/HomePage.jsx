@@ -334,6 +334,37 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Stats Section - Happy Customers, Fast Delivery, Customer Rating */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+              Our Track Record
+            </h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto font-medium">
+              Numbers that speak for themselves
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center p-8 bg-gradient-to-br from-white to-cyan-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-cyan-200">
+              <div className="text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2">1000+</div>
+              <div className="text-lg text-gray-700 font-medium">Happy Customers</div>
+              <p className="text-sm text-gray-600 mt-2">Serving businesses across Kingston</p>
+            </div>
+            <div className="text-center p-8 bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-blue-200">
+              <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">2-Hour</div>
+              <div className="text-lg text-gray-700 font-medium">Fast Delivery</div>
+              <p className="text-sm text-gray-600 mt-2">Same-day service available</p>
+            </div>
+            <div className="text-center p-8 bg-gradient-to-br from-white to-yellow-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-yellow-200">
+              <div className="text-5xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2">4.9★</div>
+              <div className="text-lg text-gray-700 font-medium">Customer Rating</div>
+              <p className="text-sm text-gray-600 mt-2">Based on 500+ reviews</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-br from-cyan-600 via-blue-600 to-slate-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1),transparent_50%)] pointer-events-none"></div>
