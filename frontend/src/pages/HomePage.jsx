@@ -98,25 +98,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
-            {/* Quick Stats - Now Primary Content */}
-            <div className="space-y-8">
-              <div className="grid grid-cols-3 gap-6">
-                <div className="text-center p-6 bg-gradient-to-br from-white to-cyan-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-cyan-200">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">1000+</div>
-                  <div className="text-sm text-gray-700 mt-2 font-medium">Happy Customers</div>
-                </div>
-                <div className="text-center p-6 bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-blue-200">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">2-Hour</div>
-                  <div className="text-sm text-gray-700 mt-2 font-medium">Fast Delivery</div>
-                </div>
-                <div className="text-center p-6 bg-gradient-to-br from-white to-yellow-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-yellow-200">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">4.9★</div>
-                  <div className="text-sm text-gray-700 mt-2 font-medium">Customer Rating</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Visual Element */}
+            {/* Quick Order - Now First */}
             <div className="relative">
               <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                 <div className="space-y-6">
