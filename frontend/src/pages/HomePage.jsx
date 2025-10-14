@@ -136,6 +136,24 @@ const HomePage = () => {
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-20 blur-xl"></div>
               <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full opacity-15 blur-xl"></div>
             </div>
+
+            {/* Quick Stats - Now Second */}
+            <div className="space-y-8">
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center p-6 bg-gradient-to-br from-white to-cyan-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-cyan-200">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">1000+</div>
+                  <div className="text-sm text-gray-700 mt-2 font-medium">Happy Customers</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-blue-200">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">2-Hour</div>
+                  <div className="text-sm text-gray-700 mt-2 font-medium">Fast Delivery</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-white to-yellow-50 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-yellow-200">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">4.9★</div>
+                  <div className="text-sm text-gray-700 mt-2 font-medium">Customer Rating</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
