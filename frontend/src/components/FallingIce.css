@@ -1,0 +1,354 @@
+/* Falling Ice Animation Container */
+.falling-ice-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+  perspective: 1500px;
+}
+
+/* Ice Element Base */
+.ice-element {
+  position: absolute;
+  top: -100px;
+  width: var(--size, 60px);
+  height: var(--size, 60px);
+  animation: fall-and-bounce infinite ease-in;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 8px 16px rgba(6, 182, 212, 0.5))
+          drop-shadow(0 4px 8px rgba(147, 197, 253, 0.3));
+}
+
+/* Falling and Bouncing Animation with 3D rotation */
+@keyframes fall-and-bounce {
+  0% {
+    transform: translateY(-100px) translateZ(0) 
+               rotateX(var(--rotation-x)) 
+               rotateY(var(--rotation-y)) 
+               rotateZ(var(--rotation-z));
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(calc(100vh - 100px)) translateZ(0)
+               rotateX(calc(var(--rotation-x) + 720deg)) 
+               rotateY(calc(var(--rotation-y) + 720deg)) 
+               rotateZ(calc(var(--rotation-z) + 360deg));
+    animation-timing-function: ease-in;
+  }
+  75% {
+    transform: translateY(calc(100vh - 100px - var(--bounce-height))) translateZ(20px)
+               rotateX(calc(var(--rotation-x) + 740deg)) 
+               rotateY(calc(var(--rotation-y) + 740deg)) 
+               rotateZ(calc(var(--rotation-z) + 380deg));
+    animation-timing-function: ease-out;
+  }
+  80% {
+    transform: translateY(calc(100vh - 100px)) translateZ(0)
+               rotateX(calc(var(--rotation-x) + 760deg)) 
+               rotateY(calc(var(--rotation-y) + 760deg)) 
+               rotateZ(calc(var(--rotation-z) + 400deg));
+    animation-timing-function: ease-in;
+  }
+  83% {
+    transform: translateY(calc(100vh - 100px - var(--bounce-height) * 0.5)) translateZ(10px)
+               rotateX(calc(var(--rotation-x) + 780deg)) 
+               rotateY(calc(var(--rotation-y) + 780deg)) 
+               rotateZ(calc(var(--rotation-z) + 420deg));
+    animation-timing-function: ease-out;
+  }
+  86% {
+    transform: translateY(calc(100vh - 100px)) translateZ(0)
+               rotateX(calc(var(--rotation-x) + 800deg)) 
+               rotateY(calc(var(--rotation-y) + 800deg)) 
+               rotateZ(calc(var(--rotation-z) + 440deg));
+    animation-timing-function: ease-in;
+  }
+  88% {
+    transform: translateY(calc(100vh - 100px - var(--bounce-height) * 0.25)) translateZ(5px)
+               rotateX(calc(var(--rotation-x) + 820deg)) 
+               rotateY(calc(var(--rotation-y) + 820deg)) 
+               rotateZ(calc(var(--rotation-z) + 460deg));
+    animation-timing-function: ease-out;
+  }
+  90% {
+    transform: translateY(calc(100vh - 100px)) translateZ(0)
+               rotateX(calc(var(--rotation-x) + 840deg)) 
+               rotateY(calc(var(--rotation-y) + 840deg)) 
+               rotateZ(calc(var(--rotation-z) + 480deg));
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh - 100px)) translateZ(0)
+               rotateX(calc(var(--rotation-x) + 840deg)) 
+               rotateY(calc(var(--rotation-y) + 840deg)) 
+               rotateZ(calc(var(--rotation-z) + 480deg));
+    opacity: 0;
+  }
+}
+
+/* HD 3D Ice Cube Container */
+.ice-cube-3d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: cube-wobble 3s infinite ease-in-out;
+}
+
+/* Subtle wobble animation for realism */
+@keyframes cube-wobble {
+  0%, 100% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: rotateX(5deg) rotateY(5deg);
+  }
+  50% {
+    transform: rotateX(0deg) rotateY(10deg);
+  }
+  75% {
+    transform: rotateX(-5deg) rotateY(5deg);
+  }
+}
+
+/* HD Ice Cube Faces with realistic lighting */
+.cube-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+  backface-visibility: visible;
+  border: 2px solid rgba(6, 182, 212, 0.5);
+  box-sizing: border-box;
+}
+
+/* Front face - brightest */
+.cube-face.front {
+  transform: translateZ(calc(var(--size, 60px) / 2));
+  background: linear-gradient(135deg, 
+    rgba(240, 253, 255, 0.98) 0%,
+    rgba(224, 242, 254, 0.95) 20%,
+    rgba(186, 230, 253, 0.92) 50%,
+    rgba(147, 197, 253, 0.88) 80%,
+    rgba(125, 211, 252, 0.85) 100%);
+  box-shadow: 
+    inset 0 0 30px rgba(255, 255, 255, 0.8),
+    inset 15px 15px 30px rgba(6, 182, 212, 0.25),
+    inset -10px -10px 25px rgba(147, 197, 253, 0.3),
+    0 0 20px rgba(6, 182, 212, 0.6),
+    0 0 40px rgba(6, 182, 212, 0.3);
+}
+
+/* Back face - darker */
+.cube-face.back {
+  transform: translateZ(calc(var(--size, 60px) / -2)) rotateY(180deg);
+  background: linear-gradient(135deg, 
+    rgba(186, 230, 253, 0.88) 0%,
+    rgba(147, 197, 253, 0.85) 30%,
+    rgba(125, 211, 252, 0.82) 60%,
+    rgba(59, 130, 246, 0.75) 100%);
+  box-shadow: 
+    inset 0 0 25px rgba(59, 130, 246, 0.4),
+    inset 10px 10px 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Right face - medium light */
+.cube-face.right {
+  transform: rotateY(90deg) translateZ(calc(var(--size, 60px) / 2));
+  background: linear-gradient(135deg, 
+    rgba(224, 242, 254, 0.94) 0%,
+    rgba(186, 230, 253, 0.90) 30%,
+    rgba(147, 197, 253, 0.86) 60%,
+    rgba(125, 211, 252, 0.82) 100%);
+  box-shadow: 
+    inset 0 0 25px rgba(255, 255, 255, 0.6),
+    inset 12px 12px 25px rgba(6, 182, 212, 0.25),
+    0 0 15px rgba(6, 182, 212, 0.4);
+}
+
+/* Left face - medium light */
+.cube-face.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--size, 60px) / 2));
+  background: linear-gradient(135deg, 
+    rgba(224, 242, 254, 0.94) 0%,
+    rgba(186, 230, 253, 0.90) 30%,
+    rgba(147, 197, 253, 0.86) 60%,
+    rgba(125, 211, 252, 0.82) 100%);
+  box-shadow: 
+    inset 0 0 25px rgba(255, 255, 255, 0.6),
+    inset 12px 12px 25px rgba(6, 182, 212, 0.25);
+}
+
+/* Top face - very bright (light from above) */
+.cube-face.top {
+  transform: rotateX(90deg) translateZ(calc(var(--size, 60px) / 2));
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(240, 253, 255, 0.96) 20%,
+    rgba(224, 242, 254, 0.94) 40%,
+    rgba(186, 230, 253, 0.90) 70%,
+    rgba(147, 197, 253, 0.88) 100%);
+  box-shadow: 
+    inset 0 0 35px rgba(255, 255, 255, 0.9),
+    inset 20px 20px 35px rgba(6, 182, 212, 0.2),
+    0 0 25px rgba(6, 182, 212, 0.5);
+}
+
+/* Bottom face - darkest (in shadow) */
+.cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--size, 60px) / 2));
+  background: linear-gradient(135deg, 
+    rgba(147, 197, 253, 0.82) 0%,
+    rgba(125, 211, 252, 0.78) 30%,
+    rgba(59, 130, 246, 0.72) 60%,
+    rgba(37, 99, 235, 0.68) 100%);
+  box-shadow: 
+    inset 0 0 20px rgba(37, 99, 235, 0.5),
+    inset 10px 10px 20px rgba(6, 182, 212, 0.4);
+}
+
+/* HD Crystal/Frost Effect on each face */
+.cube-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.9) 0%, transparent 15%),
+    radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 12%),
+    radial-gradient(circle at 45% 65%, rgba(255, 255, 255, 0.8) 0%, transparent 18%),
+    radial-gradient(circle at 70% 75%, rgba(255, 255, 255, 0.6) 0%, transparent 14%),
+    radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.75) 0%, transparent 10%),
+    radial-gradient(circle at 30% 55%, rgba(255, 255, 255, 0.65) 0%, transparent 11%),
+    radial-gradient(circle at 85% 50%, rgba(255, 255, 255, 0.7) 0%, transparent 13%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* HD Shimmer/Shine effect */
+.cube-face::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.9) 50%,
+    transparent 70%
+  );
+  background-size: 200% 200%;
+  animation: shimmer-sweep 4s infinite;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translate(-100%, -100%) rotate(45deg);
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(45deg);
+  }
+}
+
+/* Internal refraction lines for HD effect */
+.ice-cube-3d::before {
+  content: '';
+  position: absolute;
+  inset: 20%;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--size, 60px) * 0.1));
+  background: 
+    linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.6) 49%, rgba(255, 255, 255, 0.6) 51%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.5) 49%, rgba(255, 255, 255, 0.5) 51%, transparent 52%);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Sparkle effect for extra HD quality */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.ice-cube-3d::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 25%;
+  height: 25%;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.7) 30%,
+    transparent 70%);
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: sparkle 2s infinite ease-in-out;
+  pointer-events: none;
+  transform: translateZ(calc(var(--size, 60px) * 0.6));
+}
+
+/* Stagger delays for more natural randomness */
+.ice-element:nth-child(5n+1) {
+  animation-delay: calc(var(--delay, 0s) + 0.2s);
+}
+
+.ice-element:nth-child(5n+2) {
+  animation-delay: calc(var(--delay, 0s) + 0.7s);
+}
+
+.ice-element:nth-child(5n+3) {
+  animation-delay: calc(var(--delay, 0s) + 1.2s);
+}
+
+.ice-element:nth-child(5n+4) {
+  animation-delay: calc(var(--delay, 0s) + 1.8s);
+}
+
+.ice-element:nth-child(5n) {
+  animation-delay: calc(var(--delay, 0s) + 2.3s);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .ice-element {
+    width: calc(var(--size, 60px) * 0.7);
+    height: calc(var(--size, 60px) * 0.7);
+  }
+  
+  .falling-ice-container {
+    perspective: 1000px;
+  }
+}
+
+/* Performance optimization */
+.falling-ice-container,
+.ice-element,
+.ice-cube-3d,
+.cube-face {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.falling-ice-container {
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+}
