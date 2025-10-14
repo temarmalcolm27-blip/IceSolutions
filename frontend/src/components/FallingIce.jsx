@@ -5,19 +5,20 @@ const FallingIce = () => {
   const [iceElements, setIceElements] = useState([]);
 
   useEffect(() => {
-    // Create ice cubes and circular molds
+    // Create only 3D ice cubes
     const elements = [];
     
-    // Generate 20 ice elements (mix of cubes and circles)
-    for (let i = 0; i < 20; i++) {
+    // Generate 15 3D ice cubes
+    for (let i = 0; i < 15; i++) {
       elements.push({
         id: i,
-        type: Math.random() > 0.5 ? 'cube' : 'circle',
+        type: 'cube', // Only cubes now
         left: Math.random() * 100, // Random horizontal position (%)
         delay: Math.random() * 5, // Random delay (0-5s)
         duration: 3 + Math.random() * 2, // Random fall duration (3-5s)
-        size: 30 + Math.random() * 40, // Random size (30-70px)
-        rotation: Math.random() * 360, // Random initial rotation
+        size: 40 + Math.random() * 30, // Random size (40-70px)
+        rotationX: Math.random() * 360, // Random X rotation
+        rotationY: Math.random() * 360, // Random Y rotation
         bounceHeight: 20 + Math.random() * 30 // Random bounce height
       });
     }
