@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import RunningBanner from '../components/RunningBanner';
 import Footer from '../components/Footer';
+import FallingIce from '../components/FallingIce';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
