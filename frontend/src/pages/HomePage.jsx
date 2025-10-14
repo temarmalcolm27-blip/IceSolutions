@@ -101,6 +101,9 @@ const HomePage = () => {
             
             {/* Quick Order - Now First */}
             <div className="relative">
+              {/* Falling Ice Animation */}
+              <FallingIce />
+              
               <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
