@@ -104,7 +104,13 @@ const HomePage = () => {
               {/* Falling Ice Animation */}
               <FallingIce />
               
-              <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+              <div 
+                className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border-4 border-cyan-300 hover:border-cyan-500 transition-all duration-500 hover:scale-105"
+                style={{
+                  boxShadow: '0 25px 50px -12px rgba(6, 182, 212, 0.4), 0 0 80px rgba(6, 182, 212, 0.2), inset 0 2px 20px rgba(255, 255, 255, 0.8)',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(224, 242, 254, 0.5) 100%)'
+                }}
+              >
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-900">Quick Order</h3>
