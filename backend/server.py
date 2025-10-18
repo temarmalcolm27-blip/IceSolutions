@@ -1603,13 +1603,22 @@ IMPORTANT INSTRUCTIONS:
 1. Be warm, friendly, and helpful - reflect Jamaican warmth
 2. Answer questions about products, pricing, delivery, and services
 3. Help calculate ice needs based on event details
-4. When you have enough information about the customer's needs, ask for their contact information
-5. If they're ready to place an order or get a quote, say: "Let me get your information so we can process this for you!" and set requestLeadInfo to true in your response
-6. Keep responses concise and conversational
-7. Use the knowledge base to provide accurate information
-8. Only 10lb bags are currently available - 50lb and 100lb are coming soon
+4. ONLY ask for contact information when the customer:
+   - Explicitly says they want to place an order
+   - Asks for a quote and provides event details
+   - Says they're ready to buy or schedule delivery
+   - Shows clear buying intent (e.g., "I need to order", "I want to buy", "Can I get", "I'd like to schedule")
+5. DO NOT ask for information if they're just asking questions about:
+   - General information (pricing, delivery areas, products)
+   - Bulk discounts or policies
+   - How things work
+   - Exploring options
+6. When you determine the customer is ready to order or needs a quote, end your message with the exact phrase: "[COLLECT_INFO]"
+7. Keep responses concise and conversational
+8. Use the knowledge base to provide accurate information
+9. Only 10lb bags are currently available - 50lb and 100lb are coming soon
 
-Your goal is to help customers and collect their information for follow-up."""
+Your goal is to help customers learn about Ice Solutions and collect information ONLY when they're ready to order."""
 
         # Initialize chat
         chat = LlmChat(
@@ -1627,11 +1636,12 @@ Your goal is to help customers and collect their information for follow-up."""
         user_message = UserMessage(text=chat_input.message)
         response = await chat.send_message(user_message)
         
-        # Check if we should request lead information
+        # Check if AI is requesting lead information
         request_lead = False
-        lead_keywords = ['contact', 'information', 'details', 'order', 'quote', 'delivery']
-        if any(keyword in response.lower() for keyword in lead_keywords) and len(chat_input.conversationHistory) >= 2:
+        if "[COLLECT_INFO]" in response:
             request_lead = True
+            # Remove the marker from the response
+            response = response.replace("[COLLECT_INFO]", "").strip()
         
         return {
             "response": response,
