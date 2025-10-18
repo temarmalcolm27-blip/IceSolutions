@@ -1727,6 +1727,95 @@ async def create_chat_lead(lead: ChatLead):
         logger.error(f"Error saving chat lead: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to save lead: {str(e)}")
 
+# Bulk Order Model
+class BulkOrder(BaseModel):
+    name: str
+    phone: str
+    email: str
+    businessName: str = ""
+    quantity: int
+    deliveryAddress: str
+    deliveryDate: str
+    notes: str = ""
+    discountPercent: int
+    pricePerBag: float
+    subtotal: float
+    totalSavings: float
+    tier: str
+
+@api_router.post("/bulk-orders")
+async def create_bulk_order(order: BulkOrder):
+    """
+    Save bulk order information to Google Sheets for follow-up
+    """
+    try:
+        # Prepare order data for Google Sheets
+        sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
+        if not sheet_url:
+            raise HTTPException(status_code=500, detail="Google Sheets not configured")
+        
+        # Initialize Google Sheets manager
+        sheets_manager = GoogleSheetsLeadManager(
+            credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
+        )
+        
+        if not sheets_manager.authenticate():
+            raise HTTPException(status_code=500, detail="Failed to authenticate with Google Sheets")
+        
+        if not sheets_manager.connect_to_sheet(sheet_url):
+            raise HTTPException(status_code=500, detail="Failed to connect to Google Sheets")
+        
+        # Add bulk order to sheet
+        # Expected columns: Name | Phone | Email | Business Name | Product Interest | Quantity | Inquiry | Date | Source
+        order_data = [
+            order.name,
+            order.phone,
+            order.email,
+            order.businessName or "",
+            f"Bulk Order ({order.tier} bags)",
+            str(order.quantity),
+            f"Delivery: {order.deliveryAddress} on {order.deliveryDate}. Discount: {order.discountPercent}%. Total: JMD ${order.subtotal:.2f}. Notes: {order.notes}",
+            datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+            "Bulk Order Form"
+        ]
+        
+        sheets_manager.sheet.append_row(order_data)
+        logger.info(f"Bulk order saved to Google Sheets: {order.name} - {order.quantity} bags")
+        
+        # Also save to MongoDB for internal tracking
+        order_doc = {
+            "id": str(uuid.uuid4()),
+            "name": order.name,
+            "phone": order.phone,
+            "email": order.email,
+            "businessName": order.businessName,
+            "quantity": order.quantity,
+            "deliveryAddress": order.deliveryAddress,
+            "deliveryDate": order.deliveryDate,
+            "notes": order.notes,
+            "discountPercent": order.discountPercent,
+            "pricePerBag": order.pricePerBag,
+            "subtotal": order.subtotal,
+            "totalSavings": order.totalSavings,
+            "tier": order.tier,
+            "source": "bulk_order_form",
+            "status": "pending",
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.bulk_orders.insert_one(order_doc)
+        logger.info(f"Bulk order saved to MongoDB: {order.name}")
+        
+        return {
+            "success": True,
+            "message": "Bulk order request received successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error saving bulk order: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to save bulk order: {str(e)}")
+
 # Database seeding function
 async def seed_database():
     """Seed the database with initial data if collections are empty"""
