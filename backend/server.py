@@ -178,6 +178,10 @@ class CheckoutRequest(BaseModel):
     bags: int
     delivery_address: str
     delivery_fee: float = 0.0
+    discount_percent: float = 0.0
+    discount_amount: float = 0.0
+    is_bulk_order: bool = False
+    bulk_order_tier: str = ""
     metadata: Optional[Dict[str, Any]] = {}
 
 class OrderCreate(BaseModel):
