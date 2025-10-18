@@ -9,6 +9,7 @@ import QuotePage from "./pages/QuotePage";
 import SimpleQuotePage from "./pages/SimpleQuotePage";
 import EventPlanningPage from "./pages/EventPlanningPage";
 import BulkOrdersPage from "./pages/BulkOrdersPage";
+import BulkOrderFormPage from "./pages/BulkOrderFormPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -37,6 +38,7 @@ function App() {
           <Route path="/quote-old" element={<QuotePage />} />
           <Route path="/event-planning" element={<EventPlanningPage />} />
           <Route path="/bulk-orders" element={<BulkOrdersPage />} />
+          <Route path="/bulk-order-form" element={<BulkOrderFormPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
