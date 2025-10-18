@@ -137,20 +137,21 @@ const AboutPage = () => {
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  In 2023, we noticed a real problem in Kingston, Jamaica: getting party ice quickly and affordably 
-                  was a major challenge for event planners, party hosts, restaurants, and bars. Last-minute needs, 
-                  unreliable suppliers, and high prices were making celebrations stressful.
+                  In 2023, I realized a real issue in Washington Gardens, Jamaica — finding party ice that's quick, 
+                  reliable, and affordable was a major struggle for many of us. Event planners, party hosts, restaurants, 
+                  and bars were all facing the same headache: last-minute shortages, inconsistent suppliers, and overpriced 
+                  ice making celebrations harder than they should be.
                 </p>
                 <p>
-                  Based right here in Washington Gardens, Kingston, we launched Ice Solutions to solve this problem. 
-                  We focus on three things: crystal-clear, restaurant-quality ice, same-day delivery (order at least 
-                  2 hours before you need it), and affordable prices with bulk discounts. Plus, delivery is FREE in 
-                  Washington Gardens!
+                  That's why we started IceSolutions, right here in Washington Gardens, Kingston. Our mission is simple: 
+                  to make getting ice easy, fast, and affordable. We deliver crystal-clear, restaurant-quality ice, offer 
+                  same-day delivery when you order at least two hours in advance, and provide bulk discounts to help you 
+                  save more. Best of all, delivery is FREE within Washington Gardens!
                 </p>
                 <p>
-                  Today, we're proud to serve over 1,000 satisfied customers across Kingston, from intimate 
-                  backyard parties to large events and busy restaurants. Every 10lb bag of ice we deliver 
-                  represents our commitment to making your event a success. More Ice = More Vibes!
+                  Today, we're proud to serve over 1,000 happy customers across Kingston 20 and the wider Kingston area, 
+                  from cozy backyard parties and street dances to major events, restaurants, and bars. Every 10lb bag we 
+                  deliver is more than just ice; it's our promise to keep your vibes cool and your celebrations flowing.
                 </p>
               </div>
               <Link to="/contact">
