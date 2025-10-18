@@ -18,6 +18,7 @@ import FAQPage from "./pages/FAQPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ScrollToTop from "./components/ScrollToTop";
+import ChatWidget from "./components/ChatWidget";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Toaster position="top-right" />
+        <ChatWidget />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
