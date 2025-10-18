@@ -258,11 +258,11 @@ const BulkOrderFormPage = () => {
                       className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-lg py-6"
                       disabled={isSubmitting || !isValidQuantity}
                     >
-                      {isSubmitting ? 'Submitting...' : 'Submit Pre-Order Request'}
+                      Continue to Checkout
                     </Button>
                     
                     <p className="text-sm text-gray-600 text-center">
-                      By submitting, you agree to be contacted to confirm your order details and delivery schedule.
+                      Secure payment processing via Stripe
                     </p>
                   </form>
                 </CardContent>
