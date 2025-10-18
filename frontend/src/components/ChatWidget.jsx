@@ -37,7 +37,7 @@ const ChatWidget = () => {
       // Initial greeting from Temar
       setMessages([{
         id: 1,
-        text: "Hi! I'm Temar Malcolm from Ice Solutions. How can I help you with your ice needs today? 🧊",
+        text: "Hi! I'm Temar Malcolm, owner of IceSolutions. How can I help you with your ice needs today? 🧊",
         sender: 'agent',
         timestamp: new Date()
       }]);
