@@ -100,9 +100,10 @@ Not sure how much ice you need? We'll help calculate the perfect amount based on
 - Drink preferences
 
 **General Rule of Thumb**:
-- Small party (10-20 people): 2-3 bags of 10lb ice
-- Medium party (30-50 people): 5-8 bags of 10lb ice
-- Large party (50-100 people): 10-15 bags of 10lb ice
+- Small party (10-20 people): 1-2 bags of 10lb ice
+- Medium party (30-50 people): 2-4 bags of 10lb ice
+- Large party (50-100 people): 5-8 bags of 10lb ice
+- Extra large event (100-200 people): 10-15 bags of 10lb ice
 - Restaurants/Bars: Contact us for customized bulk orders
 
 ### 3. Bulk Orders & Special Pricing
