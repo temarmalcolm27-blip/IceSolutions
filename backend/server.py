@@ -13,15 +13,9 @@ from datetime import datetime, timezone
 import json
 import asyncio
 from urllib.parse import quote, unquote
-from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Connect
-from twilio.request_validator import RequestValidator
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from google_sheets_integration import GoogleSheetsLeadManager
-from sales_agent_script import SALES_AGENT_SCRIPT, SALES_FAQ, calculate_ice_recommendation, calculate_price
 from email_service import send_notification_confirmation_email
-from lead_scraper import LeadScraper
-from conversational_ai_http import get_or_create_conversation, cleanup_conversation, transcribe_audio, generate_speech
 
 
 ROOT_DIR = Path(__file__).parent
@@ -31,15 +25,6 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
-
-# Twilio configuration
-TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
-TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
-TWILIO_PHONE_NUMBER = os.environ['TWILIO_PHONE_NUMBER']
-
-# Initialize Twilio client
-twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-request_validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
 # Stripe configuration
 STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
