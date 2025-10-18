@@ -504,16 +504,22 @@ async def create_checkout_session(checkout_req: CheckoutRequest, origin_url: str
         bags = checkout_req.bags
         subtotal = bags * price_per_bag
         
-        # Apply bulk discounts
-        discount_percent = 0.0
-        if bags >= 20:
-            discount_percent = 0.15
-        elif bags >= 10:
-            discount_percent = 0.10
-        elif bags >= 5:
-            discount_percent = 0.05
+        # Use provided discount or calculate bulk discounts
+        if checkout_req.is_bulk_order and checkout_req.discount_percent > 0:
+            # Use pre-calculated discount from bulk order form
+            discount_percent = checkout_req.discount_percent / 100
+            discount_amount = checkout_req.discount_amount
+        else:
+            # Apply automatic bulk discounts
+            discount_percent = 0.0
+            if bags >= 20:
+                discount_percent = 0.15
+            elif bags >= 10:
+                discount_percent = 0.10
+            elif bags >= 5:
+                discount_percent = 0.05
+            discount_amount = subtotal * discount_percent
         
-        discount_amount = subtotal * discount_percent
         total_after_discount = subtotal - discount_amount
         total_amount = total_after_discount + checkout_req.delivery_fee
         
@@ -529,9 +535,12 @@ async def create_checkout_session(checkout_req: CheckoutRequest, origin_url: str
             "bags": str(bags),
             "delivery_address": checkout_req.delivery_address,
             "delivery_fee": str(checkout_req.delivery_fee),
-            "discount_percent": str(discount_percent),
+            "discount_percent": str(discount_percent * 100),
             "discount_amount": str(discount_amount),
+            "is_bulk_order": str(checkout_req.is_bulk_order),
+            "bulk_order_tier": checkout_req.bulk_order_tier or "",
             **checkout_req.metadata
+        }
         }
         
         checkout_request = CheckoutSessionRequest(
