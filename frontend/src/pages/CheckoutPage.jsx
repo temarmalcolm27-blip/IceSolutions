@@ -17,14 +17,30 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
-  const { bags, deliveryFee, deliveryAddress, totalAmount, discountPercent, discountAmount } = location.state || {};
+  const { 
+    bags, 
+    deliveryFee, 
+    deliveryAddress, 
+    totalAmount, 
+    discountPercent, 
+    discountAmount,
+    pricePerBag: customPricePerBag,
+    isBulkOrder,
+    bulkOrderTier,
+    customerName: preFilledName,
+    customerEmail: preFilledEmail,
+    customerPhone: preFilledPhone,
+    businessName,
+    deliveryDate,
+    notes
+  } = location.state || {};
   
   const [formData, setFormData] = useState({
-    customerName: '',
-    customerEmail: '',
-    customerPhone: '',
+    customerName: preFilledName || '',
+    customerEmail: preFilledEmail || '',
+    customerPhone: preFilledPhone || '',
     deliveryAddress: deliveryAddress || '',
-    deliveryInstructions: ''
+    deliveryInstructions: notes || ''
   });
 
   useEffect(() => {
@@ -34,7 +50,7 @@ const CheckoutPage = () => {
     }
   }, [bags, totalAmount, navigate]);
 
-  const pricePerBag = 350.00;
+  const pricePerBag = customPricePerBag || 350.00;
   const subtotal = (bags || 0) * pricePerBag;
   const discount = discountAmount || 0;
   const delivery = deliveryFee || 0;
@@ -47,15 +63,21 @@ const CheckoutPage = () => {
     try {
       const originUrl = window.location.origin;
       
-      // Create checkout session
+      // Create checkout session with bulk order info
       const response = await apiService.createCheckoutSession({
         bags,
         delivery_address: formData.deliveryAddress,
         delivery_fee: delivery,
+        discount_percent: discountPercent || 0,
+        discount_amount: discount,
+        is_bulk_order: isBulkOrder || false,
+        bulk_order_tier: bulkOrderTier || '',
         metadata: {
           customer_name: formData.customerName,
           customer_email: formData.customerEmail,
           customer_phone: formData.customerPhone,
+          business_name: businessName || '',
+          delivery_date: deliveryDate || '',
           delivery_instructions: formData.deliveryInstructions
         }
       }, originUrl);
