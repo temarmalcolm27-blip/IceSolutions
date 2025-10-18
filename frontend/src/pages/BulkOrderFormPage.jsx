@@ -72,49 +72,26 @@ const BulkOrderFormPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
-    try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${backendUrl}/api/bulk-orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          discountPercent: discount,
-          pricePerBag: pricePerBag,
-          subtotal: subtotal,
-          totalSavings: totalSavings,
-          tier: tierParam
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit order');
+    // Navigate to checkout with bulk order data
+    navigate('/checkout', {
+      state: {
+        bags: formData.quantity,
+        deliveryAddress: formData.deliveryAddress,
+        deliveryFee: 0, // Free delivery will be calculated at checkout
+        discountPercent: discount,
+        discountAmount: totalSavings,
+        pricePerBag: pricePerBag,
+        totalAmount: subtotal,
+        isBulkOrder: true,
+        bulkOrderTier: tierParam,
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        businessName: formData.businessName,
+        deliveryDate: formData.deliveryDate,
+        notes: formData.notes
       }
-      
-      toast.success('Bulk order request submitted successfully! We will contact you shortly.');
-      
-      // Reset form
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        businessName: '',
-        quantity: parseInt(quantityParam) || tierRange.max,
-        deliveryAddress: '',
-        deliveryDate: '',
-        notes: ''
-      });
-      
-    } catch (error) {
-      console.error('Error submitting bulk order:', error);
-      toast.error('Failed to submit order. Please try again or call us at (876) 490-7208');
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
   
   return (
