@@ -1570,6 +1570,161 @@ async def get_delivery_areas():
     
     return areas
 
+# ==================== CHAT WIDGET ENDPOINTS ====================
+
+# Load knowledge base
+KNOWLEDGE_BASE = ""
+try:
+    with open('/app/TEMAR_MALCOLM_KNOWLEDGE_BASE.md', 'r') as f:
+        KNOWLEDGE_BASE = f.read()
+except Exception as e:
+    logger.error(f"Failed to load knowledge base: {e}")
+    KNOWLEDGE_BASE = "You are Temar Malcolm, a sales agent for Ice Solutions, a premium ice delivery service in Kingston, Jamaica."
+
+# Chat models
+class ChatMessage(BaseModel):
+    message: str
+    conversationHistory: List[Dict[str, str]] = []
+
+class ChatLead(BaseModel):
+    name: str
+    phone: str
+    email: str
+    businessName: str = ""
+    productInterest: str
+    quantity: int
+    inquiry: str = ""
+    conversationHistory: str = ""
+
+@api_router.post("/chat")
+async def chat_with_temar(chat_input: ChatMessage):
+    """
+    Handle chat messages with Temar Malcolm AI agent
+    """
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        # Get Emergent LLM key
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="LLM API key not configured")
+        
+        # Create system message with knowledge base
+        system_message = f"""You are Temar Malcolm, a friendly and professional sales agent for Ice Solutions.
+
+{KNOWLEDGE_BASE}
+
+IMPORTANT INSTRUCTIONS:
+1. Be warm, friendly, and helpful - reflect Jamaican warmth
+2. Answer questions about products, pricing, delivery, and services
+3. Help calculate ice needs based on event details
+4. When you have enough information about the customer's needs, ask for their contact information
+5. If they're ready to place an order or get a quote, say: "Let me get your information so we can process this for you!" and set requestLeadInfo to true in your response
+6. Keep responses concise and conversational
+7. Use the knowledge base to provide accurate information
+8. Only 10lb bags are currently available - 50lb and 100lb are coming soon
+
+Your goal is to help customers and collect their information for follow-up."""
+
+        # Initialize chat
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=str(uuid.uuid4()),
+            system_message=system_message
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Prepare conversation history
+        for msg in chat_input.conversationHistory[-5:]:  # Last 5 messages for context
+            if msg.get('role') == 'user':
+                await chat.send_message(UserMessage(text=msg.get('content', '')))
+        
+        # Send current message
+        user_message = UserMessage(text=chat_input.message)
+        response = await chat.send_message(user_message)
+        
+        # Check if we should request lead information
+        request_lead = False
+        lead_keywords = ['contact', 'information', 'details', 'order', 'quote', 'delivery']
+        if any(keyword in response.lower() for keyword in lead_keywords) and len(chat_input.conversationHistory) >= 2:
+            request_lead = True
+        
+        return {
+            "response": response,
+            "requestLeadInfo": request_lead
+        }
+        
+    except Exception as e:
+        logger.error(f"Chat error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+
+@api_router.post("/leads/chat")
+async def create_chat_lead(lead: ChatLead):
+    """
+    Save lead information from chat widget to Google Sheets
+    """
+    try:
+        # Prepare lead data for Google Sheets
+        sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
+        if not sheet_url:
+            raise HTTPException(status_code=500, detail="Google Sheets not configured")
+        
+        # Initialize Google Sheets manager
+        sheets_manager = GoogleSheetsLeadManager(
+            credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
+        )
+        
+        if not sheets_manager.authenticate():
+            raise HTTPException(status_code=500, detail="Failed to authenticate with Google Sheets")
+        
+        if not sheets_manager.connect_to_sheet(sheet_url):
+            raise HTTPException(status_code=500, detail="Failed to connect to Google Sheets")
+        
+        # Add lead to sheet
+        # Expected columns: Name | Phone | Email | Business Name | Product Interest | Quantity | Inquiry | Date | Source
+        lead_data = [
+            lead.name,
+            lead.phone,
+            lead.email,
+            lead.businessName or "",
+            lead.productInterest,
+            str(lead.quantity),
+            lead.inquiry or "Chat inquiry",
+            datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+            "Website Chat"
+        ]
+        
+        sheets_manager.sheet.append_row(lead_data)
+        logger.info(f"Chat lead saved to Google Sheets: {lead.name} - {lead.phone}")
+        
+        # Also save to MongoDB for internal tracking
+        lead_doc = {
+            "id": str(uuid.uuid4()),
+            "name": lead.name,
+            "phone": lead.phone,
+            "email": lead.email,
+            "businessName": lead.businessName,
+            "productInterest": lead.productInterest,
+            "quantity": lead.quantity,
+            "inquiry": lead.inquiry,
+            "conversationHistory": lead.conversationHistory,
+            "source": "chat_widget",
+            "status": "new",
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.chat_leads.insert_one(lead_doc)
+        logger.info(f"Chat lead saved to MongoDB: {lead.name}")
+        
+        return {
+            "success": True,
+            "message": "Lead information saved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error saving chat lead: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to save lead: {str(e)}")
+
 # Database seeding function
 async def seed_database():
     """Seed the database with initial data if collections are empty"""
