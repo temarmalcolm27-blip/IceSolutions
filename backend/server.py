@@ -617,7 +617,7 @@ async def stripe_webhook(request: dict):
         session_id = request.get("session_id")
         payment_status = request.get("payment_status")
         
-        if session_id and payment_status:
+        if session_id and payment_status == "paid":
             # Update payment transaction
             await db.payment_transactions.update_one(
                 {"session_id": session_id},
@@ -628,6 +628,37 @@ async def stripe_webhook(request: dict):
                     }
                 }
             )
+            
+            # Get session metadata to save to Google Sheets
+            try:
+                status = await stripe_checkout.get_checkout_status(session_id)
+                if status and status.metadata:
+                    is_bulk_order = status.metadata.get("is_bulk_order") == "True"
+                    
+                    if is_bulk_order:
+                        # Save bulk order to Google Sheets
+                        sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
+                        if sheet_url:
+                            sheets_manager = GoogleSheetsLeadManager(
+                                credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
+                            )
+                            
+                            if sheets_manager.authenticate() and sheets_manager.connect_to_sheet(sheet_url):
+                                order_data = [
+                                    status.metadata.get("customer_name", ""),
+                                    status.metadata.get("customer_phone", ""),
+                                    status.metadata.get("customer_email", ""),
+                                    status.metadata.get("business_name", ""),
+                                    f"Bulk Order ({status.metadata.get('bulk_order_tier', '')} bags) - PAID",
+                                    status.metadata.get("bags", ""),
+                                    f"Delivery: {status.metadata.get('delivery_address', '')} on {status.metadata.get('delivery_date', '')}. Amount Paid: JMD ${status.amount_total/100:.2f}. Session: {session_id}",
+                                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                                    "Bulk Order - Paid"
+                                ]
+                                sheets_manager.sheet.append_row(order_data)
+                                logger.info(f"Bulk order saved to Google Sheets: {status.metadata.get('customer_name')} - Session: {session_id}")
+            except Exception as e:
+                logger.error(f"Error saving bulk order to Google Sheets: {str(e)}")
         
         return {"status": "success"}
         
