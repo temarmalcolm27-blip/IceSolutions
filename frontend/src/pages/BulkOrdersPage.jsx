@@ -12,7 +12,10 @@ const BulkOrdersPage = () => {
   const pricingTiers = [
     {
       range: "1-4 Bags",
+      rangeParam: "1-4",
+      quantity: 4,
       discount: "0%",
+      discountPercent: 0,
       pricePerBag: "JMD $350.00",
       totalExample: "JMD $1,400.00 (4 bags)",
       badgeColor: "bg-gray-100 text-gray-700",
@@ -20,7 +23,10 @@ const BulkOrdersPage = () => {
     },
     {
       range: "5-9 Bags",
+      rangeParam: "5-9",
+      quantity: 9,
       discount: "5%",
+      discountPercent: 5,
       pricePerBag: "JMD $332.50",
       totalExample: "JMD $2,992.50 (9 bags)",
       savings: "Save JMD $157.50",
@@ -29,7 +35,10 @@ const BulkOrdersPage = () => {
     },
     {
       range: "10-19 Bags",
+      rangeParam: "10-19",
+      quantity: 19,
       discount: "10%",
+      discountPercent: 10,
       pricePerBag: "JMD $315.00",
       totalExample: "JMD $5,985.00 (19 bags)",
       savings: "Save JMD $665.00",
@@ -38,7 +47,10 @@ const BulkOrdersPage = () => {
     },
     {
       range: "20+ Bags",
+      rangeParam: "20+",
+      quantity: 25,
       discount: "15%",
+      discountPercent: 15,
       pricePerBag: "JMD $297.50",
       totalExample: "JMD $7,437.50 (25 bags)",
       savings: "Save JMD $1,312.50",
