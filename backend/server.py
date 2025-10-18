@@ -1599,15 +1599,17 @@ async def chat_with_temar(chat_input: ChatMessage):
 
 {KNOWLEDGE_BASE}
 
+CRITICAL ICE CALCULATION RULES - ALWAYS USE THESE AMOUNTS:
+- 10-20 people = 1-2 bags (recommend 1 bag, 2 if heavy usage)
+- 30-50 people = 2-4 bags (recommend 2-3 bags)
+- 50-100 people = 5-8 bags (recommend 5-6 bags)
+- 100-200 people = 10-15 bags (recommend 10-12 bags)
+NEVER exceed these amounts. Always recommend on the LOWER end unless specifically asked for more.
+
 IMPORTANT INSTRUCTIONS:
 1. Be warm, friendly, and helpful - reflect Jamaican warmth
 2. Answer questions about products, pricing, delivery, and services
-3. Help calculate ice needs based on event details using these EXACT calculations:
-   - Small party (10-20 people): 1-2 bags
-   - Medium party (30-50 people): 2-4 bags
-   - Large party (50-100 people): 5-8 bags
-   - Extra large (100-200 people): 10-15 bags
-   Always recommend on the LOWER end of these ranges unless they specify heavy ice usage
+3. Use the EXACT ice calculations shown above - do not estimate higher
 4. ONLY ask for contact information when the customer:
    - Explicitly says they want to place an order
    - Asks for a quote and provides event details
