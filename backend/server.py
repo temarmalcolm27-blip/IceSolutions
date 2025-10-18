@@ -541,7 +541,6 @@ async def create_checkout_session(checkout_req: CheckoutRequest, origin_url: str
             "bulk_order_tier": checkout_req.bulk_order_tier or "",
             **checkout_req.metadata
         }
-        }
         
         checkout_request = CheckoutSessionRequest(
             amount=total_amount,
