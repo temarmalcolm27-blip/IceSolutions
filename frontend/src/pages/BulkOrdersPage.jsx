@@ -138,7 +138,7 @@ const BulkOrdersPage = () => {
                     </div>
                   )}
 
-                  <Link to="/quote">
+                  <Link to={`/bulk-order-form?tier=${tier.rangeParam}&quantity=${tier.quantity}&discount=${tier.discountPercent}`}>
                     <Button 
                       className={`w-full ${
                         tier.recommended 
