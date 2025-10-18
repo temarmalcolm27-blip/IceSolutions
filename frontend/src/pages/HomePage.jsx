@@ -99,11 +99,8 @@ const HomePage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
-            {/* Quick Order - Now First */}
+            {/* Quick Order - Left Side */}
             <div className="relative">
-              {/* Falling Ice Animation */}
-              <FallingIce />
-              
               <div 
                 className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border-4 border-cyan-300 hover:border-cyan-500 transition-all duration-500 hover:scale-105"
                 style={{
@@ -146,6 +143,24 @@ const HomePage = () => {
               <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-cyan-400 via-blue-400 to-blue-500 rounded-full opacity-30 blur-2xl animate-pulse"></div>
               <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-gradient-to-br from-blue-400 via-cyan-400 to-cyan-500 rounded-full opacity-25 blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-radial from-cyan-200/20 to-transparent rounded-2xl blur-xl"></div>
+            </div>
+
+            {/* Ice Image - Right Side with Fade Effect */}
+            <div className="relative hidden lg:block">
+              <div 
+                className="relative w-full h-full"
+                style={{
+                  maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 20%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%)',
+                  WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 20%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%)'
+                }}
+              >
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_icesolutions/artifacts/7a482py7_ice%20image%20-%20%202025-10-18%20174632.png"
+                  alt="Premium Ice"
+                  className="w-full h-auto object-cover"
+                  style={{ maxHeight: '500px' }}
+                />
+              </div>
             </div>
           </div>
         </div>
