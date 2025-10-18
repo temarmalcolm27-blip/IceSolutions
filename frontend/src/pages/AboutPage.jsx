@@ -82,10 +82,11 @@ const AboutPage = () => {
               About Ice Solutions
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              Founded in 2023, Ice Solutions was born from a simple observation: getting party ice quickly and affordably 
-              was a challenge in Kingston, Jamaica. Based in the Washington Gardens area, we set out to solve this problem 
-              by providing crystal-clear, restaurant-quality ice with fast, reliable delivery. Today, we're proud to serve 
-              events, restaurants, bars, and businesses across Kingston with exceptional service and quality.
+              Founded in 2023, Ice Solutions was born from recognizing a real struggle in Washington Gardens, Jamaica — 
+              finding party ice that's quick, reliable, and affordable. Based right here in Washington Gardens, we set 
+              out to solve this problem by providing crystal-clear, restaurant-quality ice with fast, reliable delivery 
+              and bulk discounts. Today, we're proud to serve over 1,000 happy customers across Kingston 20 and the wider 
+              Kingston area, keeping vibes cool and celebrations flowing.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Badge className="bg-green-100 text-green-700 px-4 py-2">
