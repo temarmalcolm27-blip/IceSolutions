@@ -351,9 +351,7 @@ def test_mongodb_single_document(results):
     """Test that MongoDB contains only one document per session_id"""
     print("\n🧪 Testing MongoDB Single Document Per Session...")
     
-    # This test would require direct MongoDB access
-    # Since we can't directly access MongoDB, we'll test indirectly through the API
-    
+    # Test the duplicate detection logic by examining webhook responses
     test_session_id = f"mongo_test_{int(time.time())}"
     
     webhook_payload = {
@@ -363,8 +361,10 @@ def test_mongodb_single_document(results):
     
     print(f"  📋 Testing MongoDB uniqueness with session: {test_session_id}")
     
-    # Make multiple webhook calls
+    # Make multiple webhook calls and track responses
+    responses = []
     order_ids = []
+    messages = []
     
     for i in range(3):
         print(f"  🔄 Webhook call {i+1}...")
@@ -376,24 +376,47 @@ def test_mongodb_single_document(results):
             
             if response.status_code == 200:
                 response_data = response.json()
+                responses.append(response_data)
+                
                 order_id = response_data.get('order_id')
+                message = response_data.get('message', '')
+                
                 if order_id:
                     order_ids.append(order_id)
+                    print(f"    📋 Call {i+1} returned order_id: {order_id}")
+                
+                if message:
+                    messages.append(message)
+                    print(f"    📋 Call {i+1} message: {message}")
             
             time.sleep(1)  # Brief pause between calls
             
         except requests.exceptions.RequestException as e:
             results.add_warning(f"Webhook call {i+1} failed: {str(e)}")
     
-    # All webhook calls should return the same order ID
-    if len(order_ids) > 1:
-        unique_order_ids = set(order_ids)
-        results.assert_equal(len(unique_order_ids), 1, "All webhook calls return same order ID (indicating single MongoDB document)")
+    # Analyze responses for duplicate detection
+    if len(responses) >= 2:
+        # Check if subsequent calls detected duplicates
+        duplicate_detected = False
         
-        if len(unique_order_ids) == 1:
-            print(f"    ✅ All calls returned same order ID: {list(unique_order_ids)[0]}")
+        for i, response in enumerate(responses[1:], 1):  # Skip first response
+            message = response.get('message', '').lower()
+            if 'already processed' in message:
+                duplicate_detected = True
+                print(f"    ✅ Call {i+1} detected duplicate: {message}")
+        
+        results.assert_true(duplicate_detected, "Subsequent webhook calls detected duplicates")
+        
+        # If we got order IDs, they should all be the same
+        if len(order_ids) > 1:
+            unique_order_ids = set(order_ids)
+            results.assert_equal(len(unique_order_ids), 1, "All webhook calls return same order ID (single MongoDB document)")
+            
+            if len(unique_order_ids) == 1:
+                print(f"    ✅ All calls returned same order ID: {list(unique_order_ids)[0]}")
+        
     else:
-        results.add_warning("Could not collect enough order IDs for MongoDB uniqueness test")
+        results.add_warning("Could not collect enough responses for MongoDB uniqueness test")
 
 def test_email_service_logs(results):
     """Test email service to ensure only one email is sent"""
