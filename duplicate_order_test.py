@@ -418,6 +418,70 @@ def test_mongodb_single_document(results):
     else:
         results.add_warning("Could not collect enough responses for MongoDB uniqueness test")
 
+def test_backend_duplicate_logs(results):
+    """Test backend logs for duplicate detection messages"""
+    print("\n🧪 Testing Backend Duplicate Detection Logs...")
+    
+    # Create a test session and make duplicate webhook calls
+    test_session_id = f"log_test_{int(time.time())}"
+    
+    webhook_payload = {
+        "session_id": test_session_id,
+        "payment_status": "paid"
+    }
+    
+    print(f"  📋 Creating duplicate webhook calls for session: {test_session_id}")
+    
+    # Make multiple webhook calls
+    for i in range(2):
+        try:
+            response = requests.post(f"{API_BASE}/webhook/stripe", 
+                                   json=webhook_payload, 
+                                   headers={'Content-Type': 'application/json'},
+                                   timeout=15)
+            print(f"    🔄 Webhook call {i+1}: {response.status_code}")
+            time.sleep(1)
+        except requests.exceptions.RequestException as e:
+            print(f"    ❌ Webhook call {i+1} failed: {str(e)}")
+    
+    # Check backend logs for duplicate detection
+    print("  📋 Checking backend logs for duplicate detection...")
+    
+    try:
+        import subprocess
+        
+        # Get recent backend logs
+        log_result = subprocess.run(['tail', '-n', '100', '/var/log/supervisor/backend.out.log'], 
+                                  capture_output=True, text=True, timeout=10)
+        
+        if log_result.returncode == 0:
+            log_content = log_result.stdout
+            
+            # Look for duplicate detection log entries
+            duplicate_keywords = ['already processed', 'duplicate', test_session_id]
+            
+            duplicate_logs = []
+            for line in log_content.split('\n'):
+                if any(keyword in line.lower() for keyword in duplicate_keywords):
+                    duplicate_logs.append(line)
+            
+            if duplicate_logs:
+                print(f"    📋 Found {len(duplicate_logs)} duplicate-related log entries")
+                for log in duplicate_logs[-5:]:  # Show last 5 entries
+                    print(f"      {log}")
+                
+                # Check for specific duplicate detection message
+                duplicate_detected = any('already processed' in log.lower() for log in duplicate_logs)
+                results.assert_true(duplicate_detected, "Backend logs show duplicate detection")
+            else:
+                results.add_warning("No duplicate detection logs found")
+        
+        else:
+            results.add_warning("Could not access backend logs")
+    
+    except Exception as e:
+        results.add_warning(f"Could not check backend logs: {str(e)}")
+
 def test_email_service_logs(results):
     """Test email service to ensure only one email is sent"""
     print("\n🧪 Testing Email Service (Single Email)...")
