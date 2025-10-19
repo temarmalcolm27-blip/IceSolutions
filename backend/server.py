@@ -612,7 +612,6 @@ async def stripe_webhook(request: dict):
         stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
         
         # Process webhook
-        # Note: In production, verify webhook signature
         session_id = request.get("session_id")
         payment_status = request.get("payment_status")
         
@@ -628,36 +627,134 @@ async def stripe_webhook(request: dict):
                 }
             )
             
-            # Get session metadata to save to Google Sheets
+            # Get session details and generate order
             try:
                 status = await stripe_checkout.get_checkout_status(session_id)
                 if status and status.metadata:
-                    is_bulk_order = status.metadata.get("is_bulk_order") == "True"
+                    # Generate Order ID (starting from 300)
+                    order_counter = await db.order_counter.find_one({"_id": "order_id"})
+                    if not order_counter:
+                        # Initialize counter at 300
+                        await db.order_counter.insert_one({"_id": "order_id", "sequence_value": 300})
+                        order_id = "300"
+                    else:
+                        # Increment counter
+                        result = await db.order_counter.find_one_and_update(
+                            {"_id": "order_id"},
+                            {"$inc": {"sequence_value": 1}},
+                            return_document=True
+                        )
+                        order_id = str(result["sequence_value"])
                     
-                    if is_bulk_order:
-                        # Save bulk order to Google Sheets
-                        sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
-                        if sheet_url:
-                            sheets_manager = GoogleSheetsLeadManager(
-                                credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
-                            )
+                    # Extract order details
+                    customer_name = status.metadata.get("customer_name", "")
+                    customer_email = status.metadata.get("customer_email", "")
+                    customer_phone = status.metadata.get("customer_phone", "")
+                    business_name = status.metadata.get("business_name", "")
+                    bags = status.metadata.get("bags", "0")
+                    delivery_address = status.metadata.get("delivery_address", "")
+                    discount_amount = float(status.metadata.get("discount_amount", "0"))
+                    is_bulk_order = status.metadata.get("is_bulk_order") == "True"
+                    bulk_order_tier = status.metadata.get("bulk_order_tier", "")
+                    
+                    # Calculate amounts
+                    total_paid = status.amount_total / 100  # Convert from cents
+                    subtotal = total_paid + discount_amount
+                    
+                    # Create tracking URL
+                    origin_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')
+                    tracking_url = f"{origin_url}/track-order?id={order_id}"
+                    
+                    # Save to Google Sheets
+                    sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
+                    if sheet_url:
+                        sheets_manager = GoogleSheetsLeadManager(
+                            credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
+                        )
+                        
+                        if sheets_manager.authenticate():
+                            # Connect to the sheet
+                            import gspread
+                            gc = gspread.authorize(sheets_manager.creds)
+                            spreadsheet = gc.open_by_url(sheet_url)
                             
-                            if sheets_manager.authenticate() and sheets_manager.connect_to_sheet(sheet_url):
-                                order_data = [
-                                    status.metadata.get("customer_name", ""),
-                                    status.metadata.get("customer_phone", ""),
-                                    status.metadata.get("customer_email", ""),
-                                    status.metadata.get("business_name", ""),
-                                    f"Bulk Order ({status.metadata.get('bulk_order_tier', '')} bags) - PAID",
-                                    status.metadata.get("bags", ""),
-                                    f"Delivery: {status.metadata.get('delivery_address', '')} on {status.metadata.get('delivery_date', '')}. Amount Paid: JMD ${status.amount_total/100:.2f}. Session: {session_id}",
-                                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-                                    "Bulk Order - Paid"
+                            # Get or create "Orders" worksheet
+                            try:
+                                orders_sheet = spreadsheet.worksheet("Orders")
+                            except:
+                                # Create Orders sheet if it doesn't exist
+                                orders_sheet = spreadsheet.add_worksheet(title="Orders", rows="1000", cols="20")
+                                # Add headers
+                                headers = [
+                                    "Order ID", "Customer Name", "Phone", "Email", "Business Name",
+                                    "Quantity", "Subtotal", "Discount", "Total", "Delivery Address",
+                                    "Status", "Order Date", "Payment Session", "Notes"
                                 ]
-                                sheets_manager.sheet.append_row(order_data)
-                                logger.info(f"Bulk order saved to Google Sheets: {status.metadata.get('customer_name')} - Session: {session_id}")
+                                orders_sheet.append_row(headers)
+                            
+                            # Prepare order data
+                            order_data = [
+                                order_id,
+                                customer_name,
+                                customer_phone,
+                                customer_email,
+                                business_name or "",
+                                bags,
+                                f"${subtotal:.2f}",
+                                f"${discount_amount:.2f}" if discount_amount > 0 else "$0.00",
+                                f"${total_paid:.2f}",
+                                delivery_address,
+                                "Planning",  # Initial status
+                                datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                                session_id,
+                                f"Bulk Order: {bulk_order_tier}" if is_bulk_order else "Regular Order"
+                            ]
+                            
+                            orders_sheet.append_row(order_data)
+                            logger.info(f"Order #{order_id} saved to Google Sheets")
+                    
+                    # Send confirmation email
+                    from email_service import send_order_confirmation_email
+                    if customer_email:
+                        send_order_confirmation_email(
+                            customer_email=customer_email,
+                            customer_name=customer_name,
+                            order_id=order_id,
+                            quantity=int(bags),
+                            subtotal=subtotal,
+                            discount=discount_amount,
+                            total=total_paid,
+                            delivery_address=delivery_address,
+                            tracking_url=tracking_url
+                        )
+                        logger.info(f"Order confirmation email sent for Order #{order_id}")
+                    
+                    # Save to MongoDB for backup
+                    order_doc = {
+                        "order_id": order_id,
+                        "session_id": session_id,
+                        "customer_name": customer_name,
+                        "customer_email": customer_email,
+                        "customer_phone": customer_phone,
+                        "business_name": business_name,
+                        "quantity": int(bags),
+                        "subtotal": subtotal,
+                        "discount": discount_amount,
+                        "total": total_paid,
+                        "delivery_address": delivery_address,
+                        "status": "Planning",
+                        "is_bulk_order": is_bulk_order,
+                        "bulk_order_tier": bulk_order_tier,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                    await db.orders.insert_one(order_doc)
+                    logger.info(f"Order #{order_id} saved to MongoDB")
+                    
             except Exception as e:
-                logger.error(f"Error saving bulk order to Google Sheets: {str(e)}")
+                logger.error(f"Error processing order after payment: {str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
         
         return {"status": "success"}
         
