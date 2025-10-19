@@ -508,15 +508,17 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Chat Widget - Improved Logic and Greeting Messages"
-    - "Dynamic Delivery Fee Calculator with Google Maps"
-    - "Checkout Page - URL Parameter Support"
-    - "NEW Pricing Logic Implementation - 20+ bags discount fix needed"
+    - "Dynamic Delivery Fee Calculator with Google Maps - API configuration needed"
+    - "Sales Agent Script Integration - missing variables"
   stuck_tasks:
-    - "NEW Pricing Logic Implementation"
+    - "Dynamic Delivery Fee Calculator with Google Maps"
+    - "Sales Agent Script Integration"
   test_all: false
   test_priority: "high_first"
   completed_testing:
+    - "Chat Widget - Improved Logic and Greeting Messages - FULLY TESTED AND WORKING"
+    - "Checkout Page - URL Parameter Support - FULLY TESTED AND WORKING"
+    - "NEW Pricing Logic Implementation - FULLY TESTED AND WORKING"
     - "All NEW frontend features comprehensively tested"
     - "Homepage, Quote, Event Planning, Bulk Orders, Checkout pages - ALL WORKING"
     - "Mobile responsiveness verified"
@@ -524,6 +526,7 @@ test_plan:
     - "Cross-page navigation and running banner verified"
     - "Order Confirmation Page duplicate processing fix - FULLY TESTED AND WORKING"
     - "Duplicate order processing fix verified working"
+    - "Chat widget conversation logic and checkout URL generation - FULLY TESTED AND WORKING"
 
 agent_communication:
     - agent: "testing"
