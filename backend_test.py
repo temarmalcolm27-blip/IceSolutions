@@ -1248,11 +1248,11 @@ def run_all_tests():
     test_delivery_areas_api(results)
     test_contacts_api(results)
     
-    # SECTION 2: NEW Google Maps Distance Calculation
+    # SECTION 2: Google Routes API Integration (NEW API Migration)
     print("\n" + "=" * 50)
-    print("🗺️  SECTION 2: NEW GOOGLE MAPS DISTANCE CALCULATION")
+    print("🗺️  SECTION 2: GOOGLE ROUTES API INTEGRATION (NEW API MIGRATION)")
     print("=" * 50)
-    test_delivery_fee_calculator(results)
+    test_google_routes_api_integration(results)
     
     # SECTION 3: NEW Chat Widget with Temar Malcolm AI
     print("\n" + "=" * 50)
