@@ -21,7 +21,7 @@ const OrderConfirmationPage = () => {
       return;
     }
 
-    // Poll for payment status
+    // Poll for payment status and process order
     const pollPaymentStatus = async (attempts = 0) => {
       const maxAttempts = 5;
       
@@ -35,6 +35,23 @@ const OrderConfirmationPage = () => {
         setPaymentStatus(status);
 
         if (status.payment_status === 'paid') {
+          // Payment is confirmed, process the order
+          try {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+            await fetch(`${backendUrl}/api/webhook/stripe`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                session_id: sessionId,
+                payment_status: 'paid'
+              })
+            });
+          } catch (webhookError) {
+            console.error('Error processing order:', webhookError);
+          }
+          
           setLoading(false);
           return;
         } else if (status.status === 'expired') {
@@ -47,7 +64,7 @@ const OrderConfirmationPage = () => {
         setTimeout(() => pollPaymentStatus(attempts + 1), 2000);
       } catch (error) {
         console.error('Error checking payment status:', error);
-        setLoading(false);
+        setLoading(false;
       }
     };
 
