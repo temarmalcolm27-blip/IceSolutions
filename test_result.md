@@ -423,11 +423,11 @@ frontend:
 
   - task: "Order Confirmation Page - Duplicate Processing Fix"
     implemented: true
-    working: true
+    working: "NA"
     file: "frontend/src/pages/OrderConfirmationPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "user"
@@ -437,7 +437,43 @@ frontend:
           comment: "Implemented idempotency check to prevent duplicate order processing. Added two-layer defense: 1) Frontend - Check sessionStorage before calling webhook (key: order_processed_{sessionId}), only calls webhook once per session_id even on refresh. 2) Backend - Existing check for duplicate session_id in database (lines 624-628 in server.py). This ensures order is only processed once. Needs comprehensive testing with page refreshes."
         - working: true
           agent: "testing"
-          comment: "✅ DUPLICATE ORDER PROCESSING FIX FULLY FUNCTIONAL - Comprehensive testing completed successfully: 1) Backend duplicate protection working perfectly - multiple webhook calls with same session_id correctly detected and prevented duplicate orders, 2) Database check verified - only ONE order created per session_id (Order ID 319 returned consistently for all duplicate calls), 3) Backend logs confirm duplicate detection: 'Order already processed for session cs_test_a1vcFXiNFnckHpf6rFtXjKvHl3xb2YVWQCSh3ACUY0tIxdCCnZHMRwL5ML, Order ID: 319', 4) Order ID generation working correctly with proper incrementing sequence, 5) Two-layer idempotency protection implemented: Frontend sessionStorage check (order_processed_{sessionId}) prevents multiple webhook calls on page refresh + Backend database check prevents duplicate order creation, 6) Webhook endpoint returns proper duplicate detection messages: 'Order already processed' with existing order_id. The duplicate order issue reported by user has been RESOLVED - refreshing OrderConfirmationPage will no longer create duplicate orders or send multiple emails."
+          comment: "✅ Duplicate order fix verified working. Multiple webhook calls correctly prevented by both frontend sessionStorage and backend database checks."
+
+  - task: "Chat Widget - Improved Logic and Greeting Messages"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/ChatWidget.jsx, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Updated chat widget greeting and response logic: 1) Initial greeting: 'Thanks for your interest in IceSolutions, where More Ice = More Vibes. How can I help you with your ice needs today?' 2) First response format: 'Thank you for your message. I'm Temar Malcolm, owner of Ice Solutions, and I'm excited to help you with your party ice needs! [answer]' 3) When customer requests specific amount, immediately collect info instead of suggesting different amount 4) Generates checkout URL with pre-filled data when order info collected."
+
+  - task: "Dynamic Delivery Fee Calculator with Google Maps"
+    implemented: true
+    working: "NA"
+    file: "backend/distance_service.py, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented Google Maps Distance Matrix API integration for distance-based delivery fees: 1) Base fee: $300 JMD outside Washington Gardens 2) Rate: $200 JMD per mile 3) Washington Gardens: FREE delivery 4) 20+ bags: FREE delivery anywhere in Kingston 5) New endpoint: POST /api/calculate-delivery-fee 6) Integrated with checkout page for real-time fee calculation."
+
+  - task: "Checkout Page - URL Parameter Support"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/CheckoutPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Updated checkout page to accept URL parameters from chat widget: 1) Reads bags, name, email, phone, address from URL params 2) Pre-fills form with chat-collected data 3) Automatically calculates delivery fee using Google Maps API 4) Applies bulk discounts (5%, 10%, 15%) based on quantity 5) Supports both URL parameters (from chat) and location.state (from quote page)."
 
 metadata:
   created_by: "testing_agent"
