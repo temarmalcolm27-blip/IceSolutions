@@ -445,11 +445,12 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Order Confirmation Page - Duplicate Processing Fix"
     - "NEW Pricing Logic Implementation - 20+ bags discount fix needed"
   stuck_tasks:
     - "NEW Pricing Logic Implementation"
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
   completed_testing:
     - "All NEW frontend features comprehensively tested"
     - "Homepage, Quote, Event Planning, Bulk Orders, Checkout pages - ALL WORKING"
