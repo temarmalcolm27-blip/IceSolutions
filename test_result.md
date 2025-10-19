@@ -215,15 +215,30 @@ backend:
 
   - task: "NEW Pricing Logic Implementation"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "❌ CRITICAL ISSUE: Quote API missing 15% discount for 20+ bags. Currently applies only 10% discount for 20+ bags instead of required 15%. Checkout API has correct 15% logic (lines 511-517) but quotes API (lines 306-311) stops at 10% for 10+ bags. Pricing verified correct for 1-19 bags: 0% (1-4 bags), 5% (5-9 bags), 10% (10-19 bags). Delivery logic working: FREE Washington Gardens, JMD $300 others. NEEDS FIX: Add 20+ bags condition with 15% discount to quotes endpoint."
+        - working: true
+          agent: "testing"
+          comment: "✅ Pricing Logic FULLY FIXED AND WORKING - Comprehensive testing verified: All bulk discount tiers working correctly: 0% (1-4 bags), 5% (5-9 bags), 10% (10-19 bags), 15% (20+ bags). Delivery fee logic working: FREE Washington Gardens, JMD $300 others. All 36 pricing test scenarios passed. Quote API now correctly applies 15% discount for 20+ bags. Business logic calculations accurate across all endpoints."
+
+  - task: "Sales Agent Script Integration"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ ISSUE: Sales agent script endpoint (/api/sales-agent/script) failing with 'NameError: name SALES_AGENT_SCRIPT is not defined'. Missing sales_agent_script.py file that should define SALES_AGENT_SCRIPT and SALES_FAQ variables. TwiML endpoint working but doesn't include lead name parameter. NEEDS FIX: Create sales_agent_script.py file or define variables directly in server.py."
 
 frontend:
   - task: "Homepage Implementation"
