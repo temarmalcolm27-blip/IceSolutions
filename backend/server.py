@@ -686,39 +686,62 @@ async def stripe_webhook(request: dict):
                             spreadsheet = sheets_manager.client.open_by_url(sheet_url)
                             
                             # Get or create "Orders" worksheet
+                            orders_sheet = None
                             try:
-                                orders_sheet = spreadsheet.worksheet("Orders")
+                                # Try to get the Orders sheet (case-insensitive search)
+                                all_worksheets = spreadsheet.worksheets()
+                                for ws in all_worksheets:
+                                    if ws.title.lower() == "orders":
+                                        orders_sheet = ws
+                                        break
+                                
+                                if not orders_sheet:
+                                    raise Exception("Orders sheet not found")
+                                    
                             except:
-                                # Create Orders sheet if it doesn't exist
-                                orders_sheet = spreadsheet.add_worksheet(title="Orders", rows="1000", cols="20")
-                                # Add headers
-                                headers = [
-                                    "Order ID", "Customer Name", "Phone", "Email", "Business Name",
-                                    "Quantity", "Subtotal", "Discount", "Total", "Delivery Address",
-                                    "Status", "Order Date", "Payment Session", "Notes"
+                                # If Orders sheet doesn't exist, create it
+                                try:
+                                    orders_sheet = spreadsheet.add_worksheet(title="Orders", rows="1000", cols="20")
+                                    # Add headers
+                                    headers = [
+                                        "Order ID", "Customer Name", "Phone", "Email", "Business Name",
+                                        "Quantity", "Subtotal", "Discount", "Total", "Delivery Address",
+                                        "Status", "Order Date", "Payment Session", "Notes"
+                                    ]
+                                    orders_sheet.append_row(headers)
+                                    logger.info("Created new Orders sheet with headers")
+                                except Exception as create_error:
+                                    # Sheet might already exist, try to get it again
+                                    logger.error(f"Error creating Orders sheet: {create_error}")
+                                    all_worksheets = spreadsheet.worksheets()
+                                    for ws in all_worksheets:
+                                        if ws.title.lower() == "orders":
+                                            orders_sheet = ws
+                                            break
+                            
+                            if orders_sheet:
+                                # Prepare order data
+                                order_data = [
+                                    order_id,
+                                    customer_name,
+                                    customer_phone,
+                                    customer_email,
+                                    business_name or "",
+                                    bags,
+                                    f"${subtotal:.2f}",
+                                    f"${discount_amount:.2f}" if discount_amount > 0 else "$0.00",
+                                    f"${total_paid:.2f}",
+                                    delivery_address,
+                                    "Planning",  # Initial status
+                                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                                    session_id,
+                                    f"Bulk Order: {bulk_order_tier}" if is_bulk_order else "Regular Order"
                                 ]
-                                orders_sheet.append_row(headers)
-                            
-                            # Prepare order data
-                            order_data = [
-                                order_id,
-                                customer_name,
-                                customer_phone,
-                                customer_email,
-                                business_name or "",
-                                bags,
-                                f"${subtotal:.2f}",
-                                f"${discount_amount:.2f}" if discount_amount > 0 else "$0.00",
-                                f"${total_paid:.2f}",
-                                delivery_address,
-                                "Planning",  # Initial status
-                                datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-                                session_id,
-                                f"Bulk Order: {bulk_order_tier}" if is_bulk_order else "Regular Order"
-                            ]
-                            
-                            orders_sheet.append_row(order_data)
-                            logger.info(f"Order #{order_id} saved to Google Sheets")
+                                
+                                orders_sheet.append_row(order_data)
+                                logger.info(f"Order #{order_id} saved to Google Sheets")
+                            else:
+                                logger.error("Could not find or create Orders sheet")
                     
                     # Send confirmation email
                     from email_service import send_order_confirmation_email
