@@ -24,7 +24,7 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
     # Email configuration (using environment variables)
     smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
     smtp_port = int(os.getenv('SMTP_PORT', '587'))
-    sender_email = os.getenv('SENDER_EMAIL', 'orders@icesolutions.com')
+    sender_email = os.getenv('SENDER_EMAIL', 'temarmalcolm27@gmail.com')
     sender_password = os.getenv('SENDER_PASSWORD', '')
     
     # If no email credentials configured, log and return
