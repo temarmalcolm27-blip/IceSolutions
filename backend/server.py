@@ -1957,6 +1957,69 @@ async def create_bulk_order(order: BulkOrder):
         logger.error(f"Error saving bulk order: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to save bulk order: {str(e)}")
 
+@api_router.get("/orders/{order_id}")
+async def get_order_status(order_id: str):
+    """
+    Get order status from Google Sheets by Order ID
+    """
+    try:
+        # First try MongoDB (faster)
+        order = await db.orders.find_one({"order_id": order_id}, {"_id": 0})
+        
+        if order:
+            return order
+        
+        # If not in MongoDB, try Google Sheets
+        sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
+        if not sheet_url:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        sheets_manager = GoogleSheetsLeadManager(
+            credentials_json_path=os.environ.get('GOOGLE_SHEETS_CREDENTIALS_PATH', '/app/backend/google_sheets_credentials.json')
+        )
+        
+        if sheets_manager.authenticate():
+            gc = gspread.authorize(sheets_manager.creds)
+            spreadsheet = gc.open_by_url(sheet_url)
+            
+            try:
+                orders_sheet = spreadsheet.worksheet("Orders")
+                # Get all records
+                records = orders_sheet.get_all_records()
+                
+                # Find order by ID
+                for record in records:
+                    if str(record.get("Order ID")) == order_id:
+                        # Return order data
+                        return {
+                            "order_id": record.get("Order ID"),
+                            "customer_name": record.get("Customer Name"),
+                            "customer_phone": record.get("Phone"),
+                            "customer_email": record.get("Email"),
+                            "business_name": record.get("Business Name", ""),
+                            "quantity": int(record.get("Quantity", 0)),
+                            "subtotal": record.get("Subtotal", "$0.00"),
+                            "discount": record.get("Discount", "$0.00"),
+                            "total": record.get("Total", "$0.00"),
+                            "delivery_address": record.get("Delivery Address"),
+                            "status": record.get("Status", "Planning"),
+                            "order_date": record.get("Order Date"),
+                            "notes": record.get("Notes", "")
+                        }
+                
+                raise HTTPException(status_code=404, detail="Order not found")
+                
+            except:
+                raise HTTPException(status_code=404, detail="Order not found")
+        else:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching order: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch order: {str(e)}")
+
 # Database seeding function
 async def seed_database():
     """Seed the database with initial data if collections are empty"""
