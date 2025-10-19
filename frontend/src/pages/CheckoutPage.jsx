@@ -106,9 +106,24 @@ const CheckoutPage = () => {
 
   const pricePerBag = customPricePerBag || 350.00;
   const subtotal = (bags || 0) * pricePerBag;
-  const discount = discountAmount || 0;
-  const delivery = deliveryFee || 0;
-  const total = totalAmount || 0;
+  
+  // Calculate discount based on bags
+  let autoDiscountPercent = 0;
+  let autoDiscountAmount = 0;
+  if (bags >= 20) {
+    autoDiscountPercent = 15;
+    autoDiscountAmount = subtotal * 0.15;
+  } else if (bags >= 10) {
+    autoDiscountPercent = 10;
+    autoDiscountAmount = subtotal * 0.10;
+  } else if (bags >= 5) {
+    autoDiscountPercent = 5;
+    autoDiscountAmount = subtotal * 0.05;
+  }
+  
+  const discount = discountAmount || autoDiscountAmount;
+  const delivery = calculatedDelivery !== null ? calculatedDelivery : (deliveryFee || 0);
+  const total = totalAmount || (subtotal - discount + delivery);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
