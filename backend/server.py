@@ -1877,8 +1877,40 @@ IMPORTANT:
         user_message = UserMessage(text=chat_input.message)
         response = await chat.send_message(user_message)
         
-        # Check if AI is requesting lead information
+        # Check if this is the first user message (for greeting)
+        is_first_message = len(chat_input.conversationHistory) <= 1
+        
+        # Check if AI is requesting lead information or generating checkout
         request_lead = False
+        checkout_url = None
+        
+        if "[GENERATE_CHECKOUT" in response:
+            # Parse checkout information from response
+            import re
+            checkout_match = re.search(r'\[GENERATE_CHECKOUT\|bags=(\d+)\|name=([^|]+)\|email=([^|]+)\|phone=([^|]+)\|address=([^\]]+)\]', response)
+            
+            if checkout_match:
+                bags = checkout_match.group(1)
+                name = checkout_match.group(2)
+                email = checkout_match.group(3)
+                phone = checkout_match.group(4)
+                address = checkout_match.group(5)
+                
+                # Generate checkout URL with pre-filled data
+                from urllib.parse import urlencode
+                params = {
+                    'bags': bags,
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                    'address': address,
+                    'from_chat': 'true'
+                }
+                checkout_url = f"/checkout?{urlencode(params)}"
+                
+            # Remove the marker from response
+            response = re.sub(r'\[GENERATE_CHECKOUT[^\]]*\]', '', response).strip()
+        
         if "[COLLECT_INFO]" in response:
             request_lead = True
             # Remove the marker from the response
@@ -1886,7 +1918,8 @@ IMPORTANT:
         
         return {
             "response": response,
-            "requestLeadInfo": request_lead
+            "requestLeadInfo": request_lead,
+            "checkoutUrl": checkout_url
         }
         
     except Exception as e:
