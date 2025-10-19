@@ -667,12 +667,13 @@ async def stripe_webhook(request: dict):
                     subtotal = total_paid + discount_amount
                     
                     # Create tracking URL
-                    # Get the correct frontend URL
-                    frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')
+                    # Get the correct frontend URL (where customers access the site)
+                    frontend_url = os.environ.get('FRONTEND_URL') or os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')
                     # Remove /api if present (backend URL might have it)
                     if '/api' in frontend_url:
                         frontend_url = frontend_url.split('/api')[0]
                     tracking_url = f"{frontend_url}/track-order?id={order_id}"
+                    logger.info(f"Generated tracking URL: {tracking_url}")
                     
                     # Save to Google Sheets
                     sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
