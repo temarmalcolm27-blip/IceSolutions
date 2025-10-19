@@ -35,21 +35,33 @@ const OrderConfirmationPage = () => {
         setPaymentStatus(status);
 
         if (status.payment_status === 'paid') {
-          // Payment is confirmed, process the order
-          try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-            await fetch(`${backendUrl}/api/webhook/stripe`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                session_id: sessionId,
-                payment_status: 'paid'
-              })
-            });
-          } catch (webhookError) {
-            console.error('Error processing order:', webhookError);
+          // Check if this session has already been processed (prevent duplicates on refresh)
+          const processedKey = `order_processed_${sessionId}`;
+          const alreadyProcessed = sessionStorage.getItem(processedKey);
+          
+          if (!alreadyProcessed) {
+            // Payment is confirmed, process the order (only once)
+            try {
+              const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+              await fetch(`${backendUrl}/api/webhook/stripe`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  session_id: sessionId,
+                  payment_status: 'paid'
+                })
+              });
+              
+              // Mark this session as processed
+              sessionStorage.setItem(processedKey, 'true');
+              console.log('Order processed successfully for session:', sessionId);
+            } catch (webhookError) {
+              console.error('Error processing order:', webhookError);
+            }
+          } else {
+            console.log('Order already processed for session:', sessionId);
           }
           
           setLoading(false);
