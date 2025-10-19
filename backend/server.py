@@ -1849,8 +1849,20 @@ async def create_chat_lead(lead: ChatLead):
         if not sheets_manager.authenticate():
             raise HTTPException(status_code=500, detail="Failed to authenticate with Google Sheets")
         
-        if not sheets_manager.connect_to_sheet(sheet_url):
-            raise HTTPException(status_code=500, detail="Failed to connect to Google Sheets")
+        # Connect to spreadsheet and get the first sheet or "Leads" tab
+        spreadsheet = sheets_manager.client.open_by_url(sheet_url)
+        
+        # Try to find "Leads" sheet, otherwise use first sheet
+        leads_sheet = None
+        try:
+            leads_sheet = spreadsheet.worksheet("Leads")
+        except:
+            # If "Leads" doesn't exist, try first sheet
+            all_sheets = spreadsheet.worksheets()
+            if all_sheets:
+                leads_sheet = all_sheets[0]
+            else:
+                raise HTTPException(status_code=500, detail="No sheets found in spreadsheet")
         
         # Add lead to sheet
         # Expected columns: Name | Phone | Email | Business Name | Product Interest | Quantity | Inquiry | Date | Source
@@ -1866,7 +1878,7 @@ async def create_chat_lead(lead: ChatLead):
             "Website Chat"
         ]
         
-        sheets_manager.sheet.append_row(lead_data)
+        leads_sheet.append_row(lead_data)
         logger.info(f"Chat lead saved to Google Sheets: {lead.name} - {lead.phone}")
         
         # Also save to MongoDB for internal tracking
