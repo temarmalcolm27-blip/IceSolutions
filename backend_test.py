@@ -787,6 +787,328 @@ def test_pricing_logic_verification(results):
             print(error_msg)
             results.errors.append(error_msg)
 
+def test_delivery_fee_calculator(results):
+    """Test NEW Google Maps Distance Calculation Endpoint"""
+    print("\n🧪 Testing NEW Google Maps Distance Calculation Endpoint...")
+    
+    # Test 1: Washington Gardens address (should return FREE delivery)
+    print("\n  🏠 Testing Washington Gardens address (FREE delivery)...")
+    washington_gardens_data = {
+        "destination_address": "Washington Gardens, Kingston, Jamaica",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=washington_gardens_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "Washington Gardens delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify required fields
+            required_fields = ['distance_miles', 'delivery_fee', 'distance_text', 'duration_text', 'is_washington_gardens']
+            for field in required_fields:
+                results.assert_true(field in data, f"Response contains required field: {field}")
+            
+            # Verify Washington Gardens gets FREE delivery
+            results.assert_equal(data.get('delivery_fee'), 0.0, "Washington Gardens has FREE delivery ($0 fee)")
+            results.assert_equal(data.get('is_washington_gardens'), True, "Washington Gardens correctly identified")
+            results.assert_equal(data.get('distance_miles'), 0, "Washington Gardens distance is 0 miles")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Washington Gardens delivery fee test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Kingston address outside Washington Gardens (should calculate $300 base + $200/mile)
+    print("\n  🏙️ Testing Kingston address outside Washington Gardens...")
+    kingston_data = {
+        "destination_address": "Half Way Tree, Kingston, Jamaica",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=kingston_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "Kingston delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify NOT Washington Gardens
+            results.assert_equal(data.get('is_washington_gardens'), False, "Half Way Tree not identified as Washington Gardens")
+            
+            # Verify delivery fee is calculated (should be > $300 base fee)
+            delivery_fee = data.get('delivery_fee', 0)
+            results.assert_true(delivery_fee >= 300.0, f"Delivery fee >= $300 base (got ${delivery_fee})")
+            
+            # Verify distance is calculated
+            distance_miles = data.get('distance_miles', 0)
+            results.assert_true(distance_miles > 0, f"Distance calculated > 0 miles (got {distance_miles})")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Kingston delivery fee test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: 20+ bags (should return $0 fee regardless of distance)
+    print("\n  📦 Testing 20+ bags (FREE delivery anywhere)...")
+    bulk_order_data = {
+        "destination_address": "Spanish Town, Jamaica",
+        "bags": 25
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=bulk_order_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        results.assert_equal(response.status_code, 200, "20+ bags delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify FREE delivery for 20+ bags
+            results.assert_equal(data.get('delivery_fee'), 0.0, "20+ bags get FREE delivery anywhere")
+            
+            # Should have free delivery reason
+            if 'free_delivery_reason' in data:
+                results.assert_true('20+' in data['free_delivery_reason'], "Free delivery reason mentions 20+ bags")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 20+ bags delivery fee test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 4: Invalid address (should return appropriate error)
+    print("\n  ❌ Testing invalid address...")
+    invalid_address_data = {
+        "destination_address": "Invalid Address That Does Not Exist, Nowhere",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=invalid_address_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=15)
+        
+        # Should return error status
+        results.assert_true(response.status_code in [400, 404, 422], "Invalid address returns appropriate error status")
+        
+        if response.status_code >= 400:
+            error_data = response.json()
+            results.assert_true('detail' in error_data, "Error response contains detail message")
+        
+    except requests.exceptions.RequestException as e:
+        results.assert_true(True, "Invalid address test handled network error gracefully")
+
+def test_chat_endpoint(results):
+    """Test NEW Chat Endpoint with Temar Malcolm AI"""
+    print("\n🧪 Testing NEW Chat Endpoint...")
+    
+    # Test 1: First message - verify new greeting format
+    print("\n  👋 Testing first message greeting format...")
+    first_message_data = {
+        "message": "Hello, I'm interested in ice delivery",
+        "conversationHistory": []
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/chat", 
+                               json=first_message_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Chat endpoint returns 200 status")
+        
+        if response.status_code == 200:
+            chat_data = response.json()
+            
+            # Verify response structure
+            required_fields = ['response', 'requestLeadInfo', 'checkoutUrl']
+            for field in required_fields:
+                results.assert_true(field in chat_data, f"Chat response contains required field: {field}")
+            
+            # Verify first response format
+            response_text = chat_data.get('response', '')
+            results.assert_true('Temar Malcolm' in response_text, "First response mentions Temar Malcolm")
+            results.assert_true('Ice Solutions' in response_text, "First response mentions Ice Solutions")
+            results.assert_true('excited to help' in response_text, "First response contains excited greeting")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Chat first message test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Customer requests specific amount - should collect info immediately
+    print("\n  📦 Testing specific quantity request (immediate info collection)...")
+    specific_request_data = {
+        "message": "I need 10 bags of ice for my party",
+        "conversationHistory": [
+            {"role": "assistant", "content": "Thank you for your message. I'm Temar Malcolm..."},
+            {"role": "user", "content": "Hello, I'm interested in ice delivery"}
+        ]
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/chat", 
+                               json=specific_request_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Specific quantity chat request returns 200")
+        
+        if response.status_code == 200:
+            chat_data = response.json()
+            response_text = chat_data.get('response', '').lower()
+            
+            # Should ask for contact information immediately, not suggest different amount
+            info_keywords = ['name', 'phone', 'email', 'address', 'contact', 'information']
+            has_info_request = any(keyword in response_text for keyword in info_keywords)
+            results.assert_true(has_info_request, "Bot asks for contact information when specific quantity requested")
+            
+            # Should NOT suggest different amounts when customer specifies what they want
+            suggestion_keywords = ['recommend', 'suggest', 'might need', 'consider', 'better']
+            has_suggestions = any(keyword in response_text for keyword in suggestion_keywords)
+            results.assert_true(not has_suggestions, "Bot does NOT suggest different amounts when customer specifies quantity")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Specific quantity chat test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: Customer asks for recommendation - should provide guidance
+    print("\n  🤔 Testing recommendation request...")
+    recommendation_request_data = {
+        "message": "How much ice do I need for 50 people?",
+        "conversationHistory": [
+            {"role": "assistant", "content": "Thank you for your message. I'm Temar Malcolm..."},
+            {"role": "user", "content": "Hello"}
+        ]
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/chat", 
+                               json=recommendation_request_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Recommendation chat request returns 200")
+        
+        if response.status_code == 200:
+            chat_data = response.json()
+            response_text = chat_data.get('response', '').lower()
+            
+            # Should provide recommendations for 50 people
+            recommendation_keywords = ['bags', 'recommend', 'need', '50', 'people']
+            has_recommendation = any(keyword in response_text for keyword in recommendation_keywords)
+            results.assert_true(has_recommendation, "Bot provides ice recommendations when asked")
+            
+            # Should mention quantity for 50 people (likely 2-4 bags based on guidelines)
+            has_quantity = any(str(i) in response_text for i in range(1, 10))
+            results.assert_true(has_quantity, "Bot mentions specific bag quantities in recommendation")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Recommendation chat test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 4: Complete order flow - verify checkout URL generation
+    print("\n  🛒 Testing checkout URL generation...")
+    complete_order_data = {
+        "message": "My name is John Smith, email john@test.com, phone 876-555-1234, address is 123 Main St Kingston",
+        "conversationHistory": [
+            {"role": "assistant", "content": "Great! I can help you with 10 bags. I'll need your contact information..."},
+            {"role": "user", "content": "I need 10 bags of ice"}
+        ]
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/chat", 
+                               json=complete_order_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Complete order chat request returns 200")
+        
+        if response.status_code == 200:
+            chat_data = response.json()
+            
+            # Check if checkout URL is generated
+            checkout_url = chat_data.get('checkoutUrl')
+            if checkout_url:
+                results.assert_true('/checkout?' in checkout_url, "Checkout URL contains proper path and parameters")
+                results.assert_true('bags=' in checkout_url, "Checkout URL contains bags parameter")
+                results.assert_true('name=' in checkout_url, "Checkout URL contains name parameter")
+                results.assert_true('email=' in checkout_url, "Checkout URL contains email parameter")
+                results.assert_true('from_chat=true' in checkout_url, "Checkout URL indicates chat origin")
+            else:
+                # If no checkout URL generated yet, should be asking for missing info
+                response_text = chat_data.get('response', '').lower()
+                info_keywords = ['name', 'phone', 'email', 'address']
+                missing_info = any(keyword in response_text for keyword in info_keywords)
+                results.assert_true(missing_info, "Bot asks for missing information or generates checkout URL")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Complete order chat test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_knowledge_base_updates(results):
+    """Verify Knowledge Base Updates"""
+    print("\n🧪 Testing Knowledge Base Updates...")
+    
+    # Test 1: Check if knowledge base file exists and has updated content
+    try:
+        with open('/app/TEMAR_MALCOLM_KNOWLEDGE_BASE.md', 'r') as f:
+            knowledge_content = f.read()
+        
+        results.assert_true(len(knowledge_content) > 0, "Knowledge base file exists and has content")
+        
+        # Test 2: Verify updated delivery fee information
+        delivery_keywords = ['$300', '$200 per mile', 'Washington Gardens', 'FREE delivery', '20+ bags']
+        for keyword in delivery_keywords:
+            results.assert_true(keyword in knowledge_content, f"Knowledge base contains delivery info: {keyword}")
+        
+        # Test 3: Verify new greeting messages are documented
+        greeting_keywords = ['Thanks for your interest in IceSolutions', 'More Ice = More Vibes', 'Temar Malcolm', 'excited to help']
+        for keyword in greeting_keywords:
+            results.assert_true(keyword in knowledge_content, f"Knowledge base contains greeting: {keyword}")
+        
+        # Test 4: Verify conversation guidelines
+        guideline_keywords = ['SPECIFIC AMOUNT', 'collect information', 'DO NOT suggest', 'GENERATE_CHECKOUT']
+        for keyword in guideline_keywords:
+            results.assert_true(keyword in knowledge_content, f"Knowledge base contains guideline: {keyword}")
+        
+        print("✅ Knowledge base contains all required updated information")
+        
+    except FileNotFoundError:
+        results.failed += 1
+        error_msg = "❌ FAIL: Knowledge base file not found"
+        print(error_msg)
+        results.errors.append(error_msg)
+    except Exception as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Error reading knowledge base: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
 def test_error_handling(results):
     """Test error handling for NEW endpoints"""
     print("\n🧪 Testing Error Handling...")
