@@ -682,10 +682,8 @@ async def stripe_webhook(request: dict):
                         )
                         
                         if sheets_manager.authenticate():
-                            # Connect to the sheet
-                            import gspread
-                            gc = gspread.authorize(sheets_manager.creds)
-                            spreadsheet = gc.open_by_url(sheet_url)
+                            # Use the authenticated client
+                            spreadsheet = sheets_manager.client.open_by_url(sheet_url)
                             
                             # Get or create "Orders" worksheet
                             try:
