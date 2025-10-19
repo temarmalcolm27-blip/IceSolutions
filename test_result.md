@@ -421,6 +421,21 @@ frontend:
           agent: "testing"
           comment: "✅ NEW Checkout Page (/checkout) FULLY FUNCTIONAL - Comprehensive testing verified: 1) Accessible with proper state data from quote page, 2) Order summary displays correctly (bags, pricing, discounts, delivery fee, total), 3) Contact form fields working (name, email, phone, address), 4) Delivery instructions field functional, 5) Form validation working (required fields marked), 6) 'Proceed to Payment' button functional (integrates with Stripe checkout), 7) Proper error handling for missing state data (redirects to quote), 8) Responsive design working, 9) Order details persist correctly from quote page, 10) Security features displayed (secure payment, quality guarantee). All checkout functionality working as expected."
 
+  - task: "Order Confirmation Page - Duplicate Processing Fix"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/OrderConfirmationPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "User reported that refreshing the order confirmation page causes duplicate orders and multiple confirmation emails. Payment is processed again on refresh."
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented idempotency check to prevent duplicate order processing. Added two-layer defense: 1) Frontend - Check sessionStorage before calling webhook (key: order_processed_{sessionId}), only calls webhook once per session_id even on refresh. 2) Backend - Existing check for duplicate session_id in database (lines 624-628 in server.py). This ensures order is only processed once. Needs comprehensive testing with page refreshes."
+
 metadata:
   created_by: "testing_agent"
   version: "1.2"
