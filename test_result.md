@@ -484,6 +484,9 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Chat Widget - Improved Logic and Greeting Messages"
+    - "Dynamic Delivery Fee Calculator with Google Maps"
+    - "Checkout Page - URL Parameter Support"
     - "NEW Pricing Logic Implementation - 20+ bags discount fix needed"
   stuck_tasks:
     - "NEW Pricing Logic Implementation"
@@ -496,6 +499,7 @@ test_plan:
     - "Business logic calculations verified"
     - "Cross-page navigation and running banner verified"
     - "Order Confirmation Page duplicate processing fix - FULLY TESTED AND WORKING"
+    - "Duplicate order processing fix verified working"
 
 agent_communication:
     - agent: "testing"
