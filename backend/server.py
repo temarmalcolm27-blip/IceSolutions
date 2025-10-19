@@ -1757,6 +1757,48 @@ class ChatLead(BaseModel):
     inquiry: str = ""
     conversationHistory: str = ""
 
+class DistanceCalculationRequest(BaseModel):
+    destination_address: str
+    bags: int = 0  # Optional, for applying 20+ bags free delivery
+
+class DistanceCalculationResponse(BaseModel):
+    distance_miles: float
+    delivery_fee: float
+    distance_text: str
+    duration_text: str
+    is_washington_gardens: bool
+    free_delivery_reason: Optional[str] = None
+
+@api_router.post("/calculate-delivery-fee", response_model=DistanceCalculationResponse)
+async def calculate_delivery_fee(request: DistanceCalculationRequest):
+    """
+    Calculate delivery fee based on distance from Washington Gardens.
+    - Base fee: $300 JMD
+    - Per mile rate: $200 JMD
+    - Washington Gardens: FREE
+    - 20+ bags: FREE anywhere in Kingston
+    """
+    try:
+        from distance_service import DistanceService
+        
+        distance_service = DistanceService()
+        
+        if request.bags > 0:
+            result = distance_service.calculate_delivery_fee_for_order(
+                request.destination_address,
+                request.bags
+            )
+        else:
+            result = distance_service.calculate_distance(request.destination_address)
+        
+        return DistanceCalculationResponse(**result)
+        
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Distance calculation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to calculate distance")
+
 @api_router.post("/chat")
 async def chat_with_temar(chat_input: ChatMessage):
     """
