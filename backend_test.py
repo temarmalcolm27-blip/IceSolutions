@@ -787,14 +787,16 @@ def test_pricing_logic_verification(results):
             print(error_msg)
             results.errors.append(error_msg)
 
-def test_delivery_fee_calculator(results):
-    """Test NEW Google Maps Distance Calculation Endpoint"""
-    print("\n🧪 Testing NEW Google Maps Distance Calculation Endpoint...")
+def test_google_routes_api_integration(results):
+    """Test Google Routes API Integration for Distance Calculation (NEW API Migration)"""
+    print("\n🧪 Testing Google Routes API Integration (Migration from Distance Matrix API)...")
+    print("   📍 Endpoint: https://routes.googleapis.com/directions/v2:computeRoutes")
+    print("   🔄 Migration: Distance Matrix API → Routes API")
     
-    # Test 1: Washington Gardens address (should return FREE delivery)
-    print("\n  🏠 Testing Washington Gardens address (FREE delivery)...")
+    # Test 1: Washington Gardens (FREE delivery)
+    print("\n  🏠 Test 1: Washington Gardens (FREE delivery)...")
     washington_gardens_data = {
-        "destination_address": "Washington Gardens, Kingston, Jamaica",
+        "destination_address": "Washington Gardens, Kingston",
         "bags": 5
     }
     
@@ -802,33 +804,38 @@ def test_delivery_fee_calculator(results):
         response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
                                json=washington_gardens_data,
                                headers={'Content-Type': 'application/json'},
-                               timeout=15)
+                               timeout=20)
         
         results.assert_equal(response.status_code, 200, "Washington Gardens delivery fee calculation returns 200")
         
         if response.status_code == 200:
             data = response.json()
+            print(f"     📊 Response: {data}")
             
-            # Verify required fields
+            # Verify required fields from Routes API
             required_fields = ['distance_miles', 'delivery_fee', 'distance_text', 'duration_text', 'is_washington_gardens']
             for field in required_fields:
                 results.assert_true(field in data, f"Response contains required field: {field}")
             
             # Verify Washington Gardens gets FREE delivery
-            results.assert_equal(data.get('delivery_fee'), 0.0, "Washington Gardens has FREE delivery ($0 fee)")
+            results.assert_equal(data.get('delivery_fee'), 0, "Washington Gardens has FREE delivery ($0 fee)")
             results.assert_equal(data.get('is_washington_gardens'), True, "Washington Gardens correctly identified")
             results.assert_equal(data.get('distance_miles'), 0, "Washington Gardens distance is 0 miles")
+            
+            # Verify response format
+            results.assert_true(isinstance(data.get('distance_text'), str), "distance_text is string")
+            results.assert_true(isinstance(data.get('duration_text'), str), "duration_text is string")
         
     except requests.exceptions.RequestException as e:
         results.failed += 1
-        error_msg = f"❌ FAIL: Washington Gardens delivery fee test failed: {str(e)}"
+        error_msg = f"❌ FAIL: Washington Gardens Routes API test failed: {str(e)}"
         print(error_msg)
         results.errors.append(error_msg)
     
-    # Test 2: Kingston address outside Washington Gardens (should calculate $300 base + $200/mile)
-    print("\n  🏙️ Testing Kingston address outside Washington Gardens...")
+    # Test 2: Kingston address (distance-based pricing)
+    print("\n  🏙️ Test 2: Kingston address (distance-based pricing)...")
     kingston_data = {
-        "destination_address": "Half Way Tree, Kingston, Jamaica",
+        "destination_address": "New Kingston, Kingston, Jamaica",
         "bags": 5
     }
     
@@ -836,65 +843,81 @@ def test_delivery_fee_calculator(results):
         response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
                                json=kingston_data,
                                headers={'Content-Type': 'application/json'},
-                               timeout=15)
+                               timeout=20)
         
         results.assert_equal(response.status_code, 200, "Kingston delivery fee calculation returns 200")
         
         if response.status_code == 200:
             data = response.json()
+            print(f"     📊 Response: {data}")
             
             # Verify NOT Washington Gardens
-            results.assert_equal(data.get('is_washington_gardens'), False, "Half Way Tree not identified as Washington Gardens")
+            results.assert_equal(data.get('is_washington_gardens'), False, "New Kingston not identified as Washington Gardens")
             
-            # Verify delivery fee is calculated (should be > $300 base fee)
-            delivery_fee = data.get('delivery_fee', 0)
-            results.assert_true(delivery_fee >= 300.0, f"Delivery fee >= $300 base (got ${delivery_fee})")
-            
-            # Verify distance is calculated
+            # Verify Routes API calculated distance successfully
             distance_miles = data.get('distance_miles', 0)
-            results.assert_true(distance_miles > 0, f"Distance calculated > 0 miles (got {distance_miles})")
+            results.assert_true(distance_miles > 0, f"Routes API calculated distance > 0 miles (got {distance_miles})")
+            
+            # Verify delivery fee calculation: $300 base + $200/mile
+            expected_min_fee = 300.0  # Base fee
+            delivery_fee = data.get('delivery_fee', 0)
+            results.assert_true(delivery_fee >= expected_min_fee, f"Delivery fee >= $300 base (got ${delivery_fee})")
+            
+            # Verify fee calculation formula: $300 + ($200 × distance_miles)
+            expected_fee = 300.0 + (200.0 * distance_miles)
+            results.assert_in_range(delivery_fee, expected_fee - 1, expected_fee + 1, 
+                                  f"Delivery fee matches formula: $300 + ($200 × {distance_miles} miles)")
+            
+            # Verify Routes API response format
+            results.assert_true('km' in data.get('distance_text', ''), "distance_text contains km measurement")
+            results.assert_true('min' in data.get('duration_text', ''), "duration_text contains time estimate")
         
     except requests.exceptions.RequestException as e:
         results.failed += 1
-        error_msg = f"❌ FAIL: Kingston delivery fee test failed: {str(e)}"
+        error_msg = f"❌ FAIL: Kingston Routes API test failed: {str(e)}"
         print(error_msg)
         results.errors.append(error_msg)
     
-    # Test 3: 20+ bags (should return $0 fee regardless of distance)
-    print("\n  📦 Testing 20+ bags (FREE delivery anywhere)...")
+    # Test 3: 20+ bags (FREE delivery anywhere)
+    print("\n  📦 Test 3: 20+ bags (FREE delivery anywhere)...")
     bulk_order_data = {
-        "destination_address": "Spanish Town, Jamaica",
-        "bags": 25
+        "destination_address": "Half Way Tree, Kingston, Jamaica",
+        "bags": 20
     }
     
     try:
         response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
                                json=bulk_order_data,
                                headers={'Content-Type': 'application/json'},
-                               timeout=15)
+                               timeout=20)
         
         results.assert_equal(response.status_code, 200, "20+ bags delivery fee calculation returns 200")
         
         if response.status_code == 200:
             data = response.json()
+            print(f"     📊 Response: {data}")
             
             # Verify FREE delivery for 20+ bags
-            results.assert_equal(data.get('delivery_fee'), 0.0, "20+ bags get FREE delivery anywhere")
+            results.assert_equal(data.get('delivery_fee'), 0, "20+ bags get FREE delivery anywhere")
             
             # Should have free delivery reason
             if 'free_delivery_reason' in data:
                 results.assert_true('20+' in data['free_delivery_reason'], "Free delivery reason mentions 20+ bags")
+            
+            # Distance should still be calculated by Routes API
+            distance_miles = data.get('distance_miles', 0)
+            results.assert_true(distance_miles > 0, f"Routes API still calculates distance for 20+ bags (got {distance_miles})")
         
     except requests.exceptions.RequestException as e:
         results.failed += 1
-        error_msg = f"❌ FAIL: 20+ bags delivery fee test failed: {str(e)}"
+        error_msg = f"❌ FAIL: 20+ bags Routes API test failed: {str(e)}"
         print(error_msg)
         results.errors.append(error_msg)
     
-    # Test 4: Invalid address (should return appropriate error)
-    print("\n  ❌ Testing invalid address...")
+    # Test 4: Invalid address (error handling)
+    print("\n  ❌ Test 4: Invalid address (error handling)...")
     invalid_address_data = {
-        "destination_address": "Invalid Address That Does Not Exist, Nowhere",
+        "destination_address": "Invalid Address XYZ123",
         "bags": 5
     }
     
@@ -902,17 +925,54 @@ def test_delivery_fee_calculator(results):
         response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
                                json=invalid_address_data,
                                headers={'Content-Type': 'application/json'},
-                               timeout=15)
+                               timeout=20)
         
-        # Should return error status
-        results.assert_true(response.status_code in [400, 404, 422], "Invalid address returns appropriate error status")
+        # Should return 400 error with appropriate message
+        results.assert_equal(response.status_code, 400, "Invalid address returns 400 error")
         
-        if response.status_code >= 400:
+        if response.status_code == 400:
             error_data = response.json()
             results.assert_true('detail' in error_data, "Error response contains detail message")
+            print(f"     ✅ Error message: {error_data.get('detail')}")
         
     except requests.exceptions.RequestException as e:
-        results.assert_true(True, "Invalid address test handled network error gracefully")
+        results.failed += 1
+        error_msg = f"❌ FAIL: Invalid address Routes API test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 5: Verify no REQUEST_DENIED errors (common with old Distance Matrix API)
+    print("\n  🔐 Test 5: Verify no REQUEST_DENIED errors...")
+    test_address_data = {
+        "destination_address": "Spanish Town, Jamaica",
+        "bags": 3
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=test_address_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Should not contain REQUEST_DENIED or legacy API errors
+            response_str = str(data).lower()
+            results.assert_true('request_denied' not in response_str, "No REQUEST_DENIED errors from Routes API")
+            results.assert_true('legacy api' not in response_str, "No legacy API error messages")
+            print(f"     ✅ Routes API working without REQUEST_DENIED errors")
+        elif response.status_code == 400:
+            # Check if it's a proper validation error, not API permission error
+            error_data = response.json()
+            error_detail = error_data.get('detail', '').lower()
+            results.assert_true('request_denied' not in error_detail, "No REQUEST_DENIED in error messages")
+            results.assert_true('api key' not in error_detail, "No API key permission errors")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: REQUEST_DENIED verification test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
 
 def test_chat_endpoint(results):
     """Test NEW Chat Endpoint with Temar Malcolm AI"""
