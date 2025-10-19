@@ -94,7 +94,7 @@ const OrderTrackingPage = () => {
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="text-2xl font-bold text-gray-900">Order Details</h3>
                         {(() => {
-                          const statusInfo = getStatusInfo(order.order_status);
+                          const statusInfo = getStatusInfo(order.status || order.order_status);
                           const StatusIcon = statusInfo.icon;
                           return (
                             <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${statusInfo.bg}`}>
@@ -108,11 +108,11 @@ const OrderTrackingPage = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                           <p className="text-sm text-gray-500">Order ID</p>
-                          <p className="font-medium text-gray-900">{order.id}</p>
+                          <p className="font-medium text-gray-900">{order.order_id || order.id}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Order Date</p>
-                          <p className="font-medium text-gray-900">{new Date(order.created_at).toLocaleDateString()}</p>
+                          <p className="font-medium text-gray-900">{order.order_date || (order.created_at && new Date(order.created_at).toLocaleDateString())}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Customer Name</p>
@@ -131,22 +131,18 @@ const OrderTrackingPage = () => {
 
                       <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">{order.bags} x 10lb Ice Bags</span>
-                          <span className="font-medium">JMD ${order.subtotal.toFixed(2)}</span>
+                          <span className="text-gray-600">{order.quantity || order.bags} x 10lb Ice Bags</span>
+                          <span className="font-medium">{order.subtotal}</span>
                         </div>
-                        {order.discount_amount > 0 && (
+                        {order.discount && order.discount !== "$0.00" && (
                           <div className="flex justify-between text-green-600">
-                            <span>Discount ({order.discount_percent}%)</span>
-                            <span>-JMD ${order.discount_amount.toFixed(2)}</span>
+                            <span>Discount</span>
+                            <span>-{order.discount}</span>
                           </div>
                         )}
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Delivery Fee</span>
-                          <span className="font-medium">{order.delivery_fee === 0 ? 'FREE' : `JMD $${order.delivery_fee.toFixed(2)}`}</span>
-                        </div>
                         <div className="flex justify-between text-lg font-bold border-t pt-3">
                           <span>Total</span>
-                          <span className="text-cyan-600">JMD ${order.total_amount.toFixed(2)}</span>
+                          <span className="text-cyan-600">{order.total}</span>
                         </div>
                       </div>
                     </div>
