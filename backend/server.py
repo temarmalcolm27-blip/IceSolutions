@@ -1859,7 +1859,7 @@ IMPORTANT:
 - When customer knows what they want, collect info immediately
 - Only suggest different quantities if they ask for recommendations
 - Keep responses concise and conversational
-- Only 10lb bags currently available - 50lb and 100lb coming soon
+- Only 10lb bags currently available - 50lb and 100lb coming soon"""
 
         # Initialize chat
         chat = LlmChat(
