@@ -353,8 +353,9 @@ def send_order_confirmation_email(
         # Send email
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
-            # For SendGrid SMTP, username is always "apikey"
-            server.login("apikey", sender_password)
+            # For Gmail, use email as username. For SendGrid, use "apikey"
+            username = sender_email if "gmail" in smtp_server else "apikey"
+            server.login(username, sender_password)
             server.sendmail(sender_email, customer_email, message.as_string())
         
         logger.info(f"Order confirmation email sent successfully to {customer_email} for Order #{order_id}")
