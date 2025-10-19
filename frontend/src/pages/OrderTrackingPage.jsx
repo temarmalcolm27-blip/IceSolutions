@@ -32,14 +32,17 @@ const OrderTrackingPage = () => {
   };
 
   const getStatusInfo = (status) => {
+    const normalizedStatus = status?.toLowerCase() || '';
     const statuses = {
+      planning: { color: 'text-blue-600', bg: 'bg-blue-100', icon: Clock, text: 'Planning' },
+      'in transit': { color: 'text-purple-600', bg: 'bg-purple-100', icon: Truck, text: 'In Transit' },
+      delivered: { color: 'text-green-600', bg: 'bg-green-100', icon: CheckCircle, text: 'Delivered' },
       pending: { color: 'text-yellow-600', bg: 'bg-yellow-100', icon: Clock, text: 'Pending' },
       confirmed: { color: 'text-blue-600', bg: 'bg-blue-100', icon: CheckCircle, text: 'Confirmed' },
       in_delivery: { color: 'text-purple-600', bg: 'bg-purple-100', icon: Truck, text: 'Out for Delivery' },
-      delivered: { color: 'text-green-600', bg: 'bg-green-100', icon: CheckCircle, text: 'Delivered' },
       cancelled: { color: 'text-red-600', bg: 'bg-red-100', icon: Clock, text: 'Cancelled' }
     };
-    return statuses[status] || statuses.pending;
+    return statuses[normalizedStatus] || statuses.planning;
   };
 
   return (
