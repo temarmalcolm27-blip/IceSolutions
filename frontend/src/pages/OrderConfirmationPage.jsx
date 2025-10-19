@@ -64,7 +64,7 @@ const OrderConfirmationPage = () => {
         setTimeout(() => pollPaymentStatus(attempts + 1), 2000);
       } catch (error) {
         console.error('Error checking payment status:', error);
-        setLoading(false;
+        setLoading(false);
       }
     };
 
