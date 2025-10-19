@@ -609,12 +609,16 @@ async def get_checkout_status(session_id: str):
 async def stripe_webhook(request: dict):
     """Handle Stripe webhook events"""
     try:
+        logger.info(f"Webhook received: {request}")
+        
         # Initialize Stripe checkout
         stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
         
         # Process webhook
         session_id = request.get("session_id")
         payment_status = request.get("payment_status")
+        
+        logger.info(f"Processing webhook - Session: {session_id}, Status: {payment_status}")
         
         if session_id and payment_status == "paid":
             # Update payment transaction
