@@ -1,7 +1,7 @@
 """
-Distance calculation service using Google Maps Distance Matrix API
+Distance calculation service using Google Routes API (new API replacing Distance Matrix)
 """
-import googlemaps
+import requests
 import os
 import logging
 from typing import Dict, Optional
@@ -14,14 +14,14 @@ class DistanceService:
         if not api_key:
             raise ValueError("GOOGLE_MAPS_API_KEY not found in environment variables")
         
-        self.gmaps = googlemaps.Client(key=api_key)
+        self.api_key = api_key
         self.origin_address = "Washington Gardens, Kingston 20, Jamaica"
         self.base_delivery_fee = 300.0  # JMD
         self.per_mile_rate = 200.0  # JMD per mile
     
     def calculate_distance(self, destination_address: str) -> Dict[str, float]:
         """
-        Calculate driving distance from Washington Gardens to destination address.
+        Calculate driving distance from Washington Gardens to destination address using Routes API.
         Returns distance in miles and calculated delivery fee.
         
         Args:
@@ -45,30 +45,63 @@ class DistanceService:
                     'is_washington_gardens': True
                 }
             
-            # Make API request for distance matrix
-            result = self.gmaps.distance_matrix(
-                origins=self.origin_address,
-                destinations=destination_address,
-                mode="driving",
-                units="metric"
-            )
+            # Use Google Routes API (new API)
+            url = "https://routes.googleapis.com/directions/v2:computeRoutes"
             
-            # Check API response status
-            if result['status'] != 'OK':
-                logger.error(f"API returned status: {result['status']}")
-                raise ValueError(f"Unable to calculate distance: {result['status']}")
+            headers = {
+                "Content-Type": "application/json",
+                "X-Goog-Api-Key": self.api_key,
+                "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.legs"
+            }
             
-            # Extract distance data from response
-            element = result['rows'][0]['elements'][0]
+            body = {
+                "origin": {
+                    "address": self.origin_address
+                },
+                "destination": {
+                    "address": destination_address
+                },
+                "travelMode": "DRIVE",
+                "routingPreference": "TRAFFIC_UNAWARE"
+            }
             
-            if element['status'] != 'OK':
-                if element['status'] == 'ZERO_RESULTS':
-                    raise ValueError("No route found to the specified address. Please check the address and try again.")
-                raise ValueError(f"Unable to calculate route: {element['status']}")
+            response = requests.post(url, headers=headers, json=body)
+            
+            # Check response status
+            if response.status_code != 200:
+                logger.error(f"Routes API returned status {response.status_code}: {response.text}")
+                raise ValueError(f"Unable to calculate distance. Please check the address and try again.")
+            
+            data = response.json()
+            
+            # Check if routes were found
+            if not data.get('routes') or len(data['routes']) == 0:
+                raise ValueError("No route found to the specified address. Please check the address and try again.")
+            
+            route = data['routes'][0]
+            
+            # Extract distance in meters
+            distance_meters = route.get('distanceMeters', 0)
+            if distance_meters == 0:
+                raise ValueError("Unable to calculate distance for this address.")
             
             # Convert distance from meters to miles
-            distance_meters = element['distance']['value']
             distance_miles = distance_meters / 1609.344
+            
+            # Extract duration
+            duration_seconds = int(route.get('duration', '0s').replace('s', ''))
+            duration_minutes = duration_seconds // 60
+            duration_hours = duration_minutes // 60
+            duration_remaining_minutes = duration_minutes % 60
+            
+            if duration_hours > 0:
+                duration_text = f"{duration_hours} hour{'s' if duration_hours > 1 else ''} {duration_remaining_minutes} min{'s' if duration_remaining_minutes != 1 else ''}"
+            else:
+                duration_text = f"{duration_minutes} min{'s' if duration_minutes != 1 else ''}"
+            
+            # Format distance text
+            distance_km = distance_meters / 1000
+            distance_text = f"{distance_km:.1f} km"
             
             # Calculate delivery fee ($300 base + $200 per mile)
             delivery_fee = self.base_delivery_fee + (distance_miles * self.per_mile_rate)
@@ -76,13 +109,13 @@ class DistanceService:
             return {
                 'distance_miles': round(distance_miles, 2),
                 'delivery_fee': round(delivery_fee, 2),
-                'distance_text': element['distance']['text'],
-                'duration_text': element['duration']['text'],
+                'distance_text': distance_text,
+                'duration_text': duration_text,
                 'is_washington_gardens': False
             }
             
-        except googlemaps.exceptions.ApiError as e:
-            logger.error(f"Google Maps API error: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Routes API request error: {str(e)}")
             raise ValueError(f"Distance calculation failed: Unable to reach mapping service")
         except Exception as e:
             logger.error(f"Distance calculation error: {str(e)}")
