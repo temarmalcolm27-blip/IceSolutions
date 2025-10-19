@@ -17,8 +17,17 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
+  // Get URL parameters (for chat widget integration)
+  const searchParams = new URLSearchParams(location.search);
+  const urlBags = searchParams.get('bags');
+  const urlName = searchParams.get('name');
+  const urlEmail = searchParams.get('email');
+  const urlPhone = searchParams.get('phone');
+  const urlAddress = searchParams.get('address');
+  const fromChat = searchParams.get('from_chat') === 'true';
+  
   const { 
-    bags, 
+    bags: stateBags, 
     deliveryFee, 
     deliveryAddress, 
     totalAmount, 
@@ -35,13 +44,58 @@ const CheckoutPage = () => {
     notes
   } = location.state || {};
   
+  // Use URL params if coming from chat, otherwise use state
+  const bags = fromChat ? parseInt(urlBags) : stateBags;
+  const initialName = fromChat ? urlName : (preFilledName || '');
+  const initialEmail = fromChat ? urlEmail : (preFilledEmail || '');
+  const initialPhone = fromChat ? urlPhone : (preFilledPhone || '');
+  const initialAddress = fromChat ? urlAddress : (deliveryAddress || '');
+  
   const [formData, setFormData] = useState({
-    customerName: preFilledName || '',
-    customerEmail: preFilledEmail || '',
-    customerPhone: preFilledPhone || '',
-    deliveryAddress: deliveryAddress || '',
+    customerName: initialName,
+    customerEmail: initialEmail,
+    customerPhone: initialPhone,
+    deliveryAddress: initialAddress,
     deliveryInstructions: notes || ''
   });
+  
+  const [calculatedDelivery, setCalculatedDelivery] = useState(deliveryFee || null);
+  const [calculatingDelivery, setCalculatingDelivery] = useState(false);
+
+  // Calculate delivery fee if coming from chat
+  useEffect(() => {
+    if (fromChat && initialAddress && !calculatedDelivery) {
+      calculateDeliveryFee();
+    }
+  }, [fromChat, initialAddress]);
+  
+  const calculateDeliveryFee = async () => {
+    if (!formData.deliveryAddress) return;
+    
+    setCalculatingDelivery(true);
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const response = await fetch(`${backendUrl}/api/calculate-delivery-fee`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          destination_address: formData.deliveryAddress,
+          bags: bags || 0
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCalculatedDelivery(data.delivery_fee);
+      }
+    } catch (error) {
+      console.error('Error calculating delivery fee:', error);
+    } finally {
+      setCalculatingDelivery(false);
+    }
+  };
 
   useEffect(() => {
     if (!bags || !totalAmount) {
