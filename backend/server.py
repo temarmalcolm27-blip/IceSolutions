@@ -621,6 +621,11 @@ async def stripe_webhook(request: dict):
         logger.info(f"Processing webhook - Session: {session_id}, Status: {payment_status}")
         
         if session_id and payment_status == "paid":
+            # Check if order already exists for this session to prevent duplicates
+            existing_order = await db.orders.find_one({"session_id": session_id})
+            if existing_order:
+                logger.info(f"Order already processed for session {session_id}, Order ID: {existing_order.get('order_id')}")
+                return {"status": "success", "message": "Order already processed", "order_id": existing_order.get('order_id')}
             # Update payment transaction
             await db.payment_transactions.update_one(
                 {"session_id": session_id},
