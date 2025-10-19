@@ -586,10 +586,13 @@ def run_duplicate_order_tests():
     # Test 4: MongoDB single document per session
     test_mongodb_single_document(results)
     
-    # Test 5: Email service (single email)
+    # Test 5: Backend duplicate detection logs
+    test_backend_duplicate_logs(results)
+    
+    # Test 6: Email service (single email)
     test_email_service_logs(results)
     
-    # Test 6: Google Sheets integration
+    # Test 7: Google Sheets integration
     test_google_sheets_integration(results)
     
     # Print summary
