@@ -157,6 +157,213 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
         return False
 
 
+
+def send_order_confirmation_email(
+    customer_email: str,
+    customer_name: str,
+    order_id: str,
+    quantity: int,
+    subtotal: float,
+    discount: float,
+    total: float,
+    delivery_address: str,
+    tracking_url: str
+):
+    """
+    Send order confirmation email to customer after successful payment
+    
+    Args:
+        customer_email: Customer's email address
+        customer_name: Customer's name
+        order_id: Unique order ID
+        quantity: Number of bags ordered
+        subtotal: Subtotal before discount
+        discount: Discount amount
+        total: Total amount paid
+        delivery_address: Delivery address
+        tracking_url: URL to track the order
+    """
+    
+    # Email configuration
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.sendgrid.net')
+    smtp_port = int(os.getenv('SMTP_PORT', '587'))
+    sender_email = os.getenv('SENDER_EMAIL', 'temarmalcolm27@gmail.com')
+    sender_password = os.getenv('SENDER_PASSWORD', '')
+    
+    # If no email credentials configured, log and return
+    if not sender_password:
+        logger.warning("Email credentials not configured. Skipping order confirmation email.")
+        logger.info(f"Would have sent order confirmation to {customer_email} for Order #{order_id}")
+        return False
+    
+    try:
+        # Create message
+        message = MIMEMultipart("alternative")
+        message["Subject"] = f"Order Confirmed! #{order_id} - Ice Solutions"
+        message["From"] = f"Ice Solutions <{sender_email}>"
+        message["To"] = customer_email
+        
+        # Create HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; background: #f9fafb; }}
+                .header {{ background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                .content {{ background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; }}
+                .order-box {{ background: #ecfeff; border: 2px solid #06b6d4; border-radius: 8px; padding: 20px; margin: 20px 0; }}
+                .order-details {{ margin: 20px 0; }}
+                .detail-row {{ display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }}
+                .detail-row.total {{ font-weight: bold; font-size: 18px; border-top: 2px solid #06b6d4; border-bottom: none; padding-top: 15px; }}
+                .button {{ display: inline-block; background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }}
+                .footer {{ background: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 14px; color: #6b7280; }}
+                .status-box {{ background: #dcfce7; border: 2px solid #16a34a; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🎉 Order Confirmed!</h1>
+                    <p style="margin: 0; font-size: 24px; font-weight: bold;">Order #{order_id}</p>
+                    <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for choosing Ice Solutions!</p>
+                </div>
+                
+                <div class="content">
+                    <p style="font-size: 18px;"><strong>Hi {customer_name},</strong></p>
+                    
+                    <p>Your payment has been successfully processed and your ice order is confirmed! We're getting your order ready for delivery.</p>
+                    
+                    <div class="order-box">
+                        <h2 style="margin-top: 0; color: #0e7490;">📦 Order Summary</h2>
+                        <div class="order-details">
+                            <div class="detail-row">
+                                <span>Order ID:</span>
+                                <span><strong>#{order_id}</strong></span>
+                            </div>
+                            <div class="detail-row">
+                                <span>10lb Ice Bags:</span>
+                                <span><strong>{quantity} bags</strong></span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Subtotal:</span>
+                                <span>JMD ${subtotal:.2f}</span>
+                            </div>
+                            {f'<div class="detail-row"><span>Discount:</span><span style="color: #16a34a;">-JMD ${discount:.2f}</span></div>' if discount > 0 else ''}
+                            <div class="detail-row total">
+                                <span>Total Paid:</span>
+                                <span style="color: #06b6d4;">JMD ${total:.2f}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-box">
+                        <p style="margin: 0; font-size: 16px; color: #166534;"><strong>✅ Status: Planning</strong></p>
+                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #15803d;">Your order is being prepared for delivery</p>
+                    </div>
+                    
+                    <p><strong>📍 Delivery Address:</strong><br>
+                    {delivery_address}</p>
+                    
+                    <center>
+                        <a href="{tracking_url}" class="button" style="color: white;">🔍 Track Your Order</a>
+                    </center>
+                    
+                    <h3 style="color: #0e7490;">What Happens Next?</h3>
+                    <ol>
+                        <li><strong>Planning:</strong> We're preparing your order (Current stage)</li>
+                        <li><strong>In Transit:</strong> Your ice is on the way!</li>
+                        <li><strong>Delivered:</strong> Enjoy your crystal-clear ice!</li>
+                    </ol>
+                    
+                    <p style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                        <strong>💡 Track your order anytime:</strong><br>
+                        Visit <a href="{tracking_url}" style="color: #0e7490;">{tracking_url}</a> to see real-time updates on your delivery status.
+                    </p>
+                    
+                    <h3 style="color: #0e7490;">Need Help?</h3>
+                    <p>Questions about your order? We're here to help!</p>
+                    <ul>
+                        <li>📞 Call: (876) 490-7208</li>
+                        <li>💬 Chat: Visit our website</li>
+                        <li>📧 Email: temarmalcolm27@gmail.com</li>
+                    </ul>
+                </div>
+                
+                <div class="footer">
+                    <p><strong>Ice Solutions</strong><br>
+                    Washington Gardens, Kingston, Jamaica<br>
+                    📞 (876) 490-7208 | More Ice = More Vibes! 🧊</p>
+                    
+                    <p style="font-size: 12px; margin-top: 15px;">
+                        Order #{ order_id} | <a href="{tracking_url}" style="color: #06b6d4;">Track Order</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Plain text version
+        text_content = f"""
+        ORDER CONFIRMED! #{order_id}
+        
+        Hi {customer_name},
+        
+        Thank you for choosing Ice Solutions! Your payment has been successfully processed.
+        
+        ORDER SUMMARY:
+        Order ID: #{order_id}
+        10lb Ice Bags: {quantity} bags
+        Subtotal: JMD ${subtotal:.2f}
+        {f'Discount: -JMD ${discount:.2f}' if discount > 0 else ''}
+        Total Paid: JMD ${total:.2f}
+        
+        DELIVERY ADDRESS:
+        {delivery_address}
+        
+        STATUS: Planning
+        Your order is being prepared for delivery
+        
+        TRACK YOUR ORDER:
+        {tracking_url}
+        
+        WHAT HAPPENS NEXT:
+        1. Planning: We're preparing your order (Current stage)
+        2. In Transit: Your ice is on the way!
+        3. Delivered: Enjoy your crystal-clear ice!
+        
+        NEED HELP?
+        Call: (876) 490-7208
+        Email: temarmalcolm27@gmail.com
+        
+        Ice Solutions
+        Washington Gardens, Kingston, Jamaica
+        More Ice = More Vibes! 🧊
+        """
+        
+        # Attach both versions
+        part1 = MIMEText(text_content, "plain")
+        part2 = MIMEText(html_content, "html")
+        message.attach(part1)
+        message.attach(part2)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            # For SendGrid SMTP, username is always "apikey"
+            server.login("apikey", sender_password)
+            server.sendmail(sender_email, customer_email, message.as_string())
+        
+        logger.info(f"Order confirmation email sent successfully to {customer_email} for Order #{order_id}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send order confirmation email to {customer_email}: {str(e)}")
+        return False
+
+
 # Email configuration instructions
 EMAIL_SETUP_INSTRUCTIONS = """
 EMAIL SERVICE SETUP INSTRUCTIONS:
