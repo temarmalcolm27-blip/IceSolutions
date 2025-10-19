@@ -71,7 +71,9 @@ We proudly serve Kingston, Jamaica and surrounding areas:
 - **Same-Day Delivery**: Available when ordered at least 2 hours before needed
 
 #### Outside Washington Gardens
-- **Delivery Fee**: JMD $300
+- **Delivery Fee**: Starts at JMD $300 + JMD $200 per mile from Washington Gardens
+- **Distance-Based Pricing**: We calculate the exact delivery fee based on the driving distance from Washington Gardens to your location
+- **20+ Bags**: Automatically get FREE delivery anywhere in Kingston
 - **Time Slots**:
   - 10 AM - 1 PM
   - 1 PM - 4 PM
