@@ -1985,8 +1985,7 @@ async def get_order_status(order_id: str):
         )
         
         if sheets_manager.authenticate():
-            gc = gspread.authorize(sheets_manager.creds)
-            spreadsheet = gc.open_by_url(sheet_url)
+            spreadsheet = sheets_manager.client.open_by_url(sheet_url)
             
             try:
                 orders_sheet = spreadsheet.worksheet("Orders")
