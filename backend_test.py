@@ -1174,8 +1174,8 @@ def test_error_handling(results):
         results.assert_true(True, "Invalid order test handled network error gracefully")
 
 def run_all_tests():
-    """Run all backend API tests including NEW features"""
-    print("🚀 Starting IceSolutions Backend API Tests - COMPREHENSIVE NEW FEATURES TESTING")
+    """Run all backend API tests including NEW CHAT & DELIVERY features"""
+    print("🚀 Starting IceSolutions Backend API Tests - CHAT WIDGET & DELIVERY FEE CALCULATOR")
     print("=" * 80)
     
     results = TestResults()
@@ -1188,34 +1188,52 @@ def run_all_tests():
     test_delivery_areas_api(results)
     test_contacts_api(results)
     
-    # SECTION 2: NEW Payment Endpoints
+    # SECTION 2: NEW Google Maps Distance Calculation
     print("\n" + "=" * 50)
-    print("💳 SECTION 2: NEW PAYMENT ENDPOINTS")
+    print("🗺️  SECTION 2: NEW GOOGLE MAPS DISTANCE CALCULATION")
+    print("=" * 50)
+    test_delivery_fee_calculator(results)
+    
+    # SECTION 3: NEW Chat Widget with Temar Malcolm AI
+    print("\n" + "=" * 50)
+    print("💬 SECTION 3: NEW CHAT WIDGET WITH TEMAR MALCOLM AI")
+    print("=" * 50)
+    test_chat_endpoint(results)
+    
+    # SECTION 4: Knowledge Base Verification
+    print("\n" + "=" * 50)
+    print("📚 SECTION 4: KNOWLEDGE BASE VERIFICATION")
+    print("=" * 50)
+    test_knowledge_base_updates(results)
+    
+    # SECTION 5: NEW Payment Endpoints
+    print("\n" + "=" * 50)
+    print("💳 SECTION 5: NEW PAYMENT ENDPOINTS")
     print("=" * 50)
     test_payment_endpoints(results)
     test_order_endpoints(results)
     
-    # SECTION 3: NEW Lead Management Endpoints  
+    # SECTION 6: NEW Lead Management Endpoints  
     print("\n" + "=" * 50)
-    print("📞 SECTION 3: NEW LEAD MANAGEMENT ENDPOINTS")
+    print("📞 SECTION 6: NEW LEAD MANAGEMENT ENDPOINTS")
     print("=" * 50)
     test_lead_management_endpoints(results)
     
-    # SECTION 4: NEW Pricing Logic Verification
+    # SECTION 7: NEW Pricing Logic Verification
     print("\n" + "=" * 50)
-    print("💰 SECTION 4: NEW PRICING LOGIC VERIFICATION")
+    print("💰 SECTION 7: NEW PRICING LOGIC VERIFICATION")
     print("=" * 50)
     test_pricing_logic_verification(results)
     
-    # SECTION 5: Error Handling
+    # SECTION 8: Error Handling
     print("\n" + "=" * 50)
-    print("⚠️  SECTION 5: ERROR HANDLING")
+    print("⚠️  SECTION 8: ERROR HANDLING")
     print("=" * 50)
     test_error_handling(results)
     
     # Print summary
     print("\n" + "=" * 80)
-    print("🏁 COMPREHENSIVE TEST SUMMARY")
+    print("🏁 COMPREHENSIVE TEST SUMMARY - CHAT & DELIVERY FEATURES")
     print("=" * 80)
     print(f"✅ PASSED: {results.passed}")
     print(f"❌ FAILED: {results.failed}")
@@ -1230,12 +1248,12 @@ def run_all_tests():
     print(f"\n📈 SUCCESS RATE: {success_rate:.1f}%")
     
     if results.failed == 0:
-        print("\n🎉 ALL TESTS PASSED! Backend API with NEW features is working correctly.")
-        print("✨ Payment flow, lead management, and pricing logic all verified!")
+        print("\n🎉 ALL TESTS PASSED! Chat widget and delivery fee calculator working correctly!")
+        print("✨ Google Maps integration, chat logic, and checkout generation all verified!")
         return True
     else:
         print(f"\n⚠️  {results.failed} tests failed. Please review the issues above.")
-        print("🔧 Focus on NEW payment and lead management features.")
+        print("🔧 Focus on NEW chat widget and delivery fee calculator features.")
         return False
 
 if __name__ == "__main__":
