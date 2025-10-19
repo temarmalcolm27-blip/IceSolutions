@@ -85,7 +85,8 @@ const ChatWidget = () => {
         text: data.response,
         sender: 'agent',
         timestamp: new Date(),
-        showLeadForm: data.requestLeadInfo
+        showLeadForm: data.requestLeadInfo,
+        checkoutUrl: data.checkoutUrl
       };
 
       setMessages(prev => [...prev, agentMessage]);
@@ -93,6 +94,14 @@ const ChatWidget = () => {
       // If agent is requesting lead information, show the form
       if (data.requestLeadInfo) {
         setShowLeadForm(true);
+      }
+      
+      // If checkout URL is provided, redirect to checkout
+      if (data.checkoutUrl) {
+        // Wait a moment for user to read the message, then redirect
+        setTimeout(() => {
+          window.location.href = data.checkoutUrl;
+        }, 2000);
       }
 
     } catch (error) {
