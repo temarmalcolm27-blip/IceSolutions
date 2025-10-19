@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 import json
 import asyncio
+import gspread
 from urllib.parse import quote, unquote
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from google_sheets_integration import GoogleSheetsLeadManager
