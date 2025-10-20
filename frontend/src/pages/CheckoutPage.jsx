@@ -62,12 +62,12 @@ const CheckoutPage = () => {
   const [calculatedDelivery, setCalculatedDelivery] = useState(deliveryFee || null);
   const [calculatingDelivery, setCalculatingDelivery] = useState(false);
 
-  // Calculate delivery fee if coming from chat
+  // Calculate delivery fee when address is available
   useEffect(() => {
-    if (fromChat && initialAddress && !calculatedDelivery) {
+    if (formData.deliveryAddress && !calculatedDelivery && bags) {
       calculateDeliveryFee();
     }
-  }, [fromChat, initialAddress]);
+  }, [formData.deliveryAddress, bags]);
   
   const calculateDeliveryFee = async () => {
     if (!formData.deliveryAddress) return;
