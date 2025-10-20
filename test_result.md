@@ -537,10 +537,10 @@ frontend:
 
 metadata:
   created_by: "testing_agent"
-  version: "1.3"
-  test_sequence: 4
+  version: "1.4"
+  test_sequence: 5
   run_ui: true
-  last_comprehensive_test: "2025-01-12 - Chat widget and delivery features tested - 96.1% success rate"
+  last_comprehensive_test: "2025-01-12 - Quote page instant calculation tested - 97.9% success rate"
 
 test_plan:
   current_focus:
