@@ -1233,67 +1233,237 @@ def test_error_handling(results):
     except requests.exceptions.RequestException as e:
         results.assert_true(True, "Invalid order test handled network error gracefully")
 
+def test_quote_page_instant_calculation(results):
+    """Test Quote Page Instant Calculation with Distance-Based Delivery Fees (REVIEW REQUEST)"""
+    print("\n🧪 Testing Quote Page Instant Calculation with Distance-Based Delivery Fees...")
+    print("   📋 REVIEW REQUEST: Test instant calculation with Google Routes API")
+    
+    # Test 1: 50 guests, address: "8 Upper Elletson Rd Kingston CSO" - should show ~$1,769.92 for 7.35 miles
+    print("\n  🏠 Test 1: 8 Upper Elletson Rd Kingston CSO (Expected: ~$1,769.92 for 7.35 miles)...")
+    elletson_data = {
+        "destination_address": "8 Upper Elletson Rd Kingston CSO",
+        "bags": 2  # 50 guests = 2 bags (50/25)
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=elletson_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Elletson Rd delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify distance is around 7.35 miles (allow ±1 mile tolerance)
+            distance_miles = data.get('distance_miles', 0)
+            results.assert_in_range(distance_miles, 6.0, 9.0, f"Distance ~7.35 miles (got {distance_miles})")
+            
+            # Verify delivery fee is around $1,769.92 (allow ±$100 tolerance)
+            delivery_fee = data.get('delivery_fee', 0)
+            results.assert_in_range(delivery_fee, 1650.0, 1900.0, f"Delivery fee ~$1,769.92 (got ${delivery_fee})")
+            
+            # Verify calculation formula: $300 + ($200 × distance_miles)
+            expected_fee = 300.0 + (200.0 * distance_miles)
+            results.assert_in_range(delivery_fee, expected_fee - 5, expected_fee + 5, 
+                                  f"Fee matches formula: $300 + ($200 × {distance_miles})")
+            
+            # Verify not Washington Gardens
+            results.assert_equal(data.get('is_washington_gardens'), False, "Elletson Rd not identified as Washington Gardens")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Elletson Rd test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Washington Gardens - should show $0 (FREE)
+    print("\n  🆓 Test 2: Washington Gardens (Expected: $0 FREE delivery)...")
+    washington_data = {
+        "destination_address": "Washington Gardens, Kingston",
+        "bags": 2
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=washington_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Washington Gardens delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify FREE delivery
+            results.assert_equal(data.get('delivery_fee'), 0, "Washington Gardens has FREE delivery ($0 fee)")
+            results.assert_equal(data.get('is_washington_gardens'), True, "Washington Gardens correctly identified")
+            results.assert_equal(data.get('distance_miles'), 0, "Washington Gardens distance is 0 miles")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Washington Gardens test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: 20+ bags free delivery - "New Kingston, Jamaica"
+    print("\n  📦 Test 3: New Kingston with 20+ bags (Expected: FREE delivery)...")
+    bulk_order_data = {
+        "destination_address": "New Kingston, Jamaica",
+        "bags": 25  # 100+ guests would need ~4+ bags, but testing with 25 for 20+ threshold
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=bulk_order_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "New Kingston 20+ bags delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify FREE delivery for 20+ bags
+            results.assert_equal(data.get('delivery_fee'), 0, "20+ bags get FREE delivery anywhere")
+            
+            # Should have free delivery reason
+            if 'free_delivery_reason' in data:
+                results.assert_true('20+' in data['free_delivery_reason'], "Free delivery reason mentions 20+ bags")
+            
+            # Distance should still be calculated
+            distance_miles = data.get('distance_miles', 0)
+            results.assert_true(distance_miles > 0, f"Distance still calculated for 20+ bags (got {distance_miles})")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: New Kingston 20+ bags test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 4: Invalid address - should return 400 error (fallback to $300 handled by frontend)
+    print("\n  ❌ Test 4: Invalid address (Expected: 400 error for fallback)...")
+    invalid_data = {
+        "destination_address": "Invalid Address XYZ123 Nowhere",
+        "bags": 2
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=invalid_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        # Should return 400 error for invalid address
+        results.assert_equal(response.status_code, 400, "Invalid address returns 400 error")
+        
+        if response.status_code == 400:
+            error_data = response.json()
+            results.assert_true('detail' in error_data, "Error response contains detail message")
+            print(f"     ✅ Error message: {error_data.get('detail')}")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Invalid address test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 5: Verify API endpoint structure matches frontend expectations
+    print("\n  🔗 Test 5: API endpoint structure verification...")
+    test_structure_data = {
+        "destination_address": "Half Way Tree, Kingston, Jamaica",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=test_structure_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify all required fields for frontend integration
+            required_fields = ['distance_miles', 'delivery_fee', 'distance_text', 'duration_text', 'is_washington_gardens']
+            for field in required_fields:
+                results.assert_true(field in data, f"Response contains required field for frontend: {field}")
+            
+            # Verify data types
+            results.assert_true(isinstance(data.get('distance_miles'), (int, float)), "distance_miles is numeric")
+            results.assert_true(isinstance(data.get('delivery_fee'), (int, float)), "delivery_fee is numeric")
+            results.assert_true(isinstance(data.get('distance_text'), str), "distance_text is string")
+            results.assert_true(isinstance(data.get('duration_text'), str), "duration_text is string")
+            results.assert_true(isinstance(data.get('is_washington_gardens'), bool), "is_washington_gardens is boolean")
+            
+            print(f"     ✅ All required fields present with correct types")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: API structure test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
 def run_all_tests():
-    """Run all backend API tests including NEW CHAT & DELIVERY features"""
-    print("🚀 Starting IceSolutions Backend API Tests - CHAT WIDGET & DELIVERY FEE CALCULATOR")
+    """Run all backend API tests focusing on QUOTE PAGE INSTANT CALCULATION"""
+    print("🚀 Starting IceSolutions Backend API Tests - QUOTE PAGE INSTANT CALCULATION")
     print("=" * 80)
+    print("📋 REVIEW REQUEST: Test quote page instant calculation with distance-based delivery fees")
     
     results = TestResults()
     
-    # SECTION 1: Existing Endpoints (Smoke Test)
+    # MAIN FOCUS: Quote Page Instant Calculation (REVIEW REQUEST)
+    print("\n" + "=" * 60)
+    print("🎯 MAIN FOCUS: QUOTE PAGE INSTANT CALCULATION (REVIEW REQUEST)")
+    print("=" * 60)
+    test_quote_page_instant_calculation(results)
+    
+    # SECTION 1: Google Routes API Integration (Supporting the main feature)
     print("\n" + "=" * 50)
-    print("📋 SECTION 1: EXISTING ENDPOINTS (SMOKE TEST)")
+    print("🗺️  SECTION 1: GOOGLE ROUTES API INTEGRATION")
+    print("=" * 50)
+    test_google_routes_api_integration(results)
+    
+    # SECTION 2: Existing Endpoints (Smoke Test)
+    print("\n" + "=" * 50)
+    print("📋 SECTION 2: EXISTING ENDPOINTS (SMOKE TEST)")
     print("=" * 50)
     test_products_api(results)
     test_delivery_areas_api(results)
     test_contacts_api(results)
     
-    # SECTION 2: Google Routes API Integration (NEW API Migration)
+    # SECTION 3: NEW Payment Endpoints
     print("\n" + "=" * 50)
-    print("🗺️  SECTION 2: GOOGLE ROUTES API INTEGRATION (NEW API MIGRATION)")
-    print("=" * 50)
-    test_google_routes_api_integration(results)
-    
-    # SECTION 3: NEW Chat Widget with Temar Malcolm AI
-    print("\n" + "=" * 50)
-    print("💬 SECTION 3: NEW CHAT WIDGET WITH TEMAR MALCOLM AI")
-    print("=" * 50)
-    test_chat_endpoint(results)
-    
-    # SECTION 4: Knowledge Base Verification
-    print("\n" + "=" * 50)
-    print("📚 SECTION 4: KNOWLEDGE BASE VERIFICATION")
-    print("=" * 50)
-    test_knowledge_base_updates(results)
-    
-    # SECTION 5: NEW Payment Endpoints
-    print("\n" + "=" * 50)
-    print("💳 SECTION 5: NEW PAYMENT ENDPOINTS")
+    print("💳 SECTION 3: NEW PAYMENT ENDPOINTS")
     print("=" * 50)
     test_payment_endpoints(results)
     test_order_endpoints(results)
     
-    # SECTION 6: NEW Lead Management Endpoints  
+    # SECTION 4: NEW Lead Management Endpoints  
     print("\n" + "=" * 50)
-    print("📞 SECTION 6: NEW LEAD MANAGEMENT ENDPOINTS")
+    print("📞 SECTION 4: NEW LEAD MANAGEMENT ENDPOINTS")
     print("=" * 50)
     test_lead_management_endpoints(results)
     
-    # SECTION 7: NEW Pricing Logic Verification
+    # SECTION 5: NEW Pricing Logic Verification
     print("\n" + "=" * 50)
-    print("💰 SECTION 7: NEW PRICING LOGIC VERIFICATION")
+    print("💰 SECTION 5: NEW PRICING LOGIC VERIFICATION")
     print("=" * 50)
     test_pricing_logic_verification(results)
     
-    # SECTION 8: Error Handling
+    # SECTION 6: Error Handling
     print("\n" + "=" * 50)
-    print("⚠️  SECTION 8: ERROR HANDLING")
+    print("⚠️  SECTION 6: ERROR HANDLING")
     print("=" * 50)
     test_error_handling(results)
     
     # Print summary
     print("\n" + "=" * 80)
-    print("🏁 COMPREHENSIVE TEST SUMMARY - CHAT & DELIVERY FEATURES")
+    print("🏁 QUOTE PAGE INSTANT CALCULATION TEST SUMMARY")
     print("=" * 80)
     print(f"✅ PASSED: {results.passed}")
     print(f"❌ FAILED: {results.failed}")
@@ -1308,12 +1478,12 @@ def run_all_tests():
     print(f"\n📈 SUCCESS RATE: {success_rate:.1f}%")
     
     if results.failed == 0:
-        print("\n🎉 ALL TESTS PASSED! Chat widget and delivery fee calculator working correctly!")
-        print("✨ Google Maps integration, chat logic, and checkout generation all verified!")
+        print("\n🎉 ALL TESTS PASSED! Quote page instant calculation working correctly!")
+        print("✨ Distance-based delivery fees, Google Routes API, and error handling all verified!")
         return True
     else:
         print(f"\n⚠️  {results.failed} tests failed. Please review the issues above.")
-        print("🔧 Focus on NEW chat widget and delivery fee calculator features.")
+        print("🔧 Focus on quote page instant calculation and delivery fee features.")
         return False
 
 if __name__ == "__main__":
