@@ -136,8 +136,9 @@ export const apiService = {
     const basePrice = recommendedBags * 350.00;
     
     // Calculate delivery fee based on address using Google Routes API
-    let deliveryFee = 300.00; // Default fallback
-    let deliveryArea = 'Outside Washington Gardens';
+    let deliveryFee = null; // Start with null (blank) instead of default
+    let deliveryArea = '';
+    let isCalculating = false;
     
     const addressLower = address.toLowerCase();
     const isWashingtonGardens = addressLower.includes('washington gardens') || 
@@ -145,23 +146,35 @@ export const apiService = {
                                addressLower.includes('wash gardens') ||
                                addressLower.includes('wash garden');
     
-    if (isWashingtonGardens) {
+    if (!address || address.trim().length === 0) {
+      // No address entered - leave delivery fee blank
+      deliveryFee = null;
+      deliveryArea = '';
+    } else if (isWashingtonGardens) {
+      // Washington Gardens - FREE delivery
       deliveryFee = 0;
-      deliveryArea = 'Washington Gardens';
-    } else if (address && address.length > 5) {
-      // Call backend API for accurate distance-based calculation
+      deliveryArea = 'Washington Gardens (Free Delivery)';
+    } else if (address.length > 10) {
+      // Address entered - call backend API for accurate distance-based calculation
+      isCalculating = true;
       try {
         const response = await api.post('/calculate-delivery-fee', {
           destination_address: address,
           bags: recommendedBags
         });
         deliveryFee = response.data.delivery_fee;
-        deliveryArea = response.data.is_washington_gardens ? 'Washington Gardens' : 
+        deliveryArea = response.data.is_washington_gardens ? 'Washington Gardens (Free Delivery)' : 
                       `${response.data.distance_text} from Washington Gardens`;
       } catch (error) {
-        console.error('Failed to calculate delivery fee, using default:', error);
-        // Keep default $300 fee on error
+        console.error('Failed to calculate delivery fee:', error);
+        // On error, set to null so it shows blank (user can try again)
+        deliveryFee = null;
+        deliveryArea = 'Unable to calculate - please check address';
       }
+    } else {
+      // Address too short - wait for complete address
+      deliveryFee = null;
+      deliveryArea = 'Enter complete address';
     }
     
     let savings = 0;
@@ -177,7 +190,7 @@ export const apiService = {
       savings = basePrice * 0.05; // 5% discount for 5+ bags
     }
     
-    const total = basePrice + deliveryFee - savings;
+    const total = basePrice + (deliveryFee || 0) - savings;
     
     return {
       bags: recommendedBags,
@@ -186,7 +199,8 @@ export const apiService = {
       total,
       savings,
       discountPercent,
-      deliveryArea
+      deliveryArea,
+      isCalculating
     };
   },
 
