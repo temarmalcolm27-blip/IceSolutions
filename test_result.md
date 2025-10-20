@@ -532,10 +532,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dynamic Delivery Fee Calculator with Google Maps - API configuration needed"
     - "Sales Agent Script Integration - missing variables"
   stuck_tasks:
-    - "Dynamic Delivery Fee Calculator with Google Maps"
     - "Sales Agent Script Integration"
   test_all: false
   test_priority: "high_first"
@@ -551,6 +549,8 @@ test_plan:
     - "Order Confirmation Page duplicate processing fix - FULLY TESTED AND WORKING"
     - "Duplicate order processing fix verified working"
     - "Chat widget conversation logic and checkout URL generation - FULLY TESTED AND WORKING"
+    - "Checkout Page Delivery Fee Calculator - COMPREHENSIVE TESTING COMPLETED AND WORKING"
+    - "Dynamic Delivery Fee Calculator with Google Maps - FULLY TESTED AND WORKING"
 
 agent_communication:
     - agent: "testing"
