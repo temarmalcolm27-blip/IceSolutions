@@ -89,7 +89,7 @@ const QuotePage = () => {
     fetchDeliveryAreas();
   }, []);
 
-  // Real-time quote calculation whenever form data changes
+  // Real-time quote calculation whenever form data changes (with debounce for address)
   useEffect(() => {
     const calculateQuote = async () => {
       const guestCount = parseInt(formData.guestCount) || 0;
@@ -105,7 +105,12 @@ const QuotePage = () => {
       }
     };
     
-    calculateQuote();
+    // Debounce the API call for address - wait 1 second after user stops typing
+    const timeoutId = setTimeout(() => {
+      calculateQuote();
+    }, 1000);
+    
+    return () => clearTimeout(timeoutId);
   }, [formData.guestCount, formData.iceAmount, formData.address]);
 
   const handleSubmit = async (e) => {
