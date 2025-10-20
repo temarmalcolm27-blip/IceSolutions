@@ -122,8 +122,9 @@ const CheckoutPage = () => {
   }
   
   const discount = discountAmount || autoDiscountAmount;
-  const delivery = calculatedDelivery !== null ? calculatedDelivery : (deliveryFee || 0);
-  const total = totalAmount || (subtotal - discount + delivery);
+  const delivery = calculatedDelivery !== null ? calculatedDelivery : (deliveryFee || 300);
+  // Always recalculate total based on current delivery fee
+  const total = subtotal - discount + delivery;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
