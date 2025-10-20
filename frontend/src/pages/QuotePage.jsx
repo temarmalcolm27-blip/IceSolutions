@@ -393,9 +393,22 @@ const QuotePage = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-700">Delivery Fee</span>
                         <span className="font-semibold">
-                          {calculatedQuote.deliveryFee === 0 ? 'FREE' : `$${calculatedQuote.deliveryFee.toFixed(2)}`}
+                          {calculatedQuote.deliveryFee === null ? (
+                            <span className="text-gray-400 italic text-sm">
+                              {calculatedQuote.deliveryArea || 'Enter address'}
+                            </span>
+                          ) : calculatedQuote.deliveryFee === 0 ? (
+                            <span className="text-green-600">FREE</span>
+                          ) : (
+                            `$${calculatedQuote.deliveryFee.toFixed(2)}`
+                          )}
                         </span>
                       </div>
+                      {calculatedQuote.deliveryArea && calculatedQuote.deliveryFee !== null && (
+                        <div className="text-xs text-gray-500 italic">
+                          {calculatedQuote.deliveryArea}
+                        </div>
+                      )}
                       {calculatedQuote.savings > 0 && (
                         <div className="flex justify-between items-center text-green-600">
                           <span>Bulk Discount (5+ bags)</span>
