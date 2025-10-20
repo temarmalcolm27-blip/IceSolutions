@@ -96,11 +96,15 @@ const QuotePage = () => {
       const iceAmount = parseInt(formData.iceAmount) || 0;
       const address = formData.address || '';
       
+      console.log('Quote calculation triggered:', { guestCount, iceAmount, address });
+      
       // Only calculate if we have meaningful data
       if (guestCount > 0 || iceAmount > 0) {
         const quote = await apiService.calculateInstantQuote(guestCount, iceAmount, address);
+        console.log('Calculated quote:', quote);
         setCalculatedQuote(quote);
       } else {
+        console.log('No meaningful data, clearing quote');
         setCalculatedQuote(null);
       }
     };
