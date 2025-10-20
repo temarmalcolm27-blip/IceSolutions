@@ -89,30 +89,20 @@ const QuotePage = () => {
     fetchDeliveryAreas();
   }, []);
 
-  // Real-time quote calculation whenever form data changes (with debounce for address)
+  // Real-time quote calculation with debounce
   useEffect(() => {
-    const calculateQuote = async () => {
+    const timeoutId = setTimeout(async () => {
       const guestCount = parseInt(formData.guestCount) || 0;
       const iceAmount = parseInt(formData.iceAmount) || 0;
       const address = formData.address || '';
       
-      console.log('Quote calculation triggered:', { guestCount, iceAmount, address });
-      
-      // Only calculate if we have meaningful data
       if (guestCount > 0 || iceAmount > 0) {
         const quote = await apiService.calculateInstantQuote(guestCount, iceAmount, address);
-        console.log('Calculated quote:', quote);
         setCalculatedQuote(quote);
       } else {
-        console.log('No meaningful data, clearing quote');
         setCalculatedQuote(null);
       }
-    };
-    
-    // Debounce the API call for address - wait 1 second after user stops typing
-    const timeoutId = setTimeout(() => {
-      calculateQuote();
-    }, 1000);
+    }, 800);
     
     return () => clearTimeout(timeoutId);
   }, [formData.guestCount, formData.iceAmount, formData.address]);
