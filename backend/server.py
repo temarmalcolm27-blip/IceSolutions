@@ -17,6 +17,7 @@ from urllib.parse import quote, unquote
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from google_sheets_integration import GoogleSheetsLeadManager
 from email_service import send_notification_confirmation_email
+from sales_agent_script import SALES_AGENT_SCRIPT, SALES_FAQ
 
 
 ROOT_DIR = Path(__file__).parent
