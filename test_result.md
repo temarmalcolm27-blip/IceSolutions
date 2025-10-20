@@ -544,9 +544,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Sales Agent Script Integration - missing variables"
-  stuck_tasks:
-    - "Sales Agent Script Integration"
+    - "Quote Page Instant Calculation with Distance-Based Delivery Fees - COMPLETED"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   completed_testing:
@@ -563,6 +562,7 @@ test_plan:
     - "Chat widget conversation logic and checkout URL generation - FULLY TESTED AND WORKING"
     - "Checkout Page Delivery Fee Calculator - COMPREHENSIVE TESTING COMPLETED AND WORKING"
     - "Dynamic Delivery Fee Calculator with Google Maps - FULLY TESTED AND WORKING"
+    - "Quote Page Instant Calculation with Distance-Based Delivery Fees - FULLY TESTED AND WORKING"
 
 agent_communication:
     - agent: "testing"
