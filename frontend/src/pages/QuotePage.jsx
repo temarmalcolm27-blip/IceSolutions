@@ -393,18 +393,16 @@ const QuotePage = () => {
                         <span className="text-gray-700">Delivery Fee</span>
                         <span className="font-semibold">
                           {calculatedQuote.deliveryFee === null ? (
-                            <span className="text-gray-400 italic text-sm">
-                              {calculatedQuote.deliveryArea || 'Enter address'}
-                            </span>
+                            <span className="text-gray-400 text-sm">{calculatedQuote.deliveryArea || '--'}</span>
                           ) : calculatedQuote.deliveryFee === 0 ? (
                             <span className="text-green-600">FREE</span>
                           ) : (
-                            `$${calculatedQuote.deliveryFee.toFixed(2)}`
+                            `JMD $${calculatedQuote.deliveryFee.toFixed(2)}`
                           )}
                         </span>
                       </div>
-                      {calculatedQuote.deliveryArea && calculatedQuote.deliveryFee !== null && (
-                        <div className="text-xs text-gray-500 italic">
+                      {calculatedQuote.deliveryArea && calculatedQuote.deliveryFee !== null && calculatedQuote.deliveryFee > 0 && (
+                        <div className="text-xs text-gray-500">
                           {calculatedQuote.deliveryArea}
                         </div>
                       )}
