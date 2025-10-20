@@ -128,28 +128,53 @@ export const apiService = {
   },
 
   // Helper function to calculate quote (for instant quotes without saving)
-  calculateInstantQuote(guestCount, iceAmount, address = '') {
+  async calculateInstantQuote(guestCount, iceAmount, address = '') {
     const recommendedBags = Math.max(1, 
       guestCount ? Math.ceil(guestCount / 25) : Math.ceil(iceAmount / 10)
     );
     
     const basePrice = recommendedBags * 350.00;
     
-    // Calculate delivery fee based on address
+    // Calculate delivery fee based on address using Google Routes API
+    let deliveryFee = 300.00; // Default fallback
+    let deliveryArea = 'Outside Washington Gardens';
+    
     const addressLower = address.toLowerCase();
     const isWashingtonGardens = addressLower.includes('washington gardens') || 
                                addressLower.includes('washington garden') ||
                                addressLower.includes('wash gardens') ||
                                addressLower.includes('wash garden');
     
-    const deliveryFee = isWashingtonGardens ? 0 : 300.00;
+    if (isWashingtonGardens) {
+      deliveryFee = 0;
+      deliveryArea = 'Washington Gardens';
+    } else if (address && address.length > 5) {
+      // Call backend API for accurate distance-based calculation
+      try {
+        const response = await api.post('/calculate-delivery-fee', {
+          destination_address: address,
+          bags: recommendedBags
+        });
+        deliveryFee = response.data.delivery_fee;
+        deliveryArea = response.data.is_washington_gardens ? 'Washington Gardens' : 
+                      `${response.data.distance_text} from Washington Gardens`;
+      } catch (error) {
+        console.error('Failed to calculate delivery fee, using default:', error);
+        // Keep default $300 fee on error
+      }
+    }
     
     let savings = 0;
-    if (recommendedBags >= 5) {
-      savings = basePrice * 0.05; // 5% discount for 5+ bags
-    }
-    if (recommendedBags >= 10) {
+    let discountPercent = 0;
+    if (recommendedBags >= 20) {
+      discountPercent = 15;
+      savings = basePrice * 0.15; // 15% discount for 20+ bags
+    } else if (recommendedBags >= 10) {
+      discountPercent = 10;
       savings = basePrice * 0.10; // 10% discount for 10+ bags
+    } else if (recommendedBags >= 5) {
+      discountPercent = 5;
+      savings = basePrice * 0.05; // 5% discount for 5+ bags
     }
     
     const total = basePrice + deliveryFee - savings;
@@ -160,7 +185,8 @@ export const apiService = {
       deliveryFee,
       total,
       savings,
-      deliveryArea: isWashingtonGardens ? 'Washington Gardens' : 'Outside Washington Gardens'
+      discountPercent,
+      deliveryArea
     };
   },
 
