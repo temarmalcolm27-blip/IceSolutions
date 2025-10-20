@@ -471,7 +471,7 @@ frontend:
 
   - task: "Dynamic Delivery Fee Calculator with Google Maps"
     implemented: true
-    working: false
+    working: true
     file: "backend/distance_service.py, backend/server.py"
     stuck_count: 2
     priority: "high"
@@ -486,6 +486,9 @@ frontend:
         - working: false
           agent: "testing"
           comment: "✅ MIGRATION COMPLETED BUT API NOT ENABLED: Code has been successfully migrated from deprecated Distance Matrix API to Google Routes API (https://routes.googleapis.com/directions/v2:computeRoutes). Implementation is correct with proper request format, error handling, and response parsing. ❌ ISSUE: Routes API returns 403 PERMISSION_DENIED - 'Routes API has not been used in project 23849335735 before or it is disabled.' ✅ WORKING: Washington Gardens detection (FREE delivery), 20+ bags logic (FREE delivery), pricing calculations ($300 base + $200/mile). ⚠️ NEEDS: Enable Routes API in Google Cloud Console at https://console.developers.google.com/apis/api/routes.googleapis.com/overview?project=23849335735. All other functionality working perfectly (96.1% test success rate)."
+        - working: true
+          agent: "testing"
+          comment: "🎉 GOOGLE ROUTES API NOW FULLY WORKING! Comprehensive testing completed with 97.2% success rate (70/72 tests passed). ✅ ALL REQUIREMENTS VERIFIED: 1) Washington Gardens FREE delivery working perfectly, 2) Various Kingston addresses with accurate distance calculations (New Kingston: 5.3 miles/$1359.31, Half Way Tree: 5.54 miles/$1407.66, Spanish Town: 13.17 miles/$2934.61, Portmore: 8.18 miles/$1935.57), 3) 20+ bags FREE delivery anywhere working correctly, 4) Invalid addresses return proper 400 errors with detailed messages, 5) All response fields present (distance_miles, delivery_fee, distance_text, duration_text, is_washington_gardens, free_delivery_reason). Routes API migration successful - no more REQUEST_DENIED errors. Distance-based pricing formula ($300 base + $200/mile) working accurately. API is production-ready!"
 
   - task: "Checkout Page - URL Parameter Support"
     implemented: true
