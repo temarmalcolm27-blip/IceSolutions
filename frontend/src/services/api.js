@@ -129,6 +129,8 @@ export const apiService = {
 
   // Helper function to calculate quote (for instant quotes without saving)
   async calculateInstantQuote(guestCount, iceAmount, address = '') {
+    console.log('[calculateInstantQuote] Starting calculation:', { guestCount, iceAmount, address });
+    
     const recommendedBags = Math.max(1, 
       guestCount ? Math.ceil(guestCount / 25) : Math.ceil(iceAmount / 10)
     );
@@ -146,17 +148,25 @@ export const apiService = {
                                addressLower.includes('wash gardens') ||
                                addressLower.includes('wash garden');
     
+    console.log('[calculateInstantQuote] Address check:', { 
+      addressLength: address.length, 
+      isWashingtonGardens 
+    });
+    
     if (!address || address.trim().length === 0) {
       // No address entered - leave delivery fee blank
       deliveryFee = null;
       deliveryArea = '';
+      console.log('[calculateInstantQuote] No address - delivery fee is null');
     } else if (isWashingtonGardens) {
       // Washington Gardens - FREE delivery
       deliveryFee = 0;
       deliveryArea = 'Washington Gardens (Free Delivery)';
+      console.log('[calculateInstantQuote] Washington Gardens detected - FREE delivery');
     } else if (address.length > 10) {
       // Address entered - call backend API for accurate distance-based calculation
       isCalculating = true;
+      console.log('[calculateInstantQuote] Calling backend API for distance calculation...');
       try {
         const response = await api.post('/calculate-delivery-fee', {
           destination_address: address,
@@ -165,8 +175,9 @@ export const apiService = {
         deliveryFee = response.data.delivery_fee;
         deliveryArea = response.data.is_washington_gardens ? 'Washington Gardens (Free Delivery)' : 
                       `${response.data.distance_text} from Washington Gardens`;
+        console.log('[calculateInstantQuote] Backend API response:', response.data);
       } catch (error) {
-        console.error('Failed to calculate delivery fee:', error);
+        console.error('[calculateInstantQuote] Failed to calculate delivery fee:', error);
         // On error, set to null so it shows blank (user can try again)
         deliveryFee = null;
         deliveryArea = 'Unable to calculate - please check address';
@@ -175,6 +186,7 @@ export const apiService = {
       // Address too short - wait for complete address
       deliveryFee = null;
       deliveryArea = 'Enter complete address';
+      console.log('[calculateInstantQuote] Address too short');
     }
     
     let savings = 0;
@@ -192,7 +204,7 @@ export const apiService = {
     
     const total = basePrice + (deliveryFee || 0) - savings;
     
-    return {
+    const result = {
       bags: recommendedBags,
       basePrice,
       deliveryFee,
@@ -202,6 +214,9 @@ export const apiService = {
       deliveryArea,
       isCalculating
     };
+    
+    console.log('[calculateInstantQuote] Final result:', result);
+    return result;
   },
 
   // Payment/Checkout APIs
