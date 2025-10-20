@@ -91,17 +91,21 @@ const QuotePage = () => {
 
   // Real-time quote calculation whenever form data changes
   useEffect(() => {
-    const guestCount = parseInt(formData.guestCount) || 0;
-    const iceAmount = parseInt(formData.iceAmount) || 0;
-    const address = formData.address || '';
+    const calculateQuote = async () => {
+      const guestCount = parseInt(formData.guestCount) || 0;
+      const iceAmount = parseInt(formData.iceAmount) || 0;
+      const address = formData.address || '';
+      
+      // Only calculate if we have meaningful data
+      if (guestCount > 0 || iceAmount > 0) {
+        const quote = await apiService.calculateInstantQuote(guestCount, iceAmount, address);
+        setCalculatedQuote(quote);
+      } else {
+        setCalculatedQuote(null);
+      }
+    };
     
-    // Only calculate if we have meaningful data
-    if (guestCount > 0 || iceAmount > 0) {
-      const quote = apiService.calculateInstantQuote(guestCount, iceAmount, address);
-      setCalculatedQuote(quote);
-    } else {
-      setCalculatedQuote(null);
-    }
+    calculateQuote();
   }, [formData.guestCount, formData.iceAmount, formData.address]);
 
   const handleSubmit = async (e) => {
