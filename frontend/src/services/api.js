@@ -127,96 +127,80 @@ export const apiService = {
     }
   },
 
-  // Helper function to calculate quote (for instant quotes without saving)
+  // Helper function to calculate quote with real-time delivery fee calculation
   async calculateInstantQuote(guestCount, iceAmount, address = '') {
-    console.log('[calculateInstantQuote] Starting calculation:', { guestCount, iceAmount, address });
-    
     const recommendedBags = Math.max(1, 
       guestCount ? Math.ceil(guestCount / 25) : Math.ceil(iceAmount / 10)
     );
     
     const basePrice = recommendedBags * 350.00;
     
-    // Calculate delivery fee based on address using Google Routes API
-    let deliveryFee = null; // Start with null (blank) instead of default
+    // Start with no delivery fee
+    let deliveryFee = null;
     let deliveryArea = '';
-    let isCalculating = false;
     
-    const addressLower = address.toLowerCase();
-    const isWashingtonGardens = addressLower.includes('washington gardens') || 
-                               addressLower.includes('washington garden') ||
-                               addressLower.includes('wash gardens') ||
-                               addressLower.includes('wash garden');
-    
-    console.log('[calculateInstantQuote] Address check:', { 
-      addressLength: address.length, 
-      isWashingtonGardens 
-    });
-    
-    if (!address || address.trim().length === 0) {
-      // No address entered - leave delivery fee blank
-      deliveryFee = null;
-      deliveryArea = '';
-      console.log('[calculateInstantQuote] No address - delivery fee is null');
-    } else if (isWashingtonGardens) {
-      // Washington Gardens - FREE delivery
-      deliveryFee = 0;
-      deliveryArea = 'Washington Gardens (Free Delivery)';
-      console.log('[calculateInstantQuote] Washington Gardens detected - FREE delivery');
-    } else if (address.length > 10) {
-      // Address entered - call backend API for accurate distance-based calculation
-      isCalculating = true;
-      console.log('[calculateInstantQuote] Calling backend API for distance calculation...');
-      try {
-        const response = await api.post('/calculate-delivery-fee', {
-          destination_address: address,
-          bags: recommendedBags
-        });
-        deliveryFee = response.data.delivery_fee;
-        deliveryArea = response.data.is_washington_gardens ? 'Washington Gardens (Free Delivery)' : 
-                      `${response.data.distance_text} from Washington Gardens`;
-        console.log('[calculateInstantQuote] Backend API response:', response.data);
-      } catch (error) {
-        console.error('[calculateInstantQuote] Failed to calculate delivery fee:', error);
-        // On error, set to null so it shows blank (user can try again)
-        deliveryFee = null;
-        deliveryArea = 'Unable to calculate - please check address';
+    // Check if address is provided
+    if (address && address.trim().length > 0) {
+      const addressLower = address.toLowerCase();
+      
+      // Check for Washington Gardens
+      if (addressLower.includes('washington gardens') || 
+          addressLower.includes('washington garden')) {
+        deliveryFee = 0;
+        deliveryArea = 'Washington Gardens - FREE Delivery';
+      } 
+      // For other addresses, call the API
+      else if (address.trim().length >= 15) {
+        try {
+          const response = await api.post('/calculate-delivery-fee', {
+            destination_address: address.trim(),
+            bags: recommendedBags
+          });
+          
+          if (response.data) {
+            deliveryFee = response.data.delivery_fee;
+            
+            if (response.data.is_washington_gardens) {
+              deliveryArea = 'Washington Gardens - FREE Delivery';
+            } else {
+              deliveryArea = `Distance: ${response.data.distance_text}`;
+            }
+          }
+        } catch (error) {
+          console.error('Delivery fee calculation error:', error);
+          deliveryFee = null;
+          deliveryArea = 'Enter valid address';
+        }
+      } else {
+        deliveryArea = 'Enter full address';
       }
-    } else {
-      // Address too short - wait for complete address
-      deliveryFee = null;
-      deliveryArea = 'Enter complete address';
-      console.log('[calculateInstantQuote] Address too short');
     }
     
+    // Calculate discount
     let savings = 0;
     let discountPercent = 0;
     if (recommendedBags >= 20) {
       discountPercent = 15;
-      savings = basePrice * 0.15; // 15% discount for 20+ bags
+      savings = basePrice * 0.15;
     } else if (recommendedBags >= 10) {
       discountPercent = 10;
-      savings = basePrice * 0.10; // 10% discount for 10+ bags
+      savings = basePrice * 0.10;
     } else if (recommendedBags >= 5) {
       discountPercent = 5;
-      savings = basePrice * 0.05; // 5% discount for 5+ bags
+      savings = basePrice * 0.05;
     }
     
-    const total = basePrice + (deliveryFee || 0) - savings;
+    const total = basePrice + (deliveryFee !== null ? deliveryFee : 0) - savings;
     
-    const result = {
+    return {
       bags: recommendedBags,
       basePrice,
       deliveryFee,
       total,
       savings,
       discountPercent,
-      deliveryArea,
-      isCalculating
+      deliveryArea
     };
-    
-    console.log('[calculateInstantQuote] Final result:', result);
-    return result;
   },
 
   // Payment/Checkout APIs
