@@ -75,6 +75,8 @@ const CheckoutPage = () => {
     if (!formData.deliveryAddress) return;
     
     setCalculatingDelivery(true);
+    console.log('Calculating delivery fee for address:', formData.deliveryAddress);
+    
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
       const response = await fetch(`${backendUrl}/api/calculate-delivery-fee`, {
@@ -90,7 +92,10 @@ const CheckoutPage = () => {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Delivery fee calculated:', data);
         setCalculatedDelivery(data.delivery_fee);
+      } else {
+        console.error('Failed to calculate delivery fee:', response.status);
       }
     } catch (error) {
       console.error('Error calculating delivery fee:', error);
