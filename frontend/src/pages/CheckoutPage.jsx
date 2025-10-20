@@ -331,8 +331,19 @@ const CheckoutPage = () => {
 
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Delivery Fee</span>
-                        <span>{delivery === 0 ? 'FREE' : `JMD $${delivery.toFixed(2)}`}</span>
+                        <span>
+                          {delivery === 0 ? (
+                            <span className="text-green-600 font-semibold">FREE</span>
+                          ) : (
+                            `JMD $${delivery.toFixed(2)}`
+                          )}
+                        </span>
                       </div>
+                      {calculatingDelivery && (
+                        <div className="text-xs text-gray-500 italic">
+                          Calculating delivery fee...
+                        </div>
+                      )}
 
                       <div className="flex justify-between items-center pt-3 border-t">
                         <span className="text-lg font-semibold">Total</span>
