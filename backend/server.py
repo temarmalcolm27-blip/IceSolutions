@@ -1287,11 +1287,11 @@ async def get_sales_agent_twiml(lead_name: str = "customer"):
     """Generate TwiML for sales agent call"""
     logger.info(f"Sales TwiML requested for lead: {lead_name}")
     
-    # Create TwiML for sales call
+    # Create TwiML for sales call with personalized greeting
     twiml_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Say voice="man" language="en-JM">
-        Hello, this is Marcus from Ice Solutions. We provide party ice deliveries for businesses in the corporate area and Kingston at a reasonable price.
+        Hello {lead_name}, this is Marcus from Ice Solutions. We provide party ice deliveries for businesses in the corporate area and Kingston at a reasonable price.
     </Say>
     <Pause length="1"/>
     <Say voice="man" language="en-JM">
@@ -1311,7 +1311,7 @@ async def get_sales_agent_twiml(lead_name: str = "customer"):
     <Pause length="1"/>
     <Say voice="man" language="en-JM">
         You can also order online at our website. Remember, More Ice equals More Vibes!
-        Thank you and have a great day!
+        Thank you {lead_name} and have a great day!
     </Say>
 </Response>'''
     
