@@ -240,13 +240,28 @@ const CheckoutPage = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="deliveryAddress">Delivery Address *</Label>
-                        <Input
-                          id="deliveryAddress"
-                          required
-                          value={formData.deliveryAddress}
-                          onChange={(e) => setFormData({...formData, deliveryAddress: e.target.value})}
-                          placeholder="123 Main St, Washington Gardens"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="deliveryAddress"
+                            required
+                            value={formData.deliveryAddress}
+                            onChange={(e) => setFormData({...formData, deliveryAddress: e.target.value})}
+                            placeholder="123 Main St, Washington Gardens"
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            onClick={calculateDeliveryFee}
+                            disabled={calculatingDelivery || !formData.deliveryAddress}
+                            variant="outline"
+                            className="whitespace-nowrap"
+                          >
+                            {calculatingDelivery ? 'Calculating...' : 'Calculate Fee'}
+                          </Button>
+                        </div>
+                        {calculatingDelivery && (
+                          <p className="text-sm text-gray-500">Calculating delivery fee based on distance...</p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
