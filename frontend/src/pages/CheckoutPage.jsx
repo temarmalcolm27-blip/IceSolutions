@@ -59,13 +59,15 @@ const CheckoutPage = () => {
     deliveryInstructions: notes || ''
   });
   
-  const [calculatedDelivery, setCalculatedDelivery] = useState(deliveryFee || null);
+  const [calculatedDelivery, setCalculatedDelivery] = useState(null);
   const [calculatingDelivery, setCalculatingDelivery] = useState(false);
+  const [hasCalculated, setHasCalculated] = useState(false);
 
-  // Calculate delivery fee when address is available
+  // Calculate delivery fee when address is available (only once automatically)
   useEffect(() => {
-    if (formData.deliveryAddress && !calculatedDelivery && bags) {
+    if (formData.deliveryAddress && !hasCalculated && bags) {
       calculateDeliveryFee();
+      setHasCalculated(true);
     }
   }, [formData.deliveryAddress, bags]);
   
