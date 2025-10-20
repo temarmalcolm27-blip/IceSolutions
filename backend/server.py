@@ -292,8 +292,8 @@ async def create_quote(quote_input: QuoteCreate, background_tasks: BackgroundTas
         'washington gardens', 'washington garden', 'wash gardens', 'wash garden'
     ])
     
-    if is_washington_gardens:
-        delivery_fee = 0.0  # Free delivery to Washington Gardens
+    if is_washington_gardens or recommended_bags >= 20:
+        delivery_fee = 0.0  # Free delivery to Washington Gardens OR 20+ bags anywhere
     else:
         delivery_fee = 300.00  # JMD $300 for areas outside Washington Gardens
     
@@ -352,8 +352,8 @@ async def create_scheduled_quote(quote_input: QuoteCreate):
         'washington gardens', 'washington garden', 'wash gardens', 'wash garden'
     ])
     
-    if is_washington_gardens:
-        delivery_fee = 0.0  # Free delivery to Washington Gardens
+    if is_washington_gardens or recommended_bags >= 20:
+        delivery_fee = 0.0  # Free delivery to Washington Gardens OR 20+ bags anywhere
     else:
         delivery_fee = 300.00  # JMD $300 for areas outside Washington Gardens
     
