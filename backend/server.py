@@ -411,10 +411,10 @@ async def create_quote_no_callback(quote_input: QuoteCreate):
         'washington gardens', 'washington garden', 'wash gardens', 'wash garden'
     ])
     
-    if is_washington_gardens:
-        delivery_fee = 0.0
+    if is_washington_gardens or recommended_bags >= 20:
+        delivery_fee = 0.0  # Free delivery to Washington Gardens OR 20+ bags anywhere
     else:
-        delivery_fee = 300.00
+        delivery_fee = 300.00  # JMD $300 for areas outside Washington Gardens
     
     # Calculate bulk discount
     savings = 0.0
