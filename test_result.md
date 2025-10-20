@@ -511,6 +511,18 @@ frontend:
           agent: "testing"
           comment: "✅ Checkout URL Parameter Support WORKING - Chat widget successfully generates checkout URLs with proper format: /checkout?bags=X&name=Y&email=Z&phone=P&address=A&from_chat=true. All parameters correctly parsed and form pre-filling functionality verified through chat endpoint testing. Integration between chat widget and checkout page confirmed working."
 
+  - task: "Checkout Page Delivery Fee Calculator - Comprehensive Testing"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/CheckoutPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "🎉 CHECKOUT DELIVERY FEE CALCULATION FULLY WORKING! Comprehensive testing completed with 100% success rate across all scenarios: 1) AUTOMATIC CALCULATION: When address is available, delivery fee automatically calculates on page load (verified with console logs showing 'Calculating delivery fee for address: 8 Upper Elletson Rd Kingston CSO' and successful API response with 7.35 miles, $1769.92 fee), 2) MANUAL CALCULATE BUTTON: 'Calculate Fee' button visible and functional, triggers recalculation when clicked, 3) REAL-TIME UPDATES: Order summary updates correctly - delivery fee changes from $300 default to calculated amount (~$1769.92 for 7.35 miles), total recalculates properly (JMD $4429.92), 4) WASHINGTON GARDENS FREE DELIVERY: Address change to 'Washington Gardens, Kingston' correctly shows 'FREE' delivery fee and updates total to JMD $2660.00, 5) 20+ BAGS FREE DELIVERY: 26 bags scenario shows 'FREE' delivery fee for all addresses (New Kingston, Spanish Town, Half Way Tree) with proper 15% bulk discount applied, 6) GOOGLE ROUTES API INTEGRATION: Distance calculations working perfectly with accurate results (New Kingston: 5.3 miles, Spanish Town: 13.17 miles, Half Way Tree: 5.54 miles), 7) CONSOLE LOGGING: All expected console messages present ('Calculating delivery fee for address...', 'Delivery fee calculated: {data}'), 8) ADDRESS PRE-FILLING: Address correctly pre-filled from quote page navigation, 9) FORM INTEGRATION: All form fields working, delivery instructions field functional, 10) BUSINESS LOGIC: Pricing formula ($300 base + $200/mile) working correctly, bulk discounts (5%, 10%, 15%) applied properly. All user requirements from review request verified working. No critical issues found - delivery fee calculation system is production-ready!"
+
 metadata:
   created_by: "testing_agent"
   version: "1.3"
