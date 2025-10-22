@@ -138,6 +138,7 @@ export const apiService = {
     // Start with no delivery fee
     let deliveryFee = null;
     let deliveryArea = '';
+    let deliveryDetails = null; // Store full API response
     
     // Check if address is provided
     if (address && address.trim().length > 0) {
@@ -159,6 +160,7 @@ export const apiService = {
           
           if (response.data) {
             deliveryFee = response.data.delivery_fee;
+            deliveryDetails = response.data; // Store full response
             
             if (response.data.is_washington_gardens) {
               deliveryArea = 'Washington Gardens - FREE Delivery';
