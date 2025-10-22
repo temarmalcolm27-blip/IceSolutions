@@ -556,8 +556,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Quote Page Instant Calculation with Distance-Based Delivery Fees - COMPLETED"
-  stuck_tasks: []
+    - "REVIEW REQUEST: Recent Changes Testing - COMPLETED"
+  stuck_tasks:
+    - "REVIEW REQUEST: Product Names Update - Main agent needs to update product names to 'Quick Fix', 'Party Solution', 'Mega Solution'"
   test_all: false
   test_priority: "high_first"
   completed_testing:
@@ -575,6 +576,9 @@ test_plan:
     - "Checkout Page Delivery Fee Calculator - COMPREHENSIVE TESTING COMPLETED AND WORKING"
     - "Dynamic Delivery Fee Calculator with Google Maps - FULLY TESTED AND WORKING"
     - "Quote Page Instant Calculation with Distance-Based Delivery Fees - FULLY TESTED AND WORKING"
+    - "REVIEW REQUEST: Discount Structure (10% on 15+ bags) - FULLY TESTED AND WORKING"
+    - "REVIEW REQUEST: Delivery Fee Calculator ($35/mile) - FULLY TESTED AND WORKING"
+    - "REVIEW REQUEST: Quote Page Simplified - FULLY TESTED AND WORKING"
 
 agent_communication:
     - agent: "testing"
