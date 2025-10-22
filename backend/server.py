@@ -802,14 +802,11 @@ async def create_order(order_input: OrderCreate):
         bags = order_input.bags
         subtotal = bags * price_per_bag
         
-        # Apply bulk discounts
-        discount_percent = 0.0
-        if bags >= 20:
-            discount_percent = 0.15
-        elif bags >= 10:
+        # Apply discount: 10% for 15+ bags only
+        if bags >= 15:
             discount_percent = 0.10
-        elif bags >= 5:
-            discount_percent = 0.05
+        else:
+            discount_percent = 0.0
         
         discount_amount = subtotal * discount_percent
         
