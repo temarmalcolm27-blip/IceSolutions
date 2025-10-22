@@ -627,16 +627,6 @@ async def stripe_webhook(request: dict):
             if existing_order:
                 logger.info(f"Order already processed for session {session_id}, Order ID: {existing_order.get('order_id')}")
                 return {"status": "success", "message": "Order already processed", "order_id": existing_order.get('order_id')}
-            # Update payment transaction
-            await db.payment_transactions.update_one(
-                {"session_id": session_id},
-                {
-                    "$set": {
-                        "payment_status": payment_status,
-                        "updated_at": datetime.now(timezone.utc).isoformat()
-                    }
-                }
-            )
             
             # Get session details and generate order
             try:
@@ -673,13 +663,46 @@ async def stripe_webhook(request: dict):
                     subtotal = total_paid + discount_amount
                     
                     # Create tracking URL
-                    # Get the correct frontend URL (where customers access the site)
                     frontend_url = os.environ.get('FRONTEND_URL') or os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')
-                    # Remove /api if present (backend URL might have it)
                     if '/api' in frontend_url:
                         frontend_url = frontend_url.split('/api')[0]
                     tracking_url = f"{frontend_url}/track-order?id={order_id}"
                     logger.info(f"Generated tracking URL: {tracking_url}")
+                    
+                    # SAVE TO MONGODB FIRST (before email/sheets) to prevent duplicate processing
+                    order_doc = {
+                        "order_id": order_id,
+                        "session_id": session_id,
+                        "customer_name": customer_name,
+                        "customer_email": customer_email,
+                        "customer_phone": customer_phone,
+                        "business_name": business_name,
+                        "quantity": int(bags),
+                        "subtotal": subtotal,
+                        "discount": discount_amount,
+                        "total": total_paid,
+                        "delivery_address": delivery_address,
+                        "status": "Planning",
+                        "is_bulk_order": is_bulk_order,
+                        "bulk_order_tier": bulk_order_tier,
+                        "email_sent": False,  # Will be updated after email sent
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                    await db.orders.insert_one(order_doc)
+                    logger.info(f"Order #{order_id} saved to MongoDB FIRST")
+                    
+                    # Update payment transaction
+                    await db.payment_transactions.update_one(
+                        {"session_id": session_id},
+                        {
+                            "$set": {
+                                "payment_status": payment_status,
+                                "order_id": order_id,
+                                "updated_at": datetime.now(timezone.utc).isoformat()
+                            }
+                        }
+                    )
                     
                     # Save to Google Sheets
                     sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
