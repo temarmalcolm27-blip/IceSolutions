@@ -188,7 +188,7 @@ const EventPlanningPage = () => {
                     </div>
                     
                     <div className="flex justify-between items-center p-4 bg-white rounded-lg">
-                      <span className="text-gray-600">10lb Bags Required</span>
+                      <span className="text-gray-600">Quick Fix (10lb bags) Required</span>
                       <span className="text-2xl font-bold text-cyan-600">{result.bagsNeeded} bags</span>
                     </div>
                     
