@@ -178,18 +178,12 @@ export const apiService = {
       }
     }
     
-    // Calculate discount
+    // Calculate discount: 10% for 15+ bags only
     let savings = 0;
     let discountPercent = 0;
-    if (recommendedBags >= 20) {
-      discountPercent = 15;
-      savings = basePrice * 0.15;
-    } else if (recommendedBags >= 10) {
+    if (recommendedBags >= 15) {
       discountPercent = 10;
       savings = basePrice * 0.10;
-    } else if (recommendedBags >= 5) {
-      discountPercent = 5;
-      savings = basePrice * 0.05;
     }
     
     const total = basePrice + (deliveryFee !== null ? deliveryFee : 0) - savings;
