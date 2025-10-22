@@ -57,7 +57,7 @@ const AboutPage = () => {
     },
     {
       name: 'Shandale Campbell',
-      role: 'Operations Manager',
+      role: 'Founder & Operations Manager',
       bio: 'Former restaurant and bar manager who understands the critical importance of reliable ice supply for hospitality and events.',
       image: '/api/placeholder/200/200'
     },
