@@ -644,82 +644,42 @@ def test_lead_management_endpoints(results):
         print(error_msg)
         results.errors.append(error_msg)
 
-def test_pricing_logic_verification(results):
-    """Test NEW Pricing Logic - Bulk Discounts and Delivery Fees"""
-    print("\n🧪 Testing NEW Pricing Logic Verification...")
+def test_review_request_discount_structure(results):
+    """Test REVIEW REQUEST: Discount Structure Updated (10% on 15+ bags only)"""
+    print("\n🧪 Testing REVIEW REQUEST: Discount Structure Updated (10% on 15+ bags only)...")
     
-    # Test pricing calculations through quote API with new logic
+    # Test pricing calculations through quote API with UPDATED logic
     test_cases = [
         {
-            "name": "1 bag - No discount",
-            "bags": 1,
+            "name": "14 bags - No discount (REVIEW REQUEST)",
+            "bags": 14,
             "address": "Kingston, Jamaica",
             "expected_discount": 0.0,
             "expected_price_per_bag": 350.0,
             "expected_delivery": 300.0
         },
         {
-            "name": "4 bags - No discount",
-            "bags": 4,
+            "name": "15 bags - 10% discount (REVIEW REQUEST)",
+            "bags": 15,
             "address": "Spanish Town, Jamaica", 
-            "expected_discount": 0.0,
-            "expected_price_per_bag": 350.0,
+            "expected_discount": 10.0,
+            "expected_price_per_bag": 315.0,
             "expected_delivery": 300.0
         },
         {
-            "name": "5 bags - 5% discount",
-            "bags": 5,
-            "address": "Portmore, Jamaica",
-            "expected_discount": 5.0,
-            "expected_price_per_bag": 332.50,
-            "expected_delivery": 300.0
-        },
-        {
-            "name": "9 bags - 5% discount",
-            "bags": 9,
-            "address": "Half Way Tree, Jamaica",
-            "expected_discount": 5.0,
-            "expected_price_per_bag": 332.50,
-            "expected_delivery": 300.0
-        },
-        {
-            "name": "10 bags - 10% discount",
-            "bags": 10,
+            "name": "20 bags - 10% discount + free delivery (REVIEW REQUEST)",
+            "bags": 20,
             "address": "New Kingston, Jamaica",
             "expected_discount": 10.0,
             "expected_price_per_bag": 315.0,
-            "expected_delivery": 300.0
+            "expected_delivery": 0.0  # Free delivery for 20+ bags
         },
         {
-            "name": "19 bags - 10% discount",
-            "bags": 19,
-            "address": "Mandeville, Jamaica",
-            "expected_discount": 10.0,
-            "expected_price_per_bag": 315.0,
-            "expected_delivery": 300.0
-        },
-        {
-            "name": "20 bags - 15% discount",
-            "bags": 20,
-            "address": "Ocho Rios, Jamaica",
-            "expected_discount": 15.0,
-            "expected_price_per_bag": 297.50,
-            "expected_delivery": 300.0
-        },
-        {
-            "name": "25 bags - 15% discount",
-            "bags": 25,
-            "address": "Montego Bay, Jamaica",
-            "expected_discount": 15.0,
-            "expected_price_per_bag": 297.50,
-            "expected_delivery": 300.0
-        },
-        {
-            "name": "5 bags - Washington Gardens (FREE delivery)",
+            "name": "Washington Gardens - FREE delivery",
             "bags": 5,
             "address": "Washington Gardens, Kingston",
-            "expected_discount": 5.0,
-            "expected_price_per_bag": 332.50,
+            "expected_discount": 0.0,  # Less than 15 bags
+            "expected_price_per_bag": 350.0,
             "expected_delivery": 0.0
         }
     ]
