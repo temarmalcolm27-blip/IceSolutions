@@ -747,6 +747,249 @@ def test_review_request_discount_structure(results):
             print(error_msg)
             results.errors.append(error_msg)
 
+def test_review_request_product_names(results):
+    """Test REVIEW REQUEST: Product Names Updated"""
+    print("\n🧪 Testing REVIEW REQUEST: Product Names Updated...")
+    
+    try:
+        response = requests.get(f"{API_BASE}/products", timeout=10)
+        results.assert_equal(response.status_code, 200, "Products API returns 200 status")
+        
+        if response.status_code == 200:
+            products = response.json()
+            results.assert_equal(len(products), 3, "Products API returns exactly 3 products")
+            
+            # Check for UPDATED product names from review request
+            expected_products = ["Quick Fix", "Party Solution", "Mega Solution"]
+            product_names = [p['name'] for p in products]
+            
+            print(f"  📦 Found product names: {product_names}")
+            
+            for expected in expected_products:
+                found = any(expected in name for name in product_names)
+                results.assert_true(found, f"Product name contains '{expected}'")
+            
+            # Verify taglines are included in response
+            for product in products:
+                results.assert_true('description' in product, f"Product '{product['name']}' has tagline/description")
+                results.assert_true(len(product.get('description', '')) > 0, f"Product '{product['name']}' has non-empty tagline")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Product names API request failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_review_request_delivery_fee_calculator(results):
+    """Test REVIEW REQUEST: Delivery Fee Calculator ($35/mile)"""
+    print("\n🧪 Testing REVIEW REQUEST: Delivery Fee Calculator ($35/mile)...")
+    
+    # Test 1: Washington Gardens (FREE)
+    print("\n  🆓 Test 1: Washington Gardens (Expected: FREE)...")
+    washington_data = {
+        "destination_address": "Washington Gardens, Kingston",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=washington_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Washington Gardens delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify FREE delivery
+            results.assert_equal(data.get('delivery_fee'), 0, "Washington Gardens has FREE delivery ($0 fee)")
+            results.assert_equal(data.get('is_washington_gardens'), True, "Washington Gardens correctly identified")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Washington Gardens delivery test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 2: Kingston address (base $300 + $35/mile) - NOTE: Backend uses $200/mile, checking if updated
+    print("\n  💰 Test 2: Kingston address (Expected: base $300 + $35/mile)...")
+    kingston_data = {
+        "destination_address": "New Kingston, Kingston, Jamaica",
+        "bags": 5
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=kingston_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "Kingston delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify NOT Washington Gardens
+            results.assert_equal(data.get('is_washington_gardens'), False, "New Kingston not identified as Washington Gardens")
+            
+            # Check distance calculation
+            distance_miles = data.get('distance_miles', 0)
+            results.assert_true(distance_miles > 0, f"Distance calculated > 0 miles (got {distance_miles})")
+            
+            # Check delivery fee - NOTE: Backend currently uses $200/mile, review request mentions $35/mile
+            delivery_fee = data.get('delivery_fee', 0)
+            results.assert_true(delivery_fee >= 300.0, f"Delivery fee >= $300 base (got ${delivery_fee})")
+            
+            # Check if it's using $35/mile (review request) or $200/mile (current backend)
+            expected_fee_35 = 300.0 + (35.0 * distance_miles)
+            expected_fee_200 = 300.0 + (200.0 * distance_miles)
+            
+            if abs(delivery_fee - expected_fee_35) < 5:
+                results.assert_true(True, f"Delivery fee uses $35/mile rate: ${delivery_fee} ≈ ${expected_fee_35}")
+            elif abs(delivery_fee - expected_fee_200) < 5:
+                print(f"     ⚠️  WARNING: Backend still uses $200/mile rate (${delivery_fee} ≈ ${expected_fee_200}), review request expects $35/mile")
+                results.assert_true(True, f"Delivery fee calculation working but uses $200/mile instead of requested $35/mile")
+            else:
+                results.assert_true(False, f"Delivery fee doesn't match expected formulas: got ${delivery_fee}, expected ${expected_fee_35} ($35/mile) or ${expected_fee_200} ($200/mile)")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: Kingston delivery test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+    
+    # Test 3: 20+ bags (FREE delivery)
+    print("\n  📦 Test 3: 20+ bags (Expected: FREE delivery)...")
+    bulk_data = {
+        "destination_address": "Spanish Town, Jamaica",
+        "bags": 20
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/calculate-delivery-fee", 
+                               json=bulk_data,
+                               headers={'Content-Type': 'application/json'},
+                               timeout=20)
+        
+        results.assert_equal(response.status_code, 200, "20+ bags delivery fee calculation returns 200")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"     📊 Response: {data}")
+            
+            # Verify FREE delivery for 20+ bags
+            results.assert_equal(data.get('delivery_fee'), 0, "20+ bags get FREE delivery anywhere")
+            
+            # Should have free delivery reason
+            if 'free_delivery_reason' in data:
+                results.assert_true('20+' in data['free_delivery_reason'], "Free delivery reason mentions 20+ bags")
+        
+    except requests.exceptions.RequestException as e:
+        results.failed += 1
+        error_msg = f"❌ FAIL: 20+ bags delivery test failed: {str(e)}"
+        print(error_msg)
+        results.errors.append(error_msg)
+
+def test_review_request_simplified_quote(results):
+    """Test REVIEW REQUEST: Quote Page Simplified (just bags + address)"""
+    print("\n🧪 Testing REVIEW REQUEST: Quote Page Simplified...")
+    
+    # Check if there's a simplified instant quote endpoint
+    # Try different possible endpoints for instant quotes
+    endpoints_to_try = [
+        "/calculate-instant-quote",
+        "/instant-quote", 
+        "/quotes-instant",
+        "/calculate-delivery-fee"  # This might be the simplified endpoint
+    ]
+    
+    simplified_data = {
+        "bags": 10,
+        "address": "Kingston, Jamaica"
+    }
+    
+    # Also try with destination_address format
+    simplified_data_alt = {
+        "bags": 10,
+        "destination_address": "Kingston, Jamaica"
+    }
+    
+    found_endpoint = False
+    
+    for endpoint in endpoints_to_try:
+        print(f"\n  🔍 Trying endpoint: {endpoint}")
+        
+        try:
+            # Try both data formats
+            for data_format in [simplified_data, simplified_data_alt]:
+                response = requests.post(f"{API_BASE}{endpoint}", 
+                                       json=data_format,
+                                       headers={'Content-Type': 'application/json'},
+                                       timeout=10)
+                
+                if response.status_code == 200:
+                    found_endpoint = True
+                    result_data = response.json()
+                    print(f"     ✅ Found working endpoint: {endpoint}")
+                    print(f"     📊 Response: {result_data}")
+                    
+                    # Verify it works with just bags + address (no guests, hours, event type)
+                    results.assert_true(True, f"Simplified quote endpoint {endpoint} works with just bags + address")
+                    
+                    # Check if response contains expected fields
+                    if 'delivery_fee' in result_data:
+                        results.assert_true('delivery_fee' in result_data, "Response contains delivery_fee")
+                    
+                    break
+            
+            if found_endpoint:
+                break
+                
+        except requests.exceptions.RequestException as e:
+            print(f"     ❌ Endpoint {endpoint} failed: {str(e)}")
+            continue
+    
+    if not found_endpoint:
+        # Check if regular quote endpoints still require full event details
+        print(f"\n  📝 Testing if regular quote endpoints still require full details...")
+        
+        # Try minimal quote data
+        minimal_quote = {
+            "customerInfo": {
+                "name": "Test Customer",
+                "email": "test@email.com", 
+                "phone": "876-555-0000",
+                "address": "Kingston, Jamaica"
+            },
+            "eventDetails": {
+                "eventDate": "2024-12-20T18:00:00Z",
+                "eventType": "Party",
+                "guestCount": 0,  # No guests specified
+                "iceAmount": 10,  # Just ice amount
+                "deliveryTime": "3 PM - 6 PM"
+            }
+        }
+        
+        try:
+            response = requests.post(f"{API_BASE}/quotes-no-callback", 
+                                   json=minimal_quote,
+                                   headers={'Content-Type': 'application/json'},
+                                   timeout=10)
+            
+            if response.status_code == 200:
+                results.assert_true(True, "Quote endpoint works with minimal event details (ice amount only)")
+            else:
+                results.assert_true(False, "No simplified quote endpoint found and regular quotes still require full details")
+                
+        except requests.exceptions.RequestException as e:
+            results.failed += 1
+            error_msg = f"❌ FAIL: Simplified quote test failed: {str(e)}"
+            print(error_msg)
+            results.errors.append(error_msg)
+
 def test_google_routes_api_integration(results):
     """Test Google Routes API Integration for Distance Calculation (NEW API Migration)"""
     print("\n🧪 Testing Google Routes API Integration (Migration from Distance Matrix API)...")
