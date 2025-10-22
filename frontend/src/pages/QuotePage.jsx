@@ -417,7 +417,7 @@ const QuotePage = () => {
                             </div>
                             <div className="flex justify-between text-gray-700">
                               <span>Distance fee:</span>
-                              <span className="font-medium">JMD $60 × {calculatedQuote.deliveryDetails.distance_miles.toFixed(2)} miles</span>
+                              <span className="font-medium">JMD $35 × {calculatedQuote.deliveryDetails.distance_miles.toFixed(2)} miles</span>
                             </div>
                             <div className="flex justify-between text-gray-700">
                               <span>Est. time:</span>
