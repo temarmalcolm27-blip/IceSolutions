@@ -54,7 +54,7 @@ const FAQPage = () => {
       answer: "Yes! For restaurants, bars, and businesses that need regular ice deliveries, we offer recurring delivery services with priority scheduling. Contact us at (876) 490-7208 to set up a business account."
     },
     {
-      question: "When will 50lb and 100lb bags be available?",
+      question: "When will Party Solution (50lb) and Mega Solution (100lb) be available?",
       answer: "We're working on adding these sizes soon! Click 'Notify When Available' on the Products page to get an email alert when they're ready to order."
     }
   ];
