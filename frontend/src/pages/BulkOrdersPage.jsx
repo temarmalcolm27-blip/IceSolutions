@@ -217,7 +217,7 @@ const BulkOrdersPage = () => {
             <div className="pt-6">
               <div className="flex items-center justify-center gap-2 text-cyan-50">
                 <Mail className="h-4 w-4" />
-                <span>orders@icesolutions.com</span>
+                <span>icesolutions.mybusiness@gmail.com</span>
               </div>
             </div>
           </div>
