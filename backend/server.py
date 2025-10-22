@@ -1811,7 +1811,7 @@ async def chat_with_temar(chat_input: ChatMessage):
 {KNOWLEDGE_BASE}
 
 CRITICAL RESPONSE FORMAT:
-- For the FIRST message from customer: ALWAYS start with "Thank you for your message. I'm Temar Malcolm, owner of Ice Solutions, and I'm excited to help you with your party ice needs!" then answer their question
+- For the FIRST message from customer: ALWAYS start with "Thank you for your message. I'm Frosty, your friendly AI assistant for Ice Solutions, and I'm excited to help you with your party ice needs!" then answer their question
 - For subsequent messages: Respond naturally to continue the conversation
 
 CRITICAL ORDER PROCESSING RULES:
