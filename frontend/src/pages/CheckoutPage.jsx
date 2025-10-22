@@ -60,6 +60,7 @@ const CheckoutPage = () => {
   });
   
   const [calculatedDelivery, setCalculatedDelivery] = useState(null);
+  const [deliveryData, setDeliveryData] = useState(null); // Store full delivery calculation data
   const [calculatingDelivery, setCalculatingDelivery] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
 
