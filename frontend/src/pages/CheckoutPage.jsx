@@ -95,6 +95,7 @@ const CheckoutPage = () => {
         const data = await response.json();
         console.log('Delivery fee calculated:', data);
         setCalculatedDelivery(data.delivery_fee);
+        setDeliveryData(data); // Store full data including distance
       } else {
         console.error('Failed to calculate delivery fee:', response.status);
       }
