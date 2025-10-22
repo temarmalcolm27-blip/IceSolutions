@@ -98,7 +98,7 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
                 <div class="footer">
                     <p><strong>Ice Solutions</strong><br>
                     Washington Gardens, Kingston, Jamaica<br>
-                    📞 (876) 490-7208 | 📧 orders@icesolutions.com</p>
+                    📞 (876) 490-7208 | 📧 icesolutions.mybusiness@gmail.com</p>
                     
                     <p style="font-size: 12px; margin-top: 15px;">
                         You're receiving this email because you subscribed to product notifications on our website.
