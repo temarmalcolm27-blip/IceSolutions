@@ -132,13 +132,13 @@ const HomePage = () => {
                       <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-1">
                         <img 
                           src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
-                          alt="10lb Ice Bags"
+                          alt="Quick Fix Ice Bags"
                           className="w-full h-full object-contain"
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">10lb Party Ice Bag</div>
-                        <div className="text-sm text-gray-600">Crystal clear, restaurant quality</div>
+                        <div className="font-medium text-gray-900">Quick Fix</div>
+                        <div className="text-sm text-gray-600">Instant chill, anytime.</div>
                       </div>
                       <div className="text-lg font-bold text-cyan-600">$350.00</div>
                     </div>
