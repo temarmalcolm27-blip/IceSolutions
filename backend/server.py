@@ -55,6 +55,7 @@ class Product(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
+    tagline: str = ""  # Added tagline field
     description: str
     price: float
     weight: str
