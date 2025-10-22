@@ -16,7 +16,7 @@ const ChatWidget = () => {
     phone: '',
     email: '',
     businessName: '',
-    productInterest: '10lb Party Ice Bags',
+    productInterest: 'Quick Fix',
     quantity: 1
   });
   const [isMinimized, setIsMinimized] = useState(false);
@@ -156,7 +156,7 @@ const ChatWidget = () => {
         phone: '',
         email: '',
         businessName: '',
-        productInterest: '10lb Party Ice Bags',
+        productInterest: 'Quick Fix',
         quantity: 1
       });
 
