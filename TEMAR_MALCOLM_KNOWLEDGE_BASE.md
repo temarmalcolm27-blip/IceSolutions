@@ -110,7 +110,8 @@ Not sure how much ice you need? We'll help calculate the perfect amount based on
 
 ### 3. Bulk Orders & Special Pricing
 - **Recurring Deliveries**: Special rates for regular customers
-- **Large Orders**: Discounts available for bulk purchases
+- **Large Orders**: 10% discount on orders of 15 bags or more
+- **20+ Bags**: Get 10% discount PLUS FREE delivery anywhere in Kingston
 - **Business Accounts**: Special pricing for restaurants, bars, and event companies
 - **Custom Schedules**: We can arrange regular delivery schedules
 
