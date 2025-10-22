@@ -43,17 +43,18 @@ Ice Solutions is your trusted partner for all party ice needs in Kingston, Jamai
 - **Description**: Perfect for larger gatherings and commercial applications
 - **Note**: Customers can sign up to be notified when available
 
-### 3. 100lb Industrial Ice Bags - **COMING SOON**
-- **Price**: JMD $64.99 per bag (tentative)
+### 3. Mega Solution (100lb bags) - **COMING SOON**
+- **Tagline**: For weddings, bars, and massive events.
+- **Price**: JMD $3,200 per bag (estimated)
 - **Weight**: 100 lbs (pounds)
 - **Status**: COMING SOON - Not yet available
-- **Best For**: Restaurants, bars, large-scale events, industrial use
+- **Best For**: Restaurants, bars, large-scale events, weddings
 - **Features**:
   - Maximum volume
   - Professional grade
   - Bulk pricing
   - Commercial delivery
-- **Description**: Ideal for restaurants, bars, and large-scale events. The most cost-effective option for high-volume needs.
+- **Description**: Maximum volume for professional and high-demand situations
 - **Note**: Customers can sign up to be notified when available
 
 ---
