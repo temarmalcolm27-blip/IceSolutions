@@ -794,54 +794,6 @@ async def stripe_webhook(request: dict):
                             else:
                                 logger.error("Could not find or create Orders sheet")
                     
-                    # Send confirmation email (only if not already sent)
-                    from email_service import send_order_confirmation_email
-                    if customer_email:
-                        # Check if email was already sent for this order
-                        existing_email_log = await db.orders.find_one({
-                            "session_id": session_id, 
-                            "email_sent": True
-                        })
-                        
-                        if not existing_email_log:
-                            send_order_confirmation_email(
-                                customer_email=customer_email,
-                                customer_name=customer_name,
-                                order_id=order_id,
-                                quantity=int(bags),
-                                subtotal=subtotal,
-                                discount=discount_amount,
-                                total=total_paid,
-                                delivery_address=delivery_address,
-                                tracking_url=tracking_url
-                            )
-                            logger.info(f"Order confirmation email sent for Order #{order_id}")
-                        else:
-                            logger.info(f"Email already sent for Order #{order_id}, skipping duplicate")
-                    
-                    # Save to MongoDB for backup
-                    order_doc = {
-                        "order_id": order_id,
-                        "session_id": session_id,
-                        "customer_name": customer_name,
-                        "customer_email": customer_email,
-                        "customer_phone": customer_phone,
-                        "business_name": business_name,
-                        "quantity": int(bags),
-                        "subtotal": subtotal,
-                        "discount": discount_amount,
-                        "total": total_paid,
-                        "delivery_address": delivery_address,
-                        "status": "Planning",
-                        "is_bulk_order": is_bulk_order,
-                        "bulk_order_tier": bulk_order_tier,
-                        "email_sent": True,  # Flag to track email sending
-                        "created_at": datetime.now(timezone.utc).isoformat(),
-                        "updated_at": datetime.now(timezone.utc).isoformat()
-                    }
-                    await db.orders.insert_one(order_doc)
-                    logger.info(f"Order #{order_id} saved to MongoDB")
-                    
             except Exception as e:
                 logger.error(f"Error processing order after payment: {str(e)}")
                 import traceback
