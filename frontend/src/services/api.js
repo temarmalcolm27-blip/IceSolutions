@@ -201,7 +201,8 @@ export const apiService = {
       total,
       savings,
       discountPercent,
-      deliveryArea
+      deliveryArea,
+      deliveryDetails // Include full delivery data
     };
   },
 
