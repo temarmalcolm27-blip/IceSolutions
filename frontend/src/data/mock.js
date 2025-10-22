@@ -14,7 +14,8 @@ export const mockData = {
   products: [
     {
       id: 1,
-      name: "10lb Party Ice Bags",
+      name: "Quick Fix",
+      tagline: "Instant chill, anytime.",
       description: "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
       price: 350.00,
       weight: "10 lbs",
@@ -24,9 +25,10 @@ export const mockData = {
     },
     {
       id: 2,
-      name: "50lb Commercial Ice Bags",
+      name: "Party Solution",
+      tagline: "Your cool answer to every crowd.",
       description: "Coming Soon! Perfect for larger events and commercial use.",
-      price: 34.99,
+      price: 1750.00,
       weight: "50 lbs",
       image: "/api/placeholder/300/200",
       inStock: false,
@@ -35,9 +37,10 @@ export const mockData = {
     },
     {
       id: 3,
-      name: "100lb Industrial Ice Bags",
+      name: "Mega Solution",
+      tagline: "For weddings, bars, and massive events.",
       description: "Coming Soon! Ideal for restaurants, bars, and large-scale events.",
-      price: 64.99,
+      price: 3200.00,
       weight: "100 lbs", 
       image: "/api/placeholder/300/200",
       inStock: false,
