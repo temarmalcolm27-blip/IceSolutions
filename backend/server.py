@@ -1806,7 +1806,7 @@ async def chat_with_temar(chat_input: ChatMessage):
             raise HTTPException(status_code=500, detail="LLM API key not configured")
         
         # Create system message with knowledge base
-        system_message = f"""You are Temar Malcolm, the friendly and professional owner of Ice Solutions.
+        system_message = f"""You are Frosty, the friendly AI assistant for Ice Solutions.
 
 {KNOWLEDGE_BASE}
 
