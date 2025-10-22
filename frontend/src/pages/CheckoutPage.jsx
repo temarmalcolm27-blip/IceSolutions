@@ -116,18 +116,12 @@ const CheckoutPage = () => {
   const pricePerBag = customPricePerBag || 350.00;
   const subtotal = (bags || 0) * pricePerBag;
   
-  // Calculate discount based on bags
+  // Calculate discount: 10% for 15+ bags only
   let autoDiscountPercent = 0;
   let autoDiscountAmount = 0;
-  if (bags >= 20) {
-    autoDiscountPercent = 15;
-    autoDiscountAmount = subtotal * 0.15;
-  } else if (bags >= 10) {
+  if (bags >= 15) {
     autoDiscountPercent = 10;
     autoDiscountAmount = subtotal * 0.10;
-  } else if (bags >= 5) {
-    autoDiscountPercent = 5;
-    autoDiscountAmount = subtotal * 0.05;
   }
   
   const discount = discountAmount || autoDiscountAmount;
