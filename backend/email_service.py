@@ -131,7 +131,7 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
         
         Ice Solutions
         Washington Gardens, Kingston, Jamaica
-        (876) 490-7208 | orders@icesolutions.com
+        (876) 490-7208 | icesolutions.mybusiness@gmail.com
         
         More Ice = More Vibes!
         """
