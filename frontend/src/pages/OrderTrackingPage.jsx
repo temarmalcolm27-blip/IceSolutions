@@ -131,7 +131,7 @@ const OrderTrackingPage = () => {
 
                       <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">{order.quantity || order.bags} x 10lb Ice Bags</span>
+                          <span className="text-gray-600">{order.quantity || order.bags} x Quick Fix (10lb bags)</span>
                           <span className="font-medium">{order.subtotal}</span>
                         </div>
                         {order.discount && order.discount !== "$0.00" && (
