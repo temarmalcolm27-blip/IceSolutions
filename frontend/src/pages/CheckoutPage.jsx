@@ -312,7 +312,7 @@ const CheckoutPage = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center pb-3 border-b">
-                        <span className="text-gray-600">10lb Ice Bags</span>
+                        <span className="text-gray-600">Quick Fix (10lb bags)</span>
                         <span className="font-semibold">{bags} bags</span>
                       </div>
 
