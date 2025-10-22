@@ -354,14 +354,11 @@ async def create_scheduled_quote(quote_input: QuoteCreate):
     else:
         delivery_fee = 300.00  # JMD $300 for areas outside Washington Gardens
     
-    # Calculate bulk discount
-    savings = 0.0
-    if recommended_bags >= 20:
-        savings = base_price * 0.15  # 15% discount for 20+ bags
-    elif recommended_bags >= 10:
-        savings = base_price * 0.10  # 10% discount for 10+ bags
-    elif recommended_bags >= 5:
-        savings = base_price * 0.05  # 5% discount for 5+ bags
+    # Apply discount: 10% for 15+ bags only
+    if recommended_bags >= 15:
+        savings = base_price * 0.10  # 10% discount for 15+ bags
+    else:
+        savings = 0
     
     total = base_price + delivery_fee - savings
     
