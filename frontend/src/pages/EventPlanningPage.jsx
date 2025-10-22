@@ -47,14 +47,10 @@ const EventPlanningPage = () => {
     const pricePerBag = 350.00;
     const totalPrice = bagsNeeded * pricePerBag;
     
-    // Apply bulk discounts
+    // Apply discount: 10% for 15+ bags only
     let discount = 0;
-    if (bagsNeeded >= 20) {
-      discount = 0.15;
-    } else if (bagsNeeded >= 10) {
+    if (bagsNeeded >= 15) {
       discount = 0.10;
-    } else if (bagsNeeded >= 5) {
-      discount = 0.05;
     }
     
     const discountAmount = totalPrice * discount;
