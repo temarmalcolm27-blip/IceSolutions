@@ -791,6 +791,7 @@ async def stripe_webhook(request: dict):
                         "status": "Planning",
                         "is_bulk_order": is_bulk_order,
                         "bulk_order_tier": bulk_order_tier,
+                        "email_sent": True,  # Flag to track email sending
                         "created_at": datetime.now(timezone.utc).isoformat(),
                         "updated_at": datetime.now(timezone.utc).isoformat()
                     }
