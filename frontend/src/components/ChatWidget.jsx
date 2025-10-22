@@ -200,7 +200,7 @@ const ChatWidget = () => {
           aria-label="Open chat"
         >
           <MessageCircle size={24} />
-          <span className="chat-badge">Chat with Temar</span>
+          <span className="chat-badge">Chat with Frosty</span>
         </button>
       )}
 
