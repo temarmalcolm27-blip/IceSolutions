@@ -212,7 +212,7 @@ const ChatWidget = () => {
             <div className="chat-header-info">
               <div className="agent-avatar">TM</div>
               <div>
-                <div className="agent-name">Temar Malcolm</div>
+                <div className="agent-name">Frosty</div>
                 <div className="agent-status">
                   <span className="status-dot"></span>
                   Online
