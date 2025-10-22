@@ -89,7 +89,7 @@ const TermsConditionsPage = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Pricing and Discounts</h2>
                   <p className="text-gray-600 mb-4"><strong>Standard Pricing:</strong></p>
                   <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                    <li>10lb bags: JMD $350 per bag</li>
+                    <li>Quick Fix (10lb): JMD $350 per bag</li>
                   </ul>
                   <p className="text-gray-600 mb-4 mt-4"><strong>Bulk Discounts (automatic):</strong></p>
                   <ul className="list-disc pl-6 space-y-2 text-gray-600">
