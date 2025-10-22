@@ -263,7 +263,7 @@ const HomePage = () => {
                   {product.id === 'prod_10lb' ? (
                     <img 
                       src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
-                      alt="10lb Ice Bags"
+                      alt="Quick Fix Ice Bags"
                       className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
