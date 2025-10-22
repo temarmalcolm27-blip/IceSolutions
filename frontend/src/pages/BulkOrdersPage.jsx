@@ -11,43 +11,30 @@ import { Link } from 'react-router-dom';
 const BulkOrdersPage = () => {
   const pricingTiers = [
     {
-      range: "1-4 Bags",
-      rangeParam: "1-4",
-      quantity: 4,
+      range: "1-14 Bags",
+      rangeParam: "1-14",
+      quantity: 14,
       discount: "0%",
       discountPercent: 0,
       pricePerBag: "JMD $350.00",
-      totalExample: "JMD $1,400.00 (4 bags)",
+      totalExample: "JMD $4,900.00 (14 bags)",
       badgeColor: "bg-gray-100 text-gray-700",
       recommended: false
     },
     {
-      range: "5-9 Bags",
-      rangeParam: "5-9",
-      quantity: 9,
-      discount: "5%",
-      discountPercent: 5,
-      pricePerBag: "JMD $332.50",
-      totalExample: "JMD $2,992.50 (9 bags)",
-      savings: "Save JMD $157.50",
-      badgeColor: "bg-blue-100 text-blue-700",
-      recommended: false
-    },
-    {
-      range: "10-19 Bags",
-      rangeParam: "10-19",
-      quantity: 19,
+      range: "15+ Bags",
+      rangeParam: "15+",
+      quantity: 20,
       discount: "10%",
       discountPercent: 10,
       pricePerBag: "JMD $315.00",
-      totalExample: "JMD $5,985.00 (19 bags)",
-      savings: "Save JMD $665.00",
+      totalExample: "JMD $6,300.00 (20 bags)",
+      savings: "Save JMD $700.00",
       badgeColor: "bg-cyan-100 text-cyan-700",
-      recommended: true
-    },
-    {
-      range: "20+ Bags",
-      rangeParam: "20+",
+      recommended: true,
+      freeDelivery: true
+    }
+  ];
       quantity: 25,
       discount: "15%",
       discountPercent: 15,
