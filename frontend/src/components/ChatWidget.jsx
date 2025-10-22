@@ -315,9 +315,9 @@ const ChatWidget = () => {
                       required
                       className="lead-input"
                     >
-                      <option value="10lb Party Ice Bags">10lb Party Ice Bags</option>
-                      <option value="50lb Commercial Ice Bags">50lb Commercial Ice Bags (Coming Soon)</option>
-                      <option value="100lb Industrial Ice Bags">100lb Industrial Ice Bags (Coming Soon)</option>
+                      <option value="Quick Fix">Quick Fix (10lb)</option>
+                      <option value="Party Solution">Party Solution (50lb - Coming Soon)</option>
+                      <option value="Mega Solution">Mega Solution (100lb - Coming Soon)</option>
                       <option value="Bulk Order">Bulk Order</option>
                       <option value="Event Planning">Event Planning</option>
                     </select>
