@@ -29,17 +29,18 @@ Ice Solutions is your trusted partner for all party ice needs in Kingston, Jamai
   - Fast cooling
 - **Description**: Perfect for parties, events, and small gatherings. Each bag contains crystal-clear, restaurant-quality ice cubes that keep drinks cold longer.
 
-### 2. 50lb Commercial Ice Bags - **COMING SOON**
-- **Price**: JMD $34.99 per bag (tentative)
+### 2. Party Solution (50lb bags) - **COMING SOON**
+- **Tagline**: Your cool answer to every crowd.
+- **Price**: JMD $1,750 per bag (estimated)
 - **Weight**: 50 lbs (pounds)
 - **Status**: COMING SOON - Not yet available
-- **Best For**: Larger events, commercial use, medium businesses
+- **Best For**: Larger events, commercial use, event venues
 - **Features**:
   - Bulk quantity
   - Cost-effective
   - Commercial grade
   - Extended freshness
-- **Description**: Perfect for larger events and commercial use. Great value for businesses needing more ice.
+- **Description**: Perfect for larger gatherings and commercial applications
 - **Note**: Customers can sign up to be notified when available
 
 ### 3. 100lb Industrial Ice Bags - **COMING SOON**
