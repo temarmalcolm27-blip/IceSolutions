@@ -1612,51 +1612,62 @@ def test_quote_page_instant_calculation(results):
         results.errors.append(error_msg)
 
 def run_all_tests():
-    """Run all backend API tests focusing on QUOTE PAGE INSTANT CALCULATION"""
-    print("🚀 Starting IceSolutions Backend API Tests - QUOTE PAGE INSTANT CALCULATION")
+    """Run all backend API tests focusing on REVIEW REQUEST CHANGES"""
+    print("🚀 Starting IceSolutions Backend API Tests - REVIEW REQUEST CHANGES")
     print("=" * 80)
-    print("📋 REVIEW REQUEST: Test quote page instant calculation with distance-based delivery fees")
+    print("📋 REVIEW REQUEST: Test all recent changes to IceSolutions application")
     
     results = TestResults()
     
-    # MAIN FOCUS: Quote Page Instant Calculation (REVIEW REQUEST)
+    # MAIN FOCUS: Review Request Changes
     print("\n" + "=" * 60)
-    print("🎯 MAIN FOCUS: QUOTE PAGE INSTANT CALCULATION (REVIEW REQUEST)")
+    print("🎯 MAIN FOCUS: REVIEW REQUEST CHANGES")
     print("=" * 60)
+    
+    # 1. Discount Structure Updated (10% on 15+ bags only)
+    test_review_request_discount_structure(results)
+    
+    # 2. Product Names Updated
+    test_review_request_product_names(results)
+    
+    # 3. Quote Page Simplified
+    test_review_request_simplified_quote(results)
+    
+    # 4. Delivery Fee Calculator ($35/mile)
+    test_review_request_delivery_fee_calculator(results)
+    
+    # SECTION 1: Quote Page Instant Calculation (Supporting feature)
+    print("\n" + "=" * 50)
+    print("🎯 SECTION 1: QUOTE PAGE INSTANT CALCULATION")
+    print("=" * 50)
     test_quote_page_instant_calculation(results)
     
-    # SECTION 1: Google Routes API Integration (Supporting the main feature)
+    # SECTION 2: Google Routes API Integration (Supporting the main feature)
     print("\n" + "=" * 50)
-    print("🗺️  SECTION 1: GOOGLE ROUTES API INTEGRATION")
+    print("🗺️  SECTION 2: GOOGLE ROUTES API INTEGRATION")
     print("=" * 50)
     test_google_routes_api_integration(results)
     
-    # SECTION 2: Existing Endpoints (Smoke Test)
+    # SECTION 3: Existing Endpoints (Smoke Test)
     print("\n" + "=" * 50)
-    print("📋 SECTION 2: EXISTING ENDPOINTS (SMOKE TEST)")
+    print("📋 SECTION 3: EXISTING ENDPOINTS (SMOKE TEST)")
     print("=" * 50)
     test_products_api(results)
     test_delivery_areas_api(results)
     test_contacts_api(results)
     
-    # SECTION 3: NEW Payment Endpoints
+    # SECTION 4: NEW Payment Endpoints
     print("\n" + "=" * 50)
-    print("💳 SECTION 3: NEW PAYMENT ENDPOINTS")
+    print("💳 SECTION 4: NEW PAYMENT ENDPOINTS")
     print("=" * 50)
     test_payment_endpoints(results)
     test_order_endpoints(results)
     
-    # SECTION 4: NEW Lead Management Endpoints  
+    # SECTION 5: NEW Lead Management Endpoints  
     print("\n" + "=" * 50)
-    print("📞 SECTION 4: NEW LEAD MANAGEMENT ENDPOINTS")
+    print("📞 SECTION 5: NEW LEAD MANAGEMENT ENDPOINTS")
     print("=" * 50)
     test_lead_management_endpoints(results)
-    
-    # SECTION 5: NEW Pricing Logic Verification
-    print("\n" + "=" * 50)
-    print("💰 SECTION 5: NEW PRICING LOGIC VERIFICATION")
-    print("=" * 50)
-    test_pricing_logic_verification(results)
     
     # SECTION 6: Error Handling
     print("\n" + "=" * 50)
