@@ -11,7 +11,7 @@ const FAQPage = () => {
   const faqs = [
     {
       question: "What type of ice do you sell?",
-      answer: "We specialize in premium cube ice made from purified water. It's the same crystal-clear, restaurant-quality ice used by top restaurants and bars across Kingston. Currently, we offer 10lb bags, with 50lb and 100lb bags coming soon."
+      answer: "We specialize in premium cube ice made from purified water. It's the same crystal-clear, restaurant-quality ice used by top restaurants and bars across Kingston. Currently, we offer Quick Fix (10lb bags), with Party Solution (50lb) and Mega Solution (100lb) coming soon."
     },
     {
       question: "How fast can you deliver?",
