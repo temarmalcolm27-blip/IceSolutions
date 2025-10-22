@@ -58,6 +58,7 @@ const RefundPolicyPage = () => {
                   <ul className="list-disc pl-6 space-y-2 text-gray-600">
                     <li><strong>Late Delivery:</strong> If we're more than 30 minutes late, contact us for compensation</li>
                     <li><strong>Wrong Amount:</strong> We'll deliver the difference immediately at no charge</li>
+                    <li><strong>Wrong Product:</strong> If we delivered the wrong product size (e.g., different bag size than ordered)</li>
                     <li><strong>Non-Delivery:</strong> Full refund if we fail to deliver</li>
                   </ul>
                 </div>
