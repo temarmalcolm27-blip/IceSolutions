@@ -16,7 +16,8 @@ Ice Solutions is your trusted partner for all party ice needs in Kingston, Jamai
 
 ## Products & Pricing
 
-### 1. 10lb Party Ice Bags - **CURRENTLY AVAILABLE**
+### 1. Quick Fix (10lb bags) - **CURRENTLY AVAILABLE**
+- **Tagline**: Instant chill, anytime.
 - **Price**: JMD $350.00 per bag
 - **Weight**: 10 lbs (pounds)
 - **Status**: IN STOCK - Available for immediate delivery
