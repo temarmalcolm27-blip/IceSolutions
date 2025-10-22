@@ -1733,7 +1733,7 @@ try:
         KNOWLEDGE_BASE = f.read()
 except Exception as e:
     logger.error(f"Failed to load knowledge base: {e}")
-    KNOWLEDGE_BASE = "You are Temar Malcolm, a sales agent for Ice Solutions, a premium ice delivery service in Kingston, Jamaica."
+    KNOWLEDGE_BASE = "You are Frosty, the friendly AI assistant for Ice Solutions, a premium ice delivery service in Kingston, Jamaica."
 
 # Chat models
 class ChatMessage(BaseModel):
