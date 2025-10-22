@@ -750,21 +750,30 @@ async def stripe_webhook(request: dict):
                             else:
                                 logger.error("Could not find or create Orders sheet")
                     
-                    # Send confirmation email
+                    # Send confirmation email (only if not already sent)
                     from email_service import send_order_confirmation_email
                     if customer_email:
-                        send_order_confirmation_email(
-                            customer_email=customer_email,
-                            customer_name=customer_name,
-                            order_id=order_id,
-                            quantity=int(bags),
-                            subtotal=subtotal,
-                            discount=discount_amount,
-                            total=total_paid,
-                            delivery_address=delivery_address,
-                            tracking_url=tracking_url
-                        )
-                        logger.info(f"Order confirmation email sent for Order #{order_id}")
+                        # Check if email was already sent for this order
+                        existing_email_log = await db.orders.find_one({
+                            "session_id": session_id, 
+                            "email_sent": True
+                        })
+                        
+                        if not existing_email_log:
+                            send_order_confirmation_email(
+                                customer_email=customer_email,
+                                customer_name=customer_name,
+                                order_id=order_id,
+                                quantity=int(bags),
+                                subtotal=subtotal,
+                                discount=discount_amount,
+                                total=total_paid,
+                                delivery_address=delivery_address,
+                                tracking_url=tracking_url
+                            )
+                            logger.info(f"Order confirmation email sent for Order #{order_id}")
+                        else:
+                            logger.info(f"Email already sent for Order #{order_id}, skipping duplicate")
                     
                     # Save to MongoDB for backup
                     order_doc = {
