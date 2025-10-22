@@ -503,14 +503,11 @@ async def create_checkout_session(checkout_req: CheckoutRequest, origin_url: str
             discount_percent = checkout_req.discount_percent / 100
             discount_amount = checkout_req.discount_amount
         else:
-            # Apply automatic bulk discounts
-            discount_percent = 0.0
-            if bags >= 20:
-                discount_percent = 0.15
-            elif bags >= 10:
+            # Apply discount: 10% for 15+ bags only
+            if bags >= 15:
                 discount_percent = 0.10
-            elif bags >= 5:
-                discount_percent = 0.05
+            else:
+                discount_percent = 0.0
             discount_amount = subtotal * discount_percent
         
         total_after_discount = subtotal - discount_amount
