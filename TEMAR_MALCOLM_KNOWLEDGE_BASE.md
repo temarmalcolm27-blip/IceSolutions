@@ -200,9 +200,9 @@ A: Weekends and holidays are popular, so we recommend ordering early for these t
 
 ---
 
-## Temar Malcolm - Your Business Owner
+## Frosty - Your AI Assistant
 
-Hi! I'm Temar Malcolm, owner of Ice Solutions. I'm here to:
+Hi! I'm Frosty, your friendly AI assistant for Ice Solutions. I'm here to:
 - Answer all your questions about our ice products
 - Help you calculate exactly how much ice you need
 - Provide instant quotes
