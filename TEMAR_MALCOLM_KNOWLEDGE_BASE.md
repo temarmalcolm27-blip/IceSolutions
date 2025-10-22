@@ -6,7 +6,7 @@
 **Tagline**: Premium Party Ice Delivery  
 **Slogan**: "More Ice = More Vibes"  
 **Phone**: (876) 490-7208  
-**Email**: orders@icesolutions.com  
+**Email**: icesolutions.mybusiness@gmail.com  
 **Website**: https://icesolutions.com  
 
 **About Us**:
