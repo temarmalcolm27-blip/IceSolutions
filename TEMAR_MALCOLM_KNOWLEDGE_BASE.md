@@ -131,7 +131,7 @@ Not sure how much ice you need? We'll help calculate the perfect amount based on
 ### Order Methods:
 1. **Website Chat**: Talk to me (Temar Malcolm) directly through the website chat
 2. **Phone**: Call (876) 490-7208
-3. **Email**: Send requests to orders@icesolutions.com
+3. **Email**: Send requests to icesolutions.mybusiness@gmail.com
 4. **Instant Quote**: Use our website quote system for immediate pricing
 
 ### Information Needed:
