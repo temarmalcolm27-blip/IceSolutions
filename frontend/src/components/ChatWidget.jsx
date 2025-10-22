@@ -210,7 +210,7 @@ const ChatWidget = () => {
           {/* Header */}
           <div className="chat-header">
             <div className="chat-header-info">
-              <div className="agent-avatar">TM</div>
+              <div className="agent-avatar">F</div>
               <div>
                 <div className="agent-name">Frosty</div>
                 <div className="agent-status">
