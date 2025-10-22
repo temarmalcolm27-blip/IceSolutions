@@ -108,7 +108,7 @@ const ChatWidget = () => {
       console.error('Error sending message:', error);
       const errorMessage = {
         id: messages.length + 2,
-        text: "I apologize, I'm having trouble connecting right now. Please try calling us at (876) 490-7208 or email orders@icesolutions.com",
+        text: "I apologize, I'm having trouble connecting right now. Please try calling us at (876) 490-7208 or email icesolutions.mybusiness@gmail.com",
         sender: 'agent',
         timestamp: new Date()
       };
