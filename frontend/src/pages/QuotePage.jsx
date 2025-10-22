@@ -401,7 +401,37 @@ const QuotePage = () => {
                           )}
                         </span>
                       </div>
-                      {calculatedQuote.deliveryArea && calculatedQuote.deliveryFee !== null && calculatedQuote.deliveryFee > 0 && (
+                      
+                      {/* Delivery Fee Breakdown */}
+                      {calculatedQuote.deliveryDetails && calculatedQuote.deliveryFee > 0 && (
+                        <div className="ml-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                          <div className="text-xs space-y-1">
+                            <div className="font-semibold text-blue-900 mb-2">📍 Delivery Calculation:</div>
+                            <div className="flex justify-between text-gray-700">
+                              <span>Distance:</span>
+                              <span className="font-medium">{calculatedQuote.deliveryDetails.distance_text} ({calculatedQuote.deliveryDetails.distance_miles.toFixed(2)} miles)</span>
+                            </div>
+                            <div className="flex justify-between text-gray-700">
+                              <span>Base fee:</span>
+                              <span className="font-medium">JMD $300</span>
+                            </div>
+                            <div className="flex justify-between text-gray-700">
+                              <span>Distance fee:</span>
+                              <span className="font-medium">JMD $60 × {calculatedQuote.deliveryDetails.distance_miles.toFixed(2)} miles</span>
+                            </div>
+                            <div className="flex justify-between text-gray-700">
+                              <span>Est. time:</span>
+                              <span className="font-medium">{calculatedQuote.deliveryDetails.duration_text}</span>
+                            </div>
+                            <div className="pt-2 mt-2 border-t border-blue-200 flex justify-between font-semibold text-blue-900">
+                              <span>Total delivery:</span>
+                              <span>JMD ${calculatedQuote.deliveryFee.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {calculatedQuote.deliveryArea && calculatedQuote.deliveryFee !== null && calculatedQuote.deliveryFee > 0 && !calculatedQuote.deliveryDetails && (
                         <div className="text-xs text-gray-500">
                           {calculatedQuote.deliveryArea}
                         </div>
