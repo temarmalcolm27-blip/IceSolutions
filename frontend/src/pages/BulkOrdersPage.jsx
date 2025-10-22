@@ -35,16 +35,6 @@ const BulkOrdersPage = () => {
       freeDelivery: true
     }
   ];
-      quantity: 25,
-      discount: "15%",
-      discountPercent: 15,
-      pricePerBag: "JMD $297.50",
-      totalExample: "JMD $7,437.50 (25 bags)",
-      savings: "Save JMD $1,312.50",
-      badgeColor: "bg-green-100 text-green-700",
-      recommended: false
-    }
-  ];
 
   const benefits = [
     "Automatic discounts applied at checkout",
