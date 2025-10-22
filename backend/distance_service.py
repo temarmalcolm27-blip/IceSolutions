@@ -17,7 +17,7 @@ class DistanceService:
         self.api_key = api_key
         self.origin_address = "Washington Gardens, Kingston 20, Jamaica"
         self.base_delivery_fee = 300.0  # JMD
-        self.per_mile_rate = 200.0  # JMD per mile
+        self.per_mile_rate = 60.0  # JMD per mile (reduced from $200 to $60)
     
     def calculate_distance(self, destination_address: str) -> Dict[str, float]:
         """
