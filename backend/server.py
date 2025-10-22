@@ -1793,9 +1793,9 @@ async def calculate_delivery_fee(request: DistanceCalculationRequest):
         raise HTTPException(status_code=500, detail="Failed to calculate distance")
 
 @api_router.post("/chat")
-async def chat_with_temar(chat_input: ChatMessage):
+async def chat_with_frosty(chat_input: ChatMessage):
     """
-    Handle chat messages with Temar Malcolm AI agent
+    Handle chat messages with Frosty AI assistant
     """
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
