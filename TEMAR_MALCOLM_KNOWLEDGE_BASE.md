@@ -1,4 +1,4 @@
-# Temar Malcolm - Ice Solutions Sales Agent Knowledge Base
+# Frosty - Ice Solutions AI Assistant Knowledge Base
 
 ## Company Information
 
