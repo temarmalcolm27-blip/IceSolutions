@@ -704,7 +704,28 @@ async def stripe_webhook(request: dict):
                         }
                     )
                     
-                    # Save to Google Sheets
+                    # Send confirmation email
+                    from email_service import send_order_confirmation_email
+                    if customer_email:
+                        send_order_confirmation_email(
+                            customer_email=customer_email,
+                            customer_name=customer_name,
+                            order_id=order_id,
+                            quantity=int(bags),
+                            subtotal=subtotal,
+                            discount=discount_amount,
+                            total=total_paid,
+                            delivery_address=delivery_address,
+                            tracking_url=tracking_url
+                        )
+                        # Mark email as sent in MongoDB
+                        await db.orders.update_one(
+                            {"session_id": session_id},
+                            {"$set": {"email_sent": True}}
+                        )
+                        logger.info(f"Order confirmation email sent for Order #{order_id}")
+                    
+                    # Save to Google Sheets (after email, so if this fails, email was still sent)
                     sheet_url = os.environ.get('GOOGLE_SHEETS_URL')
                     if sheet_url:
                         sheets_manager = GoogleSheetsLeadManager(
