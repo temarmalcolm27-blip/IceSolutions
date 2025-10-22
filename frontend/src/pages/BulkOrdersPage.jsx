@@ -161,32 +161,25 @@ const BulkOrdersPage = () => {
             <Card>
               <CardContent className="p-8">
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                  <div className="text-center max-w-2xl mx-auto">
                     <div>
-                      <div className="text-4xl font-bold text-gray-900 mb-2">5-9</div>
-                      <div className="text-sm text-gray-600 mb-3">Bags</div>
-                      <Badge className="bg-blue-100 text-blue-700">5% Discount</Badge>
-                      <div className="mt-4 text-2xl font-bold text-blue-600">Save $17.50+</div>
-                    </div>
-                    
-                    <div className="md:border-x border-gray-200">
-                      <div className="text-4xl font-bold text-gray-900 mb-2">10-19</div>
-                      <div className="text-sm text-gray-600 mb-3">Bags</div>
-                      <Badge className="bg-cyan-100 text-cyan-700">10% Discount</Badge>
-                      <div className="mt-4 text-2xl font-bold text-cyan-600">Save $350+</div>
-                    </div>
-                    
-                    <div>
-                      <div className="text-4xl font-bold text-gray-900 mb-2">20+</div>
-                      <div className="text-sm text-gray-600 mb-3">Bags</div>
-                      <Badge className="bg-green-100 text-green-700">15% Discount</Badge>
-                      <div className="mt-4 text-2xl font-bold text-green-600">Save $1,050+</div>
+                      <div className="text-5xl font-bold text-gray-900 mb-2">15+</div>
+                      <div className="text-sm text-gray-600 mb-4">Bags</div>
+                      <Badge className="bg-cyan-100 text-cyan-700 text-lg px-4 py-2">10% Discount</Badge>
+                      <div className="mt-6 text-3xl font-bold text-cyan-600">Save JMD $525+</div>
+                      <p className="mt-4 text-gray-600">Based on 15 bags order</p>
                     </div>
                   </div>
 
                   <div className="pt-6 border-t border-gray-200">
                     <p className="text-center text-gray-600">
-                      Discounts automatically applied at checkout. No coupon code needed!
+                      Discount automatically applied at checkout. No coupon code needed!
+                    </p>
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                    <p className="text-center text-green-700 font-medium">
+                      🎉 Orders of 20+ bags also get FREE delivery anywhere in Kingston!
                     </p>
                   </div>
                 </div>
