@@ -2159,7 +2159,8 @@ async def seed_database():
         products_data = [
             {
                 "id": "prod_10lb",
-                "name": "10lb Party Ice Bags",
+                "name": "Quick Fix",
+                "tagline": "Instant chill, anytime.",
                 "description": "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
                 "price": 350.00,
                 "weight": "10 lbs",
@@ -2171,7 +2172,8 @@ async def seed_database():
             },
             {
                 "id": "prod_50lb",
-                "name": "50lb Commercial Ice Bags",
+                "name": "Party Solution",
+                "tagline": "Your cool answer to every crowd.",
                 "description": "Coming Soon! Perfect for larger events and commercial use.",
                 "price": 1750.00,
                 "weight": "50 lbs",
@@ -2183,7 +2185,8 @@ async def seed_database():
             },
             {
                 "id": "prod_100lb",
-                "name": "100lb Industrial Ice Bags",
+                "name": "Mega Solution",
+                "tagline": "For weddings, bars, and massive events.",
                 "description": "Coming Soon! Ideal for restaurants, bars, and large-scale events.",
                 "price": 3200.00,
                 "weight": "100 lbs",
