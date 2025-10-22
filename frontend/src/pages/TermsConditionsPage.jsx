@@ -47,8 +47,9 @@ const TermsConditionsPage = () => {
                     Ice Solutions provides premium ice delivery services in Kingston, Jamaica and surrounding areas:
                   </p>
                   <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                    <li>10lb bags of restaurant-quality ice (currently available)</li>
-                    <li>50lb and 100lb bags (coming soon - notification list available)</li>
+                    <li>Quick Fix (10lb bags) - restaurant-quality ice (currently available)</li>
+                    <li>Party Solution (50lb bags) - coming soon (notification list available)</li>
+                    <li>Mega Solution (100lb bags) - coming soon (notification list available)</li>
                     <li>Same-day delivery (order at least 2 hours in advance)</li>
                     <li>FREE delivery in Washington Gardens area</li>
                     <li>JMD $300 delivery fee for other areas</li>
