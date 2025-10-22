@@ -1677,7 +1677,7 @@ def run_all_tests():
     
     # Print summary
     print("\n" + "=" * 80)
-    print("🏁 QUOTE PAGE INSTANT CALCULATION TEST SUMMARY")
+    print("🏁 REVIEW REQUEST CHANGES TEST SUMMARY")
     print("=" * 80)
     print(f"✅ PASSED: {results.passed}")
     print(f"❌ FAILED: {results.failed}")
@@ -1692,12 +1692,12 @@ def run_all_tests():
     print(f"\n📈 SUCCESS RATE: {success_rate:.1f}%")
     
     if results.failed == 0:
-        print("\n🎉 ALL TESTS PASSED! Quote page instant calculation working correctly!")
-        print("✨ Distance-based delivery fees, Google Routes API, and error handling all verified!")
+        print("\n🎉 ALL TESTS PASSED! Review request changes working correctly!")
+        print("✨ Discount structure, product names, delivery fees, and quote simplification all verified!")
         return True
     else:
         print(f"\n⚠️  {results.failed} tests failed. Please review the issues above.")
-        print("🔧 Focus on quote page instant calculation and delivery fee features.")
+        print("🔧 Focus on review request changes: discount structure, product names, delivery fees.")
         return False
 
 if __name__ == "__main__":
