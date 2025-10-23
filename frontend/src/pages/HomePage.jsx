@@ -137,8 +137,8 @@ const HomePage = () => {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Quick Fix</div>
-                        <div className="text-sm text-gray-600">Instant chill, anytime.</div>
+                        <div className="font-medium text-gray-900">Quick Pack</div>
+                        <div className="text-sm text-gray-600">Single bag solution</div>
                       </div>
                       <div className="text-lg font-bold text-cyan-600">$350.00</div>
                     </div>
