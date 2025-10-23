@@ -253,39 +253,33 @@ const ProductsPage = () => {
           <Card className="max-w-2xl mx-auto border-0 shadow-xl">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl text-gray-900">How Much Ice Do You Need?</CardTitle>
-              <p className="text-gray-600">Use our calculator to estimate the perfect amount for your event</p>
+              <p className="text-gray-600">Tell us how many Quick Packs you need</p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Number of Guests</label>
-                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                    <option>10-25 guests</option>
-                    <option>25-50 guests</option>
-                    <option>50-100 guests</option>
-                    <option>100+ guests</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Event Duration</label>
-                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                    <option>2-4 hours</option>
-                    <option>4-6 hours</option>
-                    <option>6-8 hours</option>
-                    <option>8+ hours</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Number of Quick Packs Needed</label>
+                <Input 
+                  type="number" 
+                  min="1" 
+                  placeholder="Enter number of bags"
+                  className="w-full p-3 text-lg"
+                />
+                <p className="text-xs text-gray-500">💡 1 Quick Pack serves ~25 people for 1 hour</p>
               </div>
               
               <div className="bg-cyan-50 p-6 rounded-lg border border-cyan-200">
-                <h4 className="font-semibold text-cyan-900 mb-2">Recommended Amount</h4>
-                <p className="text-2xl font-bold text-cyan-600">3-4 bags (30-40 lbs)</p>
-                <p className="text-sm text-cyan-700 mt-1">Based on your selections</p>
+                <h4 className="font-semibold text-cyan-900 mb-2">Quick Guide</h4>
+                <ul className="text-sm text-cyan-700 space-y-1">
+                  <li>• Small party (10-25 people): 1-2 packs</li>
+                  <li>• Medium event (25-50 people): 3-5 packs</li>
+                  <li>• Large gathering (50-100 people): 6-10 packs</li>
+                  <li>• Major event (100+ people): 15+ packs</li>
+                </ul>
               </div>
               
               <Link to="/quote">
                 <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
-                  Get Quote for This Amount
+                  Get Quote Now
                 </Button>
               </Link>
             </CardContent>
