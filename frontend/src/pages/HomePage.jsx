@@ -260,7 +260,13 @@ const HomePage = () => {
               products.map((product) => (
               <Card key={product.id} className="group hover:shadow-2xl transition-all duration-300 border-2 border-cyan-100 shadow-lg overflow-hidden transform hover:scale-105">
                 <div className="aspect-video bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50 flex items-center justify-center relative overflow-hidden">
-                  {product.id === 'prod_10lb' ? (
+                  {product.id === 1 || product.name === 'Quick Pack' ? (
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/yoj6u8t5_10lb%20Quick%20Pack.jpg"
+                      alt="Quick Pack Ice Bag"
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : product.id === 2 || product.id === 'prod_10lb' || product.name === 'Quick Fix' ? (
                     <img 
                       src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
                       alt="Quick Fix Ice Bags"
