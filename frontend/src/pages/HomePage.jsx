@@ -143,7 +143,7 @@ const HomePage = () => {
                       <div className="text-lg font-bold text-cyan-600">$350.00</div>
                     </div>
                     
-                    <Link to="/quote" className="block">
+                    <Link to="/quick-order" className="block">
                       <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
                         Order Now - Same Day Delivery
                       </Button>
