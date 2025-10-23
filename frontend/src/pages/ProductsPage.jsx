@@ -106,7 +106,13 @@ const ProductsPage = () => {
                 onClick={() => setSelectedProduct(selectedProduct === product.id ? null : product.id)}
               >
                 <div className="aspect-video bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden">
-                  {product.id === 'prod_10lb' ? (
+                  {product.id === 'prod_quick_pack' ? (
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/yoj6u8t5_10lb%20Quick%20Pack.jpg"
+                      alt="Quick Pack Ice Bag"
+                      className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : product.id === 'prod_10lb' ? (
                     <img 
                       src="https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png"
                       alt="Quick Fix Ice Bags"
