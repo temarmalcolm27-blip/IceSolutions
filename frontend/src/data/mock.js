@@ -14,17 +14,28 @@ export const mockData = {
   products: [
     {
       id: 1,
+      name: "Quick Pack",
+      tagline: "Single bag solution",
+      description: "Perfect for small gatherings and personal use. One bag of premium ice.",
+      price: 350.00,
+      weight: "10 lbs (1 bag)",
+      image: "https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png",
+      inStock: true,
+      features: ["Crystal Clear", "Restaurant Quality", "Single Bag", "Perfect for Small Events"]
+    },
+    {
+      id: 2,
       name: "Quick Fix",
       tagline: "Instant chill, anytime.",
-      description: "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
-      price: 350.00,
-      weight: "10 lbs",
-      image: "/api/placeholder/300/200",
+      description: "Perfect for parties, events, and gatherings. Crystal-clear, restaurant-quality ice.",
+      price: 650.00,
+      weight: "10 lbs (2 bags)",
+      image: "https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png",
       inStock: true,
       features: ["Crystal Clear", "Restaurant Quality", "Fast Melting", "Perfect Cube Size"]
     },
     {
-      id: 2,
+      id: 3,
       name: "Party Solution",
       tagline: "Your cool answer to every crowd.",
       description: "Coming Soon! Perfect for larger events and commercial use.",
@@ -36,7 +47,7 @@ export const mockData = {
       features: ["Bulk Quantity", "Cost Effective", "Commercial Grade", "Extended Freshness"]
     },
     {
-      id: 3,
+      id: 4,
       name: "Mega Solution",
       tagline: "For weddings, bars, and massive events.",
       description: "Coming Soon! Ideal for restaurants, bars, and large-scale events.",
