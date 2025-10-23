@@ -77,9 +77,9 @@ const Footer = () => {
                 <Phone className="h-4 w-4 mr-3 text-cyan-400" />
                 <span className="text-sm">(876) 490-7208</span>
               </div>
-              <a href="mailto:temarmalcolm27@gmail.com" className="flex items-center text-gray-300 hover:text-cyan-400 transition-colors">
+              <a href="mailto:icesolutions.mybusiness@gmail.com" className="flex items-center text-gray-300 hover:text-cyan-400 transition-colors">
                 <Mail className="h-4 w-4 mr-3 text-cyan-400" />
-                <span className="text-sm">temarmalcolm27@gmail.com</span>
+                <span className="text-sm">icesolutions.mybusiness@gmail.com</span>
               </a>
               <div className="flex items-start text-gray-300">
                 <MapPin className="h-4 w-4 mr-3 text-cyan-400 mt-0.5 flex-shrink-0" />

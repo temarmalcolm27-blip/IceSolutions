@@ -96,9 +96,9 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: 'temarmalcolm27@gmail.com',
+      details: 'icesolutions.mybusiness@gmail.com',
       description: 'We respond within 2 hours',
-      action: () => window.open('mailto:temarmalcolm27@gmail.com')
+      action: () => window.open('mailto:icesolutions.mybusiness@gmail.com')
     },
     {
       icon: MapPin,

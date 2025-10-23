@@ -105,7 +105,7 @@ const FAQPage = () => {
                 <p className="text-gray-600 mb-6">We're here to help! Contact us anytime.</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a href="tel:+18764907208" className="inline-block px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all">Call (876) 490-7208</a>
-                  <a href="mailto:temarmalcolm27@gmail.com" className="inline-block px-6 py-3 bg-white text-cyan-600 border-2 border-cyan-600 rounded-lg hover:bg-cyan-50 transition-all">Email Us</a>
+                  <a href="mailto:icesolutions.mybusiness@gmail.com" className="inline-block px-6 py-3 bg-white text-cyan-600 border-2 border-cyan-600 rounded-lg hover:bg-cyan-50 transition-all">Email Us</a>
                 </div>
               </CardContent>
             </Card>

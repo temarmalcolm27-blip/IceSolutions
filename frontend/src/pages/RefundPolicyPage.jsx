@@ -37,7 +37,7 @@ const RefundPolicyPage = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Cancellation Policy</h2>
                   <ul className="list-disc pl-6 space-y-2 text-gray-600">
                     <li><strong>Before Delivery:</strong> Cancel up to 1 hour before scheduled delivery for a full refund</li>
-                    <li><strong>How to Cancel:</strong> Call (876) 490-7208 or email temarmalcolm27@gmail.com</li>
+                    <li><strong>How to Cancel:</strong> Call (876) 490-7208 or email icesolutions.mybusiness@gmail.com</li>
                     <li><strong>Refund Timeline:</strong> Refunds processed within 5-7 business days to original payment method</li>
                   </ul>
                 </div>
@@ -88,7 +88,7 @@ const RefundPolicyPage = () => {
                   <p className="text-gray-600 mb-4">Contact us immediately:</p>
                   <div className="space-y-2 text-gray-600">
                     <p><strong>Phone:</strong> <a href="tel:+18764907208" className="text-cyan-600 hover:underline">(876) 490-7208</a> (Fastest)</p>
-                    <p><strong>Email:</strong> <a href="mailto:temarmalcolm27@gmail.com" className="text-cyan-600 hover:underline">temarmalcolm27@gmail.com</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:icesolutions.mybusiness@gmail.com" className="text-cyan-600 hover:underline">icesolutions.mybusiness@gmail.com</a></p>
                     <p className="text-sm mt-4">We're here to help! Your satisfaction is our priority.</p>
                   </div>
                 </div>

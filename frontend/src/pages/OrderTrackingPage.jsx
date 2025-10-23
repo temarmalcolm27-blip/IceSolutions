@@ -159,7 +159,7 @@ const OrderTrackingPage = () => {
                   <div className="flex flex-col sm:flex-row gap-3">
                     <a href="tel:+18764907208" className="text-cyan-600 hover:underline font-medium">(876) 490-7208</a>
                     <span className="hidden sm:inline text-gray-300">|</span>
-                    <a href="mailto:temarmalcolm27@gmail.com" className="text-cyan-600 hover:underline font-medium">temarmalcolm27@gmail.com</a>
+                    <a href="mailto:icesolutions.mybusiness@gmail.com" className="text-cyan-600 hover:underline font-medium">icesolutions.mybusiness@gmail.com</a>
                   </div>
                 </CardContent>
               </Card>

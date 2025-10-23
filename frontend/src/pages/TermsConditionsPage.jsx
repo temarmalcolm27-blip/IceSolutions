@@ -156,7 +156,7 @@ const TermsConditionsPage = () => {
                     If you have questions about these Terms and Conditions:
                   </p>
                   <div className="space-y-2 text-gray-600">
-                    <p><strong>Email:</strong> <a href="mailto:temarmalcolm27@gmail.com" className="text-cyan-600 hover:underline">temarmalcolm27@gmail.com</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:icesolutions.mybusiness@gmail.com" className="text-cyan-600 hover:underline">icesolutions.mybusiness@gmail.com</a></p>
                     <p><strong>Phone:</strong> <a href="tel:+18764907208" className="text-cyan-600 hover:underline">(876) 490-7208</a></p>
                     <p><strong>Address:</strong> Rosend Avenue, Washington Gardens, Kingston 20, Jamaica</p>
                   </div>
