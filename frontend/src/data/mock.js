@@ -19,7 +19,7 @@ export const mockData = {
       description: "Perfect for small gatherings and personal use. One bag of premium ice.",
       price: 350.00,
       weight: "10 lbs (1 bag)",
-      image: "https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png",
+      image: "https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/yoj6u8t5_10lb%20Quick%20Pack.jpg",
       inStock: true,
       features: ["Crystal Clear", "Restaurant Quality", "Single Bag", "Perfect for Small Events"]
     },
