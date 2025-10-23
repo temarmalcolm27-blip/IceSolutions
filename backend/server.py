@@ -2159,12 +2159,25 @@ async def seed_database():
     if product_count == 0:
         products_data = [
             {
+                "id": "prod_quick_pack",
+                "name": "Quick Pack",
+                "tagline": "Single bag solution",
+                "description": "Perfect for small gatherings and personal use. One bag of premium ice.",
+                "price": 350.00,
+                "weight": "10 lbs (1 bag)",
+                "inStock": True,
+                "comingSoon": False,
+                "features": ["Crystal Clear", "Restaurant Quality", "Single Bag", "Perfect for Small Events"],
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            },
+            {
                 "id": "prod_10lb",
                 "name": "Quick Fix",
                 "tagline": "Instant chill, anytime.",
-                "description": "Perfect for parties, events, and small gatherings. Crystal-clear, restaurant-quality ice.",
-                "price": 350.00,
-                "weight": "10 lbs",
+                "description": "Perfect for parties, events, and gatherings. Crystal-clear, restaurant-quality ice.",
+                "price": 650.00,
+                "weight": "10 lbs (2 bags)",
                 "inStock": True,
                 "comingSoon": False,
                 "features": ["Crystal Clear", "Restaurant Quality", "Fast Melting", "Perfect Cube Size"],
