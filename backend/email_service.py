@@ -24,7 +24,7 @@ def send_notification_confirmation_email(customer_email: str, product_name: str,
     # Email configuration (using environment variables)
     smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
     smtp_port = int(os.getenv('SMTP_PORT', '587'))
-    sender_email = os.getenv('SENDER_EMAIL', 'temarmalcolm27@gmail.com')
+    sender_email = os.getenv('SENDER_EMAIL', 'icesolutions.mybusiness@gmail.com')
     sender_password = os.getenv('SENDER_PASSWORD', '')
     
     # If no email credentials configured, log and return
@@ -188,7 +188,7 @@ def send_order_confirmation_email(
     # Email configuration
     smtp_server = os.getenv('SMTP_SERVER', 'smtp.sendgrid.net')
     smtp_port = int(os.getenv('SMTP_PORT', '587'))
-    sender_email = os.getenv('SENDER_EMAIL', 'temarmalcolm27@gmail.com')
+    sender_email = os.getenv('SENDER_EMAIL', 'icesolutions.mybusiness@gmail.com')
     sender_password = os.getenv('SENDER_PASSWORD', '')
     
     # If no email credentials configured, log and return
@@ -288,7 +288,7 @@ def send_order_confirmation_email(
                     <ul>
                         <li>📞 Call: (876) 490-7208</li>
                         <li>💬 Chat: Visit our website</li>
-                        <li>📧 Email: temarmalcolm27@gmail.com</li>
+                        <li>📧 Email: icesolutions.mybusiness@gmail.com</li>
                     </ul>
                 </div>
                 
@@ -337,7 +337,7 @@ def send_order_confirmation_email(
         
         NEED HELP?
         Call: (876) 490-7208
-        Email: temarmalcolm27@gmail.com
+        Email: icesolutions.mybusiness@gmail.com
         
         Ice Solutions
         Washington Gardens, Kingston, Jamaica
