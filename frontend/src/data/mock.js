@@ -30,7 +30,7 @@ export const mockData = {
       description: "Perfect for parties, events, and gatherings. Crystal-clear, restaurant-quality ice.",
       price: 650.00,
       weight: "10 lbs (2 bags)",
-      image: "https://customer-assets.emergentagent.com/job_cool-cubes/artifacts/gat89bkm_10lbs%20ice%20bags.png",
+      image: "https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/drvmn7o3_10lb%20Quick%20fix.webp",
       inStock: true,
       features: ["Crystal Clear", "Restaurant Quality", "Fast Melting", "Perfect Cube Size"]
     },
