@@ -131,7 +131,7 @@ const HomePage = () => {
                     <div className="flex items-center space-x-3">
                       <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-1">
                         <img 
-                          src="https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/drvmn7o3_10lb%20Quick%20fix.webp"
+                          src="https://customer-assets.emergentagent.com/job_iceflow-system/artifacts/yoj6u8t5_10lb%20Quick%20Pack.jpg"
                           alt="Quick Pack Ice Bag"
                           className="w-full h-full object-contain"
                         />
