@@ -7,6 +7,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import QuotePage from "./pages/QuotePage";
 import SimpleQuotePage from "./pages/SimpleQuotePage";
+import QuickOrderPage from "./pages/QuickOrderPage";
 import EventPlanningPage from "./pages/EventPlanningPage";
 import BulkOrdersPage from "./pages/BulkOrdersPage";
 import BulkOrderFormPage from "./pages/BulkOrderFormPage";
